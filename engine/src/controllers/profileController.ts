@@ -153,7 +153,7 @@ export const profileController = {
   calculateNutritionalNeeds: async (req: Request, res: Response) => {
     try {
       const { id } = req.params;
-      const { age, gender, weight, activity } = req.body;
+      const { _age, gender, weight, activity } = req.body;
 
       // ANSES RNP calculations for vegan diet
       const baseNeeds = {

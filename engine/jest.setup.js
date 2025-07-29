@@ -1,2 +1,2 @@
 // jest.setup.js
-import { jest } from '@jest/globals'
+// Setup file for Jest tests

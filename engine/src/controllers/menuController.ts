@@ -13,7 +13,7 @@ export const menuController = {
         budget = 'medium', 
         cookingTime = 'medium',
         dietaryRestrictions = [],
-        nutritionalGoals = {}
+        _nutritionalGoals = {}
       } = req.body;
 
       logger.info('Generating menu for preferences:', {
@@ -158,7 +158,7 @@ export const menuController = {
    */
   swapIngredient: async (req: Request, res: Response) => {
     try {
-      const { ingredient, reason, nutritionalTarget } = req.body;
+      const { ingredient, _reason, _nutritionalTarget } = req.body;
 
       if (!ingredient) {
         throw createError('Ingredient parameter is required', 400);

@@ -1,0 +1,40 @@
+services:
+  - type: web
+    name: veganflemme-engine
+    env: node
+    region: frankfurt
+    plan: starter
+    buildCommand: cd engine && npm install && npm run build
+    startCommand: cd engine && npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3001
+      - key: FRONTEND_URL
+        fromService:
+          type: web
+          name: veganflemme-frontend
+          envVarKey: VERCEL_URL
+      - key: LOG_LEVEL
+        value: info
+      - key: ENABLE_MENU_GENERATION
+        value: true
+      - key: ENABLE_CART_BUILDER
+        value: true
+      - key: ENABLE_ANALYTICS
+        value: true
+    scaling:
+      minInstances: 1
+      maxInstances: 3
+    autoDeploy: true
+    buildFilter:
+      paths:
+        - engine/**
+      ignoredPaths:
+        - frontend/**
+        - docs/**
+        - README.md
+    domains:
+      - api.veganflemme.com  # Domaine personnalisé optionnel

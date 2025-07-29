@@ -2,16 +2,19 @@ module.exports = {
   parser: '@typescript-eslint/parser',
   plugins: ['@typescript-eslint'],
   extends: [
-    'eslint:recommended',
-    '@typescript-eslint/recommended'
+    'eslint:recommended'
   ],
   env: {
     node: true,
     es2020: true
   },
+  parserOptions: {
+    ecmaVersion: 2020,
+    sourceType: 'module'
+  },
   rules: {
     'no-console': 'off', // Allow console in backend
-    '@typescript-eslint/no-unused-vars': 'error',
-    '@typescript-eslint/explicit-function-return-type': 'off'
+    'no-unused-vars': ['error', { varsIgnorePattern: '^_', argsIgnorePattern: '^_' }],
+    'no-undef': 'error'
   }
 }

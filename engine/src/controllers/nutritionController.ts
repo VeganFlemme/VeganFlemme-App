@@ -8,7 +8,7 @@ export const nutritionController = {
    */
   getRNPData: async (req: Request, res: Response) => {
     try {
-      const { age, gender } = req.query;
+      const { _age, _gender } = req.query;
 
       // ANSES Références Nutritionnelles pour la Population
       const rnpData = {
@@ -81,7 +81,7 @@ export const nutritionController = {
    */
   analyzeNutrition: async (req: Request, res: Response) => {
     try {
-      const { foods, quantities } = req.body;
+      const { foods, _quantities } = req.body;
 
       if (!foods || !Array.isArray(foods)) {
         throw createError('Foods array is required', 400);
@@ -155,7 +155,7 @@ export const nutritionController = {
    */
   getWeeklyEvolution: async (req: Request, res: Response) => {
     try {
-      const { profileId } = req.params;
+      const { _profileId } = req.params;
       
       // Mock weekly data for chart
       const weeklyData = {
