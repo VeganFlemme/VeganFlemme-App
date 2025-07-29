@@ -1,5 +1,5 @@
 module.exports = {
-  content: ['./postcss.config.js'],
+  content: [],
   plugins: {
     tailwindcss: {},
     autoprefixer: {},
