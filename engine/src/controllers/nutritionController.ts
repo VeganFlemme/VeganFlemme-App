@@ -149,13 +149,6 @@ export const nutritionController = {
 
   /**
    * Get weekly nutrition evolution
-   * 
-   * Retrieves weekly nutrition evolution data for a given profile.
-   * The data includes mock weekly statistics for charting purposes.
-   * 
-   * @param {Request} req - The request object containing the profile ID in params.
-   * @param {Response} res - The response object to send the weekly data.
-   * @returns {void} Sends a JSON response with weekly nutrition evolution data.
    */
   getWeeklyEvolution: async (req: Request, res: Response) => {
     try {
