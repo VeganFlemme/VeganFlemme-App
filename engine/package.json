@@ -14,7 +14,8 @@
     "test:coverage": "jest --coverage",
     "lint": "eslint src/**/*.ts",
     "lint:fix": "eslint src/**/*.ts --fix",
-    "build:production": "npm ci --production=false && npm run build"
+    "build:production": "npm ci --production=false && npm run build",
+    "verify-deployment": "./scripts/verify-deployment.sh"
   },
   "dependencies": {
     "axios": "^1.6.0",
