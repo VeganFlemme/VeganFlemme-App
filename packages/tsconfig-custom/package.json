@@ -1,0 +1,14 @@
+{
+  "name": "@veganflemme/tsconfig-custom",
+  "version": "0.1.0",
+  "description": "Shared TypeScript configuration for VeganFlemme projects",
+  "main": "base.json",
+  "files": [
+    "base.json",
+    "nextjs.json",
+    "node.json"
+  ],
+  "publishConfig": {
+    "access": "restricted"
+  }
+}

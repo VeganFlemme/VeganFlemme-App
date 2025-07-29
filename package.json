@@ -1,0 +1,26 @@
+{
+  "name": "veganflemme-monorepo",
+  "version": "0.1.0",
+  "private": true,
+  "description": "VeganFlemme - Le Moteur de Menus Vegan Intelligents",
+  "scripts": {
+    "dev": "pnpm --parallel --recursive dev",
+    "build": "pnpm --recursive build",
+    "lint": "pnpm --recursive lint",
+    "clean": "pnpm --recursive clean",
+    "type-check": "pnpm --recursive type-check"
+  },
+  "keywords": [
+    "vegan",
+    "nutrition",
+    "menu-planning",
+    "monorepo"
+  ],
+  "author": "VeganFlemme Team",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
+  },
+  "packageManager": "pnpm@10.13.1"
+}
