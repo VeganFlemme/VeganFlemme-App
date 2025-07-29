@@ -10,7 +10,6 @@ export default function HomePage() {
   const handleNewsletterSignup = (e: React.FormEvent) => {
     e.preventDefault()
     // TODO: Implement newsletter signup
-    console.log('Newsletter signup:', email)
     setEmail('')
   }
 
@@ -81,7 +80,7 @@ export default function HomePage() {
             <div className="text-center p-6 bg-white rounded-xl shadow-sm">
               <ShoppingCart className="h-12 w-12 text-primary-500 mx-auto mb-4" />
               <h3 className="text-xl font-semibold mb-2">Panier Intelligent</h3>
-              <p className="text-gray-600">Génération automatique avec liens affiliés Greenweez & partenaires</p>
+              <p className="text-gray-600">Génération automatique avec liens affiliés Greenweez &amp; partenaires</p>
             </div>
           </div>
         </div>
@@ -109,7 +108,7 @@ export default function HomePage() {
               type="submit"
               className="bg-primary-500 text-white px-8 py-3 rounded-lg hover:bg-primary-600 transition-colors font-semibold"
             >
-              S'inscrire
+              S&apos;inscrire
             </button>
           </form>
         </div>

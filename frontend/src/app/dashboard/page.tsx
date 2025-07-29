@@ -1,11 +1,45 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import { ArrowLeft, TrendingUp, Activity, Leaf, AlertTriangle } from 'lucide-react'
 import Link from 'next/link'
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
+import { apiClient } from '../../lib/api'
 
 export default function DashboardPage() {
-  // Mock data - in real app this would come from API
-  const nutritionData = {
+  const [weeklyData, setWeeklyData] = useState<any>(null)
+  const [dailyTracking, setDailyTracking] = useState<any>(null)
+  const [loading, setLoading] = useState(true)
+
+  // Load data from API
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const [weeklyResponse, dailyResponse] = await Promise.all([
+          apiClient.getWeeklyEvolution('user-123'),
+          apiClient.getDailyTracking('user-123')
+        ])
+        
+        if (weeklyResponse.success) setWeeklyData(weeklyResponse.data)
+        if (dailyResponse.success) setDailyTracking(dailyResponse.data)
+      } catch (error) {
+        console.error('Failed to load dashboard data:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+    
+    loadData()
+  }, [])
+
+  // Use daily tracking data for gauges, fallback to mock data
+  const nutritionData = dailyTracking ? {
+    calories: { current: dailyTracking.dailyTotals.calories, target: dailyTracking.targets.calories, unit: 'kcal' },
+    protein: { current: dailyTracking.dailyTotals.protein, target: dailyTracking.targets.protein, unit: 'g' },
+    iron: { current: dailyTracking.dailyTotals.iron, target: dailyTracking.targets.iron, unit: 'mg' },
+    b12: { current: dailyTracking.dailyTotals.b12, target: dailyTracking.targets.b12, unit: 'μg' },
+    omega3: { current: dailyTracking.dailyTotals.omega3, target: dailyTracking.targets.omega3, unit: 'g' },
+  } : {
     calories: { current: 1850, target: 2000, unit: 'kcal' },
     protein: { current: 85, target: 100, unit: 'g' },
     iron: { current: 12, target: 15, unit: 'mg' },
@@ -25,7 +59,7 @@ export default function DashboardPage() {
       <div className="container mx-auto px-4 py-8 max-w-6xl">
         <Link href="/" className="inline-flex items-center text-primary-500 hover:text-primary-600 mb-6">
           <ArrowLeft className="h-4 w-4 mr-2" />
-          Retour à l'accueil
+          Retour à l&apos;accueil
         </Link>
 
         <div className="mb-8">
@@ -98,9 +132,61 @@ export default function DashboardPage() {
                 <Activity className="h-5 w-5 mr-2 text-primary-500" />
                 Évolution sur 7 jours
               </h2>
-              <div className="h-64 bg-gray-50 rounded-lg flex items-center justify-center">
-                <p className="text-gray-500">Graphique d'évolution (à implémenter avec Recharts)</p>
-              </div>
+              {loading ? (
+                <div className="h-64 bg-gray-50 rounded-lg flex items-center justify-center">
+                  <p className="text-gray-500">Chargement des données...</p>
+                </div>
+              ) : weeklyData ? (
+                <div className="h-64">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart data={weeklyData.data}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="day" />
+                      <YAxis domain={[0, 100]} />
+                      <Tooltip 
+                        formatter={(value: any, name: string) => [`${value}%`, name]}
+                        labelFormatter={(label) => `${label}`}
+                      />
+                      <Line 
+                        type="monotone" 
+                        dataKey="protein" 
+                        stroke="#20c997" 
+                        strokeWidth={3}
+                        name="Protéines"
+                        dot={{ fill: '#20c997', strokeWidth: 2 }}
+                      />
+                      <Line 
+                        type="monotone" 
+                        dataKey="iron" 
+                        stroke="#6366f1" 
+                        strokeWidth={3}
+                        name="Fer"
+                        dot={{ fill: '#6366f1', strokeWidth: 2 }}
+                      />
+                      <Line 
+                        type="monotone" 
+                        dataKey="b12" 
+                        stroke="#f59e0b" 
+                        strokeWidth={3}
+                        name="B12"
+                        dot={{ fill: '#f59e0b', strokeWidth: 2 }}
+                      />
+                      <Line 
+                        type="monotone" 
+                        dataKey="omega3" 
+                        stroke="#ec4899" 
+                        strokeWidth={3}
+                        name="Oméga-3"
+                        dot={{ fill: '#ec4899', strokeWidth: 2 }}
+                      />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+              ) : (
+                <div className="h-64 bg-gray-50 rounded-lg flex items-center justify-center">
+                  <p className="text-gray-500">Aucune donnée disponible</p>
+                </div>
+              )}
             </div>
 
             {/* Environmental Impact */}
@@ -112,7 +198,7 @@ export default function DashboardPage() {
               <div className="grid md:grid-cols-3 gap-6">
                 <div className="text-center p-4 bg-green-50 rounded-lg">
                   <div className="text-2xl font-bold text-green-600 mb-1">2.3 kg</div>
-                  <div className="text-sm text-gray-600">CO2 évité aujourd'hui</div>
+                  <div className="text-sm text-gray-600">CO2 évité aujourd&apos;hui</div>
                 </div>
                 <div className="text-center p-4 bg-blue-50 rounded-lg">
                   <div className="text-2xl font-bold text-blue-600 mb-1">420 L</div>

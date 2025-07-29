@@ -20,7 +20,6 @@ export default function ProfilePage() {
 
   const handleSave = () => {
     // TODO: Implement profile save
-    console.log('Saving profile:', profile)
   }
 
   return (
@@ -28,7 +27,7 @@ export default function ProfilePage() {
       <div className="container mx-auto px-4 py-8 max-w-4xl">
         <Link href="/" className="inline-flex items-center text-primary-500 hover:text-primary-600 mb-6">
           <ArrowLeft className="h-4 w-4 mr-2" />
-          Retour à l'accueil
+          Retour à l&apos;accueil
         </Link>
 
         <div className="bg-white rounded-2xl shadow-lg p-8">
@@ -141,7 +140,7 @@ export default function ProfilePage() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Niveau d'activité
+                  Niveau d&apos;activité
                 </label>
                 <select
                   value={profile.activity}

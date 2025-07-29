@@ -150,6 +150,110 @@ export const nutritionController = {
   /**
    * Get daily nutrition tracking
    */
+  /**
+   * Get weekly nutrition evolution
+   */
+  getWeeklyEvolution: async (req: Request, res: Response) => {
+    try {
+      const { profileId } = req.params;
+      
+      // Mock weekly data for chart
+      const weeklyData = {
+        period: '7 derniers jours',
+        data: [
+          {
+            day: 'Lun',
+            date: '2024-01-22',
+            protein: 92,
+            iron: 88,
+            b12: 75,
+            omega3: 70,
+            calories: 1980
+          },
+          {
+            day: 'Mar',
+            date: '2024-01-23',
+            protein: 95,
+            iron: 82,
+            b12: 78,
+            omega3: 72,
+            calories: 1850
+          },
+          {
+            day: 'Mer',
+            date: '2024-01-24',
+            protein: 89,
+            iron: 91,
+            b12: 72,
+            omega3: 75,
+            calories: 2100
+          },
+          {
+            day: 'Jeu',
+            date: '2024-01-25',
+            protein: 98,
+            iron: 85,
+            b12: 80,
+            omega3: 68,
+            calories: 1920
+          },
+          {
+            day: 'Ven',
+            date: '2024-01-26',
+            protein: 93,
+            iron: 89,
+            b12: 76,
+            omega3: 74,
+            calories: 2050
+          },
+          {
+            day: 'Sam',
+            date: '2024-01-27',
+            protein: 87,
+            iron: 86,
+            b12: 74,
+            omega3: 71,
+            calories: 1780
+          },
+          {
+            day: 'Dim',
+            date: '2024-01-28',
+            protein: 91,
+            iron: 88,
+            b12: 77,
+            omega3: 73,
+            calories: 1900
+          }
+        ],
+        averages: {
+          protein: 92,
+          iron: 87,
+          b12: 76,
+          omega3: 72,
+          calories: 1940
+        },
+        trends: {
+          protein: 'stable',
+          iron: 'increasing',
+          b12: 'stable',
+          omega3: 'increasing'
+        }
+      };
+
+      res.status(200).json({
+        success: true,
+        data: weeklyData
+      });
+
+    } catch (error) {
+      logger.error('Weekly evolution retrieval failed:', error);
+      throw createError('Failed to retrieve weekly evolution', 500);
+    }
+  },
+
+  /**
+   * Get daily nutrition tracking
+   */
   getDailyTracking: async (req: Request, res: Response) => {
     try {
       const { profileId } = req.params;

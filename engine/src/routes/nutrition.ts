@@ -24,4 +24,11 @@ router.post('/analyze', nutritionController.analyzeNutrition);
  */
 router.get('/daily-tracking/:profileId', nutritionController.getDailyTracking);
 
+/**
+ * @route GET /api/nutrition/weekly-evolution/:profileId
+ * @desc Get weekly nutrition evolution for charts
+ * @access Public
+ */
+router.get('/weekly-evolution/:profileId', nutritionController.getWeeklyEvolution);
+
 export { router as nutritionRouter };
