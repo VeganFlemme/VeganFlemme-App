@@ -66,8 +66,10 @@ fi
 
 # Test if the server can start (quick start/stop test)
 echo "🚀 Testing server startup..."
-timeout 5s npm start &
+npm start &
 SERVER_PID=$!
+(sleep 5 && kill $SERVER_PID 2>/dev/null) &
+TIMER_PID=$!
 sleep 2
 
 # Check if server is running
