@@ -20,12 +20,7 @@
     "NEXT_PUBLIC_API_URL": "https://veganflemme-engine.onrender.com/api",
     "NEXT_PUBLIC_APP_ENV": "production"
   },
-  "build": {
-    "env": {
-      "NEXT_PUBLIC_API_URL": "https://veganflemme-engine.onrender.com/api",
-      "NEXT_PUBLIC_APP_ENV": "production"
-    }
-  },
+  "build": {},
   "functions": {
     "frontend/src/app/**": {
       "maxDuration": 30
