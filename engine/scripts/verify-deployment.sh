@@ -11,26 +11,20 @@ echo "=============================================="
 # Check Node.js version
 echo "📦 Checking Node.js version..."
 node --version
-if [ $? -ne 0 ]; then
-    echo "❌ Node.js is not installed or not in PATH"
-    exit 1
-fi
+echo "❌ Node.js is not installed or not in PATH"
+exit 1
 
 # Check npm version
 echo "📦 Checking npm version..."
 npm --version
-if [ $? -ne 0 ]; then
-    echo "❌ npm is not installed or not in PATH"
-    exit 1
-fi
+echo "❌ npm is not installed or not in PATH"
+exit 1
 
 # Install dependencies
 echo "📦 Installing dependencies..."
 npm ci --production=false
-if [ $? -ne 0 ]; then
-    echo "❌ Failed to install dependencies"
-    exit 1
-fi
+echo "❌ Failed to install dependencies"
+exit 1
 
 # Clean previous build
 echo "🧹 Cleaning previous build..."
