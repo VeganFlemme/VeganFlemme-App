@@ -49,9 +49,19 @@ jobs:
     - name: Test health endpoint
       run: |
         npm start &
-        sleep 10
-        curl -f http://localhost:3001/api/health || exit 1
-        pkill -f "node dist/index.js"
+        APP_PID=$!
+        
+        # Wait for app to start with timeout
+        timeout 30 bash -c 'until curl -f http://localhost:3001/api/health; do sleep 2; done'
+        
+        # Test API endpoints
+        curl -f http://localhost:3001/api/health
+        curl -f -X POST http://localhost:3001/api/menu/generate \
+          -H "Content-Type: application/json" \
+          -d '{"people": 2, "budget": "medium"}'
+        
+        # Clean up
+        kill $APP_PID
 
     - name: Upload build artifacts
       if: github.ref == 'refs/heads/main'
@@ -75,8 +85,17 @@ jobs:
 
     - name: Deploy to Render
       run: |
-        curl -X POST \
+        RESPONSE=$(curl -s -X POST \
           -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
           -H "Content-Type: application/json" \
-          -d '{"serviceId": "${{ secrets.RENDER_SERVICE_ID }}"}' \
-          https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/deploys
+          -d '{}' \
+          https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/deploys)
+        
+        DEPLOY_ID=$(echo $RESPONSE | jq -r '.id')
+        echo "Deploy initiated with ID: $DEPLOY_ID"
+        
+        if [ "$DEPLOY_ID" = "null" ]; then
+          echo "Failed to initiate deployment"
+          echo $RESPONSE
+          exit 1
+        fi

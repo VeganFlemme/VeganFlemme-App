@@ -23,7 +23,7 @@ export default function DashboardPage() {
         if (weeklyResponse.success) setWeeklyData(weeklyResponse.data)
         if (dailyResponse.success) setDailyTracking(dailyResponse.data)
       } catch (error) {
-        console.error('Failed to load dashboard data:', error)
+        // Error is handled by the API client
       } finally {
         setLoading(false)
       }

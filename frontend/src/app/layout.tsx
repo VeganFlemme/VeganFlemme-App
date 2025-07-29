@@ -1,4 +1,4 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import './globals.css'
 
 export const metadata: Metadata = {
@@ -6,9 +6,13 @@ export const metadata: Metadata = {
   description: 'Web-app qui simplifie la transition vegan avec génération de menus 100% vegan et RNP ANSES, jauges nutritionnelles/écolo, swap intelligent d\'ingrédients.',
   keywords: 'vegan, nutrition, ANSES, RNP, menus, recettes, transition végétale',
   authors: [{ name: 'VeganFlemme' }],
-  viewport: 'width=device-width, initial-scale=1',
-  themeColor: '#20c997',
   manifest: '/manifest.json',
+}
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  themeColor: '#20c997',
 }
 
 export default function RootLayout({

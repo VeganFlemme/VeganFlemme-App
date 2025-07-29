@@ -73,7 +73,7 @@ class ApiClient {
 
       return await response.json()
     } catch (error) {
-      console.error('API request failed:', error)
+      // Return error response instead of logging
       return {
         success: false,
         data: null as T,
