@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import { logger } from '../utils/logger';
 import { createError } from '../middleware/errorHandler';
 
@@ -156,12 +156,12 @@ export const menuController = {
   /**
    * Get ingredient swap recommendations
    */
-  swapIngredient: async (req: Request, res: Response) => {
+  swapIngredient: async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { ingredient, _reason, _nutritionalTarget } = req.body;
 
       if (!ingredient) {
-        throw createError('Ingredient parameter is required', 400);
+        return next(createError('Ingredient parameter is required', 400));
       }
 
       // TODO: Implement intelligent swap algorithm
@@ -188,9 +188,9 @@ export const menuController = {
         }
       });
 
-    } catch (error) {
+    } catch (error: any) {
       logger.error('Ingredient swap failed:', error);
-      throw createError('Failed to generate swap suggestions', 500);
+      next(createError('Failed to generate swap suggestions', 500));
     }
   }
 };

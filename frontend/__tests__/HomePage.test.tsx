@@ -21,8 +21,8 @@ describe('HomePage', () => {
   it('renders the main heading', () => {
     render(<HomePage />)
     
-    const heading = screen.getByText(/Votre transition vegan simplifiée/i)
-    expect(heading).toBeInTheDocument()
+    // Check for the main heading text in the hero section
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(/Votre transition.*vegan.*simplifiée/i)
   })
 
   it('renders the VeganFlemme brand name', () => {
@@ -42,10 +42,18 @@ describe('HomePage', () => {
   it('renders the features section', () => {
     render(<HomePage />)
     
-    expect(screen.getByText(/Menus Personnalisés/i)).toBeInTheDocument()
-    expect(screen.getByText(/Suivi Nutritionnel/i)).toBeInTheDocument()
-    expect(screen.getByText(/Impact Écologique/i)).toBeInTheDocument()
-    expect(screen.getByText(/Panier Intelligent/i)).toBeInTheDocument()
+    // Find the features section specifically
+    const featuresSection = screen.getByText(/Pourquoi choisir VeganFlemme/i)
+    expect(featuresSection).toBeInTheDocument()
+    
+    // Check for feature headings - use more specific selectors
+    const featureHeadings = screen.getAllByRole('heading', { level: 3 })
+    const headingTexts = featureHeadings.map(h => h.textContent)
+    
+    expect(headingTexts).toContain('Menus Personnalisés')
+    expect(headingTexts).toContain('Suivi Nutritionnel')
+    expect(headingTexts).toContain('Impact Écologique')
+    expect(headingTexts).toContain('Panier Intelligent')
   })
 
   it('renders the newsletter signup form', () => {
