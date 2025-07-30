@@ -504,6 +504,7 @@ export class RecipeIntegrationService {
     if (name.includes('spinach') || name.includes('kale') || name.includes('lettuce') || 
         name.includes('arugula') || name.includes('chard')) {
       categories.push('leafy-greens');
+      categories.push('vegetables'); // Leafy greens are also vegetables
     }
     
     if (name.includes('carrot') || name.includes('beet') || name.includes('potato') || 
