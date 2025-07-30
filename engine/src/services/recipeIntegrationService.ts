@@ -1,7 +1,6 @@
 import axios from 'axios';
 import { FoodItem, MenuDay, NutritionProfile, UserPreferences, Menu, Recipe } from '../types';
 import { calculateNutritionalScore } from './nutritionAnalysisService';
-import { getQualityScore } from './qualityScorerService';
 import * as math from 'mathjs';
 
 /**
@@ -35,7 +34,7 @@ export class RecipeIntegrationService {
           if (!meal) continue;
           
           // Skip if meal already has detailed recipe
-          if (meal.recipeDetails?.instructions?.length > 0) continue;
+          if (meal.recipeDetails?.instructions && meal.recipeDetails.instructions.length > 0) continue;
           
           // Generate recipe search parameters based on meal
           const searchParams = this.generateSearchParameters(
@@ -76,7 +75,32 @@ export class RecipeIntegrationService {
             
             // Update meal nutrition with more accurate data from recipe
             if (recipeDetails.nutrition) {
-              meal.nutrition = this.parseNutrition(recipeDetails);
+              const nutritionData = this.parseNutrition(recipeDetails);
+              // Only update the nutrition values that are available, keeping the original structure
+              if (meal.nutrition) {
+                // Update existing nutrition with recipe data
+                Object.assign(meal.nutrition, nutritionData);
+              } else {
+                // Create nutrition object with default NutrientProfile structure
+                meal.nutrition = {
+                  calories: nutritionData.calories || 0,
+                  protein: nutritionData.protein || 0,
+                  carbs: nutritionData.carbs || 0,
+                  fat: nutritionData.fat || 0,
+                  fiber: nutritionData.fiber || 0,
+                  iron: nutritionData.iron || 0,
+                  calcium: nutritionData.calcium || 0,
+                  magnesium: nutritionData.magnesium || 0,
+                  zinc: nutritionData.zinc || 0,
+                  vitaminB12: nutritionData.vitaminB12 || 0,
+                  vitaminD: nutritionData.vitaminD || 0,
+                  vitaminB6: nutritionData.vitaminB6 || 0,
+                  vitaminC: nutritionData.vitaminC || 0,
+                  folate: nutritionData.folate || 0,
+                  omega3: nutritionData.omega3 || 0,
+                  omega6: nutritionData.omega6 || 0
+                };
+              }
             }
             
             // Update meal cooking time
@@ -103,7 +127,7 @@ export class RecipeIntegrationService {
   /**
    * Searches for recipes matching the given parameters
    */
-  private async searchRecipes(params: Record<string, any>): Promise<any[]> {
+  public async searchRecipes(params: Record<string, any>): Promise<any[]> {
     try {
       // Create cache key from params
       const cacheKey = JSON.stringify(params);
@@ -138,7 +162,7 @@ export class RecipeIntegrationService {
   /**
    * Gets detailed recipe information by ID
    */
-  private async getRecipeDetails(recipeId: number): Promise<any> {
+  public async getRecipeDetails(recipeId: number): Promise<any> {
     try {
       // Create cache key
       const cacheKey = `recipe_${recipeId}`;
@@ -365,7 +389,7 @@ export class RecipeIntegrationService {
         // Count matching ingredients
         let matches = 0;
         for (const name of mealIngredientNames) {
-          if (recipeIngredientNames.some(ing => ing.includes(name))) {
+          if (recipeIngredientNames.some((ing: string) => ing.includes(name))) {
             matches++;
           }
         }
@@ -387,7 +411,7 @@ export class RecipeIntegrationService {
   /**
    * Validates that a recipe is truly vegan by analyzing ingredients
    */
-  private validateVeganRecipe(recipe: any): boolean {
+  public validateVeganRecipe(recipe: any): boolean {
     if (!recipe || !recipe.extendedIngredients) return false;
     
     // List of non-vegan ingredients and keywords to check
@@ -423,7 +447,7 @@ export class RecipeIntegrationService {
   /**
    * Parses recipe instructions into a structured format
    */
-  private parseInstructions(recipe: any): any[] {
+  public parseInstructions(recipe: any): any[] {
     if (!recipe.analyzedInstructions || recipe.analyzedInstructions.length === 0) {
       return recipe.instructions ? [{ step: recipe.instructions }] : [];
     }
@@ -446,7 +470,7 @@ export class RecipeIntegrationService {
   /**
    * Parses recipe ingredients into a structured format
    */
-  private parseIngredients(recipe: any): any[] {
+  public parseIngredients(recipe: any): any[] {
     if (!recipe.extendedIngredients) return [];
     
     return recipe.extendedIngredients.map((ingredient: any) => ({
@@ -511,7 +535,7 @@ export class RecipeIntegrationService {
   /**
    * Parses recipe nutrition data into a structured format
    */
-  private parseNutrition(recipe: any): Record<string, number> {
+  public parseNutrition(recipe: any): Record<string, number> {
     if (!recipe.nutrition || !recipe.nutrition.nutrients) {
       return {};
     }
@@ -550,7 +574,7 @@ export class RecipeIntegrationService {
   /**
    * Calculates quality scores for a recipe
    */
-  private async calculateQualityScores(recipe: any): Promise<any> {
+  public async calculateQualityScores(recipe: any): Promise<any> {
     try {
       // Placeholder for actual quality scoring logic
       // In a real implementation, this would call the QualityScorer service
@@ -909,12 +933,15 @@ export class RecipeIntegrationService {
   private calculateNutritionScore(dailyAverages: Record<string, number>, userProfile: NutritionProfile): number {
     // This is a simplified calculation - a real implementation would be more complex
     
+    // Calculate BMR (Basal Metabolic Rate) using Harris-Benedict equation
+    const bmr = this.calculateBMR(userProfile);
+    
     // Define target ranges for key nutrients
     const targets: Record<string, { min: number; optimal: number; max: number }> = {
       calories: {
-        min: userProfile.bmr * 0.85,
-        optimal: userProfile.bmr * 1.0,
-        max: userProfile.bmr * 1.15
+        min: bmr * 0.85,
+        optimal: bmr * 1.0,
+        max: bmr * 1.15
       },
       protein: {
         min: userProfile.weight * 0.8,
@@ -922,14 +949,14 @@ export class RecipeIntegrationService {
         max: userProfile.weight * 2.0
       },
       carbs: {
-        min: (userProfile.bmr * 0.45) / 4, // 45% of calories from carbs (min)
-        optimal: (userProfile.bmr * 0.55) / 4, // 55% of calories from carbs (optimal)
-        max: (userProfile.bmr * 0.65) / 4 // 65% of calories from carbs (max)
+        min: (bmr * 0.45) / 4, // 45% of calories from carbs (min)
+        optimal: (bmr * 0.55) / 4, // 55% of calories from carbs (optimal)
+        max: (bmr * 0.65) / 4 // 65% of calories from carbs (max)
       },
       fat: {
-        min: (userProfile.bmr * 0.2) / 9, // 20% of calories from fat (min)
-        optimal: (userProfile.bmr * 0.3) / 9, // 30% of calories from fat (optimal)
-        max: (userProfile.bmr * 0.35) / 9 // 35% of calories from fat (max)
+        min: (bmr * 0.2) / 9, // 20% of calories from fat (min)
+        optimal: (bmr * 0.3) / 9, // 30% of calories from fat (optimal)
+        max: (bmr * 0.35) / 9 // 35% of calories from fat (max)
       },
       fiber: {
         min: 25,
@@ -974,5 +1001,17 @@ export class RecipeIntegrationService {
     // Calculate average score and convert to 0-100 scale
     const averageScore = nutrientCount > 0 ? totalScore / nutrientCount : 0;
     return Math.round(averageScore * 100);
+  }
+
+  /**
+   * Calculates BMR (Basal Metabolic Rate) using Harris-Benedict equation
+   */
+  private calculateBMR(profile: NutritionProfile): number {
+    // Harris-Benedict equation for BMR calculation
+    if (profile.gender === 'male') {
+      return 88.362 + (13.397 * profile.weight) + (4.799 * profile.height) - (5.677 * profile.age);
+    } else {
+      return 447.593 + (9.247 * profile.weight) + (3.098 * profile.height) - (4.330 * profile.age);
+    }
   }
 }

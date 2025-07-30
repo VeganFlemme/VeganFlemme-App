@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { RecipeIntegrationService } from '../services/recipeIntegrationService';
 import { MenuOptimizationService } from '../services/menuOptimizationService';
 import { ProfileService } from '../services/profileService';
+import { UserPreferences } from '../types';
 
 /**
  * Controller for recipe-related endpoints
@@ -152,7 +153,7 @@ export class RecipeController {
       }
       
       // Get user profile
-      const userProfile = await this.profileService.getUserProfile(userId);
+      const userProfile = await this.profileService.getProfile(userId);
       
       if (!userProfile) {
         res.status(404).json({
@@ -162,14 +163,25 @@ export class RecipeController {
         return;
       }
       
-      // Get user preferences
-      const preferences = await this.profileService.getUserPreferences(userId);
+      // Get user preferences (from the profile) and convert to UserPreferences format
+      const userPreferences: UserPreferences = {
+        people: 1, // Default to 1 person, could be configurable
+        budget: userProfile?.preferences?.budget || 'medium',
+        cookingTime: userProfile?.preferences?.cookingTime === 'elaborate' ? 'long' : (userProfile?.preferences?.cookingTime as 'quick' | 'medium') || 'medium',
+        cuisineTypes: userProfile?.preferences?.cuisineTypes || [],
+        mealTypes: ['breakfast', 'lunch', 'dinner'],
+        daysCount: 7,
+        restrictions: [],
+        favoriteIngredients: userProfile?.preferences?.favoriteMeals || [],
+        dislikedIngredients: userProfile?.preferences?.avoidedIngredients || [],
+        includeSnacks: true
+      };
       
       // Enhance menu with recipes
       const enhancedMenu = await this.recipeService.enrichMenuWithRecipes(
         menu,
-        userProfile,
-        preferences
+        userProfile.nutritionProfile,
+        userPreferences
       );
       
       res.json({
@@ -202,7 +214,7 @@ export class RecipeController {
       }
       
       // Get user profile
-      const userProfile = await this.profileService.getUserProfile(userId as string);
+      const userProfile = await this.profileService.getProfile(userId as string);
       
       if (!userProfile) {
         res.status(404).json({
@@ -212,13 +224,24 @@ export class RecipeController {
         return;
       }
       
-      // Get user preferences
-      const preferences = await this.profileService.getUserPreferences(userId as string);
+      // Get user preferences (from the profile) and convert to UserPreferences format
+      const userPreferences2: UserPreferences = {
+        people: 1, // Default to 1 person
+        budget: userProfile?.preferences?.budget || 'medium',
+        cookingTime: userProfile?.preferences?.cookingTime === 'elaborate' ? 'long' : (userProfile?.preferences?.cookingTime as 'quick' | 'medium') || 'medium',
+        cuisineTypes: userProfile?.preferences?.cuisineTypes || [],
+        mealTypes: ['breakfast', 'lunch', 'dinner'],
+        daysCount: 7,
+        restrictions: [],
+        favoriteIngredients: userProfile?.preferences?.favoriteMeals || [],
+        dislikedIngredients: userProfile?.preferences?.avoidedIngredients || [],
+        includeSnacks: true
+      };
       
       // Generate search parameters based on user profile and meal type
       const searchParams = this.generateSearchParamsFromProfile(
-        userProfile,
-        preferences,
+        userProfile.nutritionProfile,
+        userPreferences2,
         mealType as string,
         parseInt(count as string)
       );
@@ -248,8 +271,8 @@ export class RecipeController {
    * Generates API search parameters based on user profile and meal type
    */
   private generateSearchParamsFromProfile(
-    userProfile: any,
-    preferences: any,
+    nutritionProfile: any,
+    preferences: UserPreferences,
     mealType: string,
     count: number
   ): Record<string, any> {
@@ -282,9 +305,17 @@ export class RecipeController {
     }
     
     // Calculate nutritional targets based on user profile
-    if (userProfile) {
+    if (nutritionProfile) {
+      // Calculate BMR using Harris-Benedict equation
+      let bmr: number;
+      if (nutritionProfile.gender === 'male') {
+        bmr = 88.362 + (13.397 * nutritionProfile.weight) + (4.799 * nutritionProfile.height) - (5.677 * nutritionProfile.age);
+      } else {
+        bmr = 447.593 + (9.247 * nutritionProfile.weight) + (3.098 * nutritionProfile.height) - (4.330 * nutritionProfile.age);
+      }
+      
       // Adjust calories based on meal type
-      let targetCalories = userProfile.bmr;
+      let targetCalories = bmr;
       
       if (mealType) {
         switch (mealType.toLowerCase()) {
@@ -310,7 +341,7 @@ export class RecipeController {
       params.maxCalories = Math.ceil(targetCalories * 1.2);
       
       // Set protein target based on weight
-      const dailyProtein = userProfile.weight * 1.2; // 1.2g per kg of body weight
+      const dailyProtein = nutritionProfile.weight * 1.2; // 1.2g per kg of body weight
       let mealProtein = dailyProtein;
       
       if (mealType) {

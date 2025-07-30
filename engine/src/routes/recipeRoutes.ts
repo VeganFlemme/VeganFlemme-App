@@ -8,8 +8,8 @@ const router = Router();
 
 // Initialize services
 const recipeService = new RecipeIntegrationService(process.env.SPOONACULAR_API_KEY || '');
-const menuService = new MenuOptimizationService([], {}); // Initialize with proper dependencies
-const profileService = new ProfileService(); // Initialize with proper dependencies
+const menuService = new MenuOptimizationService(); // No arguments needed
+const profileService = new ProfileService(); // No arguments needed
 
 // Initialize controller
 const recipeController = new RecipeController(recipeService, menuService, profileService);

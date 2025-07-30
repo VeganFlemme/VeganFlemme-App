@@ -106,6 +106,17 @@ export interface Meal {
     ecoScore?: string;
     novaGroup?: number;
   };
+  recipeDetails?: {
+    id: number;
+    title: string;
+    image?: string;
+    sourceUrl?: string;
+    servings?: number;
+    readyInMinutes?: number;
+    instructions?: any[];
+    ingredients?: any[];
+    nutrition?: Record<string, number>;
+  };
 }
 
 export interface MenuDay {
