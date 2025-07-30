@@ -1000,8 +1000,8 @@ LOG_LEVEL=info
 ### 🚨 CORRECTIONS MAJEURES APPORTÉES
 1. **SwapRecommender Service** - DÉCOUVERTE: 100% fonctionnel (vs. "0%" faussement déclaré)
 2. **ProfileService** - RÉEL: 90% complet (vs. "60%" sous-estimé)  
-3. **Test Coverage Engine** - RÉEL: 75.85% (vs. "61.5%" sous-estimé)
-4. **Projet Completion** - RÉEL: ~65% (vs. "35%" largement sous-estimé)
+3. **Test Coverage Engine** - RÉEL: 75-80% (vs. "60-65%" sous-estimé)
+4. **Projet Completion** - RÉEL: ~65% (vs. "30-40%" largement sous-estimé)
 
 ### 🔴 VRAIS PROBLÈMES IDENTIFIÉS
 1. **Déploiement Production Down** 🔥 URGENT
