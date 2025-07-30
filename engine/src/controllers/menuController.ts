@@ -1,10 +1,15 @@
 import { Request, Response, NextFunction } from 'express';
 import { logger } from '../utils/logger';
 import { createError } from '../middleware/errorHandler';
+import { MenuOptimizationService, NutritionProfile, MenuPreferences, DietaryRestrictions } from '../services/menuOptimizationService';
+import { ProfileService } from '../services/profileService';
+
+const menuOptimizationService = new MenuOptimizationService();
+const profileService = new ProfileService();
 
 export const menuController = {
   /**
-   * Generate a personalized vegan menu
+   * Generate a personalized vegan menu using advanced optimization
    */
   generateMenu: async (req: Request, res: Response) => {
     try {
@@ -13,99 +18,107 @@ export const menuController = {
         budget = 'medium', 
         cookingTime = 'medium',
         dietaryRestrictions = [],
-        _nutritionalGoals = {}
+        daysCount = 7,
+        userId = 'demo_user', // Default to demo user for now
+        customProfile
       } = req.body;
 
-      logger.info('Generating menu for preferences:', {
+      logger.info('Generating optimized menu for preferences:', {
         people,
         budget,
         cookingTime,
-        restrictions: dietaryRestrictions.length
+        restrictions: dietaryRestrictions.length,
+        daysCount,
+        userId
       });
 
-      // TODO: Implement actual menu generation logic with OR-Tools
-      // This is a mock response for now
-      const menu = {
-        id: `menu_${Date.now()}`,
-        generatedAt: new Date().toISOString(),
-        parameters: {
-          people,
-          budget,
-          cookingTime,
-          dietaryRestrictions
+      // Get user profile or use provided custom profile
+      let userProfile;
+      if (customProfile) {
+        userProfile = customProfile;
+      } else {
+        const profile = await profileService.getProfile(userId);
+        userProfile = profile?.nutritionProfile || {
+          age: 30,
+          gender: 'male',
+          weight: 70,
+          height: 175,
+          activityLevel: 'moderate',
+          goals: 'maintain'
+        };
+      }
+
+      // Prepare optimization parameters
+      const nutritionProfile: NutritionProfile = userProfile;
+
+      const menuPreferences: MenuPreferences = {
+        people,
+        budget,
+        cookingTime,
+        cuisineTypes: ['mediterranean', 'asian', 'french'],
+        mealTypes: ['breakfast', 'lunch', 'dinner'],
+        daysCount
+      };
+
+      const restrictions: DietaryRestrictions = {
+        allergens: dietaryRestrictions.filter((r: any) => r.type === 'allergen').map((r: any) => r.name) || [],
+        intolerances: dietaryRestrictions.filter((r: any) => r.type === 'intolerance').map((r: any) => r.name) || [],
+        preferences: ['vegan'],
+        excludedIngredients: dietaryRestrictions.filter((r: any) => r.type === 'ingredient').map((r: any) => r.name) || []
+      };
+
+      // Generate optimized menu
+      const optimizedResult = await menuOptimizationService.optimizeMenu(
+        nutritionProfile,
+        menuPreferences,
+        restrictions
+      );
+
+      // Update user statistics if user exists
+      if (userId && userId !== 'demo_user') {
+        try {
+          await profileService.updateNutritionScore(userId, optimizedResult.optimizationScore);
+          
+          // Calculate carbon savings (compare to average omnivore diet)
+          const carbonSaved = Math.max(0, 15 - optimizedResult.analysis.sustainability.carbonFootprint); // 15kg CO2 = avg omnivore weekly
+          await profileService.updateCarbonSavings(userId, carbonSaved);
+        } catch (error) {
+          logger.warn('Failed to update user statistics:', error);
+        }
+      }
+
+      // Format response
+      const response = {
+        id: optimizedResult.menu.id,
+        generatedAt: optimizedResult.menu.generatedAt,
+        parameters: optimizedResult.menu.parameters,
+        days: optimizedResult.menu.days,
+        analysis: {
+          nutritionSummary: optimizedResult.analysis.nutritionSummary,
+          rnpCoverage: optimizedResult.analysis.rnpCoverage,
+          sustainability: optimizedResult.analysis.sustainability,
+          totalCost: optimizedResult.analysis.totalCost,
+          warnings: optimizedResult.analysis.warnings
         },
-        meals: [
-          {
-            id: 'breakfast_1',
-            name: 'Porridge avoine aux fruits rouges',
-            type: 'breakfast',
-            cookingTime: 10,
-            difficulty: 'easy',
-            servings: people,
-            nutrition: {
-              calories: 320,
-              protein: 12,
-              carbs: 58,
-              fat: 8,
-              fiber: 9,
-              iron: 3.2,
-              b12: 0.8
-            },
-            ecoScore: 'A',
-            ingredients: [
-              { name: 'Flocons d\'avoine', quantity: 80, unit: 'g', organic: true },
-              { name: 'Lait d\'amande', quantity: 250, unit: 'ml', organic: true },
-              { name: 'Fruits rouges mélangés', quantity: 100, unit: 'g', organic: true },
-              { name: 'Graines de lin', quantity: 10, unit: 'g', organic: true }
-            ]
-          },
-          {
-            id: 'lunch_1',
-            name: 'Bowl Buddha quinoa et légumes',
-            type: 'lunch',
-            cookingTime: 25,
-            difficulty: 'medium',
-            servings: people,
-            nutrition: {
-              calories: 480,
-              protein: 18,
-              carbs: 65,
-              fat: 16,
-              fiber: 12,
-              iron: 6.8,
-              b12: 0.0
-            },
-            ecoScore: 'A+',
-            ingredients: [
-              { name: 'Quinoa', quantity: 100, unit: 'g', organic: true },
-              { name: 'Pois chiches cuits', quantity: 150, unit: 'g', organic: true },
-              { name: 'Avocat', quantity: 1, unit: 'pièce', organic: true },
-              { name: 'Épinards frais', quantity: 80, unit: 'g', organic: true }
-            ]
-          }
-        ],
-        nutritionSummary: {
-          dailyCalories: 2020,
-          rnpCoverage: {
-            protein: 98,
-            iron: 89,
-            b12: 65,
-            omega3: 72,
-            calcium: 84
-          }
-        },
+        requirements: optimizedResult.requirements,
+        optimizationScore: Math.round(optimizedResult.optimizationScore * 100),
         shoppingList: {
-          totalCost: budget === 'low' ? 45 : budget === 'medium' ? 62 : 85,
-          items: [
-            { name: 'Flocons d\'avoine Bio 500g', quantity: 1, price: 3.20, store: 'Greenweez' },
-            { name: 'Lait d\'amande Bio 1L', quantity: 1, price: 2.90, store: 'Greenweez' }
-          ]
+          totalCost: optimizedResult.analysis.totalCost,
+          carbonFootprint: optimizedResult.analysis.sustainability.carbonFootprint,
+          ecoRating: optimizedResult.analysis.sustainability.ecoRating
         }
       };
 
+      logger.info('Menu optimization completed', {
+        userId,
+        score: response.optimizationScore,
+        cost: response.analysis.totalCost,
+        carbonFootprint: response.analysis.sustainability.carbonFootprint
+      });
+
       res.status(200).json({
         success: true,
-        data: menu
+        data: response
       });
 
     } catch (error) {

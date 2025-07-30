@@ -20,17 +20,17 @@ describe('Menu Endpoints', () => {
       expect(response.body).toHaveProperty('success', true);
       expect(response.body).toHaveProperty('data');
       expect(response.body.data).toHaveProperty('id');
-      expect(response.body.data).toHaveProperty('meals');
-      expect(response.body.data).toHaveProperty('nutritionSummary');
+      expect(response.body.data).toHaveProperty('days');
+      expect(response.body.data).toHaveProperty('analysis');
       expect(response.body.data).toHaveProperty('shoppingList');
       
-      // Check meals structure
-      expect(Array.isArray(response.body.data.meals)).toBe(true);
-      expect(response.body.data.meals.length).toBeGreaterThan(0);
+      // Check days structure
+      expect(Array.isArray(response.body.data.days)).toBe(true);
+      expect(response.body.data.days.length).toBeGreaterThan(0);
       
-      // Check nutrition summary
-      expect(response.body.data.nutritionSummary).toHaveProperty('dailyCalories');
-      expect(response.body.data.nutritionSummary).toHaveProperty('rnpCoverage');
+      // Check analysis structure
+      expect(response.body.data.analysis).toHaveProperty('nutritionSummary');
+      expect(response.body.data.analysis).toHaveProperty('rnpCoverage');
     });
 
     it('should handle empty preferences', async () => {
