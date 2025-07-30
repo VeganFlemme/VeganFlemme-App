@@ -92,7 +92,8 @@ export class CiqualService {
    * Load a specific CIQUAL data file
    */
   private async loadDataFile(fileName: string): Promise<void> {
-    const filePath = path.join(process.cwd(), '..', fileName);
+    const dataDir = process.env.CIQUAL_DATA_DIR || path.join(process.cwd(), 'data');
+    const filePath = path.join(dataDir, fileName);
     
     try {
       logger.info('Loading CIQUAL file', { fileName });
