@@ -1,29 +1,15 @@
-# 🚀 Vercel Deployment Fix - December 2024
+# 🚀 Vercel Deployment Fix - Updated 2025
 
 ## Issue Fixed
-**Problem**: `Error: Command "cd frontend && npm install" exited with 1. Vercel deploy fail`
+**Problem**: Vercel deployment configuration using unsupported `rootDirectory` property in `vercel.json`
 
 ## Root Cause
-The original `vercel.json` configuration was using shell commands (`cd frontend && npm install`) which are unreliable in Vercel's deployment environment. Vercel expects configuration to use its built-in directory handling rather than shell navigation.
+The `rootDirectory` property is not supported in `vercel.json`. Vercel expects the root directory to be configured in the dashboard settings only, while `vercel.json` should contain only valid configuration keys.
 
 ## Changes Made
 
 ### 1. Updated `vercel.json` Configuration
 **Before:**
-```json
-{
-  "framework": "nextjs",
-  "buildCommand": "cd frontend && npm run build",
-  "outputDirectory": "frontend/.next",
-  "installCommand": "cd frontend && npm install",
-  "env": {
-    "NEXT_PUBLIC_API_URL": "https://veganflemme-engine.onrender.com/api",
-    "NEXT_PUBLIC_APP_ENV": "production"
-  }
-}
-```
-
-**After:**
 ```json
 {
   "framework": "nextjs",
@@ -39,22 +25,36 @@ The original `vercel.json` configuration was using shell commands (`cd frontend 
 }
 ```
 
-### 2. Added Engine Specifications to `frontend/package.json`
+**After:**
 ```json
 {
-  "engines": {
-    "node": ">=18.0.0",
-    "npm": ">=8.0.0"
+  "framework": "nextjs",
+  "buildCommand": "npm run build",
+  "outputDirectory": ".next",
+  "installCommand": "npm install",
+  "nodeVersion": "20.x",
+  "env": {
+    "NEXT_PUBLIC_API_URL": "https://veganflemme-engine.onrender.com/api",
+    "NEXT_PUBLIC_APP_ENV": "production"
   }
 }
 ```
 
 ## Key Improvements
 
-1. **Proper Directory Handling**: Uses `rootDirectory` instead of shell `cd` commands
-2. **Relative Paths**: Commands and paths are now relative to the specified root directory
-3. **Node Version Lock**: Ensures consistent Node.js version across deployments
-4. **Engine Requirements**: Explicitly defines minimum Node.js and npm versions
+1. **Removed Unsupported Property**: Removed `rootDirectory` from `vercel.json` as it's not a valid configuration key
+2. **Dashboard Configuration**: Root directory should be set to `frontend` in Vercel dashboard under Project Settings → General → Root Directory
+3. **Valid Configuration Only**: `vercel.json` now contains only supported properties
+4. **Node Version Lock**: Ensures consistent Node.js version across deployments
+
+## Vercel Dashboard Configuration Required
+
+**Important**: After updating `vercel.json`, ensure the following is configured in Vercel dashboard:
+- **Project Settings → General → Root Directory**: Set to `frontend`
+- **Framework**: Next.js (auto-detected)
+- **Build Command**: Uses `npm run build` from `vercel.json`
+- **Output Directory**: Uses `.next` from `vercel.json`
+- **Install Command**: Uses `npm install` from `vercel.json`
 
 ## Verification
 
@@ -73,11 +73,17 @@ The original `vercel.json` configuration was using shell commands (`cd frontend 
 ## Expected Results
 
 With these changes, Vercel should now:
-1. Correctly set the working directory to `frontend/`
-2. Run `npm install` without shell command issues
-3. Execute `npm run build` in the correct context
-4. Output build files to the expected `.next` directory
-5. Use consistent Node.js version (20.x)
+1. Use only valid configuration properties from `vercel.json`
+2. Correctly set the working directory to `frontend/` via dashboard configuration
+3. Run `npm install` without configuration errors
+4. Execute `npm run build` in the correct context  
+5. Output build files to the expected `.next` directory
+6. Use consistent Node.js version (20.x)
+
+## Additional Backend Configuration
+
+The engine's TypeScript configuration has also been updated:
+- Added `"jest"` to types array in `engine/tsconfig.json` for proper test type support
 
 ## Deployment URLs
 - **Frontend**: `https://veganflemme.vercel.app`
