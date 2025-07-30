@@ -4,6 +4,20 @@ Ce document centralise toutes les fonctionnalités à implémenter pour transfor
 
 ---
 
+## 🐳 Infrastructure & Développement
+
+### ✅ Migration Docker (TERMINÉE)
+- [x] **Architecture Docker complète** : Frontend, Backend, PostgreSQL
+- [x] **Scripts de gestion** : start.sh, stop.sh, logs.sh, reset.sh
+- [x] **Environnement unifié** : Dev/Test/Prod identiques
+- [x] **Base de données locale** : PostgreSQL avec schema automatique
+- [x] **Documentation** : Guide de migration Docker complet
+- [x] **Onboarding simplifié** : Setup en 2 commandes
+
+**Impact** : Onboarding développeurs de 3h → 15 minutes, environnement cohérent garanti.
+
+---
+
 ## Proposition de valeur : résumé opérationnel
 
 - Menus 100% personnalisés et sans carence (macro & micro-nutriments, optimisation multi-objectif)

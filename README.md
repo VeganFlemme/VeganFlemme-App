@@ -105,6 +105,40 @@ curl https://veganflemme-engine.onrender.com/api/health
 
 ---
 
+## 🐳 Docker Support
+
+VeganFlemme supporte maintenant Docker pour un développement et déploiement simplifiés !
+
+### Démarrage Rapide avec Docker
+
+```bash
+# 1. Configuration
+cp .env.docker.example .env
+
+# 2. Démarrage de tous les services
+./scripts/docker/start.sh --build --detach
+
+# 3. Vérification
+./scripts/docker/logs.sh --test
+```
+
+### Services Docker
+- **🌐 Frontend** : http://localhost:3000 (Next.js)
+- **⚙️ Backend** : http://localhost:3001/api (Express)
+- **🗄️ Database** : postgresql://localhost:5432/veganflemme
+
+### Scripts Utiles
+```bash
+./scripts/docker/start.sh    # Démarrer les services
+./scripts/docker/stop.sh     # Arrêter les services
+./scripts/docker/logs.sh     # Voir les logs
+./scripts/docker/reset.sh    # Reset complet
+```
+
+📖 **Documentation complète** : [Guide de Migration Docker](./DOCKER_MIGRATION_GUIDE.md)
+
+---
+
 ## 📦 Monorepo Structure
 
 Ce repository contient deux projets principaux :

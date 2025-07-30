@@ -7,6 +7,8 @@ const nextConfig = {
   env: {
     CUSTOM_KEY: 'VeganFlemme',
   },
+  // Enable standalone mode for Docker production builds
+  output: 'standalone',
 }
 
 module.exports = nextConfig

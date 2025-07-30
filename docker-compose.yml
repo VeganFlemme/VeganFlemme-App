@@ -1,0 +1,165 @@
+# ===================================================================
+# 🐳 VeganFlemme App - Docker Compose Configuration
+# ===================================================================
+# Orchestration complète des services pour développement et production
+# Services: Frontend (Next.js), Backend (Express), Database (PostgreSQL)
+# Ports: 3000 (frontend), 3001 (backend), 5432 (database)
+# ===================================================================
+
+version: '3.8'
+
+# ===================================================================
+# 📦 SERVICES CONFIGURATION
+# ===================================================================
+services:
+  # ===================================================================
+  # 🗄️ DATABASE SERVICE - PostgreSQL
+  # ===================================================================
+  database:
+    image: postgres:15-alpine
+    container_name: veganflemme-database
+    restart: unless-stopped
+    environment:
+      # Configuration PostgreSQL
+      POSTGRES_DB: ${POSTGRES_DB:-veganflemme}
+      POSTGRES_USER: ${POSTGRES_USER:-veganflemme}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-veganflemme_secure_2024}
+      # Configuration locale française
+      POSTGRES_INITDB_ARGS: "--locale=fr_FR.UTF-8"
+      TZ: Europe/Paris
+    ports:
+      - "5432:5432"
+    volumes:
+      # Persistance des données
+      - postgres_data:/var/lib/postgresql/data
+      # Scripts d'initialisation (optionnel)
+      - ./database/init:/docker-entrypoint-initdb.d:ro
+    networks:
+      - veganflemme-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-veganflemme} -d ${POSTGRES_DB:-veganflemme}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  # ===================================================================
+  # ⚙️ BACKEND SERVICE - API Express
+  # ===================================================================
+  backend:
+    build:
+      context: ./engine
+      dockerfile: Dockerfile
+      target: production
+    container_name: veganflemme-backend
+    restart: unless-stopped
+    environment:
+      # Configuration Node.js
+      NODE_ENV: ${NODE_ENV:-development}
+      PORT: 3001
+      
+      # Configuration base de données
+      DATABASE_URL: postgresql://${POSTGRES_USER:-veganflemme}:${POSTGRES_PASSWORD:-veganflemme_secure_2024}@database:5432/${POSTGRES_DB:-veganflemme}
+      
+      # Configuration frontend
+      FRONTEND_URL: http://localhost:3000
+      
+      # Configuration logging
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+      
+      # Features flags
+      ENABLE_MENU_GENERATION: ${ENABLE_MENU_GENERATION:-true}
+      ENABLE_CART_BUILDER: ${ENABLE_CART_BUILDER:-true}
+      ENABLE_ANALYTICS: ${ENABLE_ANALYTICS:-false}
+      
+      # Sécurité (à configurer en production)
+      JWT_SECRET: ${JWT_SECRET:-development_jwt_secret_key_change_in_production}
+      ENCRYPTION_KEY: ${ENCRYPTION_KEY:-development_encryption_key_change_in_production}
+      
+      # Rate limiting
+      RATE_LIMIT_WINDOW_MS: ${RATE_LIMIT_WINDOW_MS:-900000}
+      RATE_LIMIT_MAX_REQUESTS: ${RATE_LIMIT_MAX_REQUESTS:-100}
+    ports:
+      - "3001:3001"
+    volumes:
+      # Logs persistants
+      - ./logs:/app/logs
+    depends_on:
+      database:
+        condition: service_healthy
+    networks:
+      - veganflemme-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3001/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # ===================================================================
+  # 🌐 FRONTEND SERVICE - Next.js Application
+  # ===================================================================
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      target: runner
+    container_name: veganflemme-frontend
+    restart: unless-stopped
+    environment:
+      # Configuration Next.js
+      NODE_ENV: ${NODE_ENV:-development}
+      PORT: 3000
+      HOSTNAME: "0.0.0.0"
+      
+      # Configuration API
+      NEXT_PUBLIC_API_URL: http://localhost:3001/api
+      NEXT_PUBLIC_APP_ENV: ${NODE_ENV:-development}
+      
+      # Features flags publiques
+      NEXT_PUBLIC_ENABLE_ANALYTICS: ${NEXT_PUBLIC_ENABLE_ANALYTICS:-false}
+      NEXT_PUBLIC_ENABLE_CART_BUILDER: ${NEXT_PUBLIC_ENABLE_CART_BUILDER:-true}
+      NEXT_PUBLIC_ENABLE_AFFILIATE_LINKS: ${NEXT_PUBLIC_ENABLE_AFFILIATE_LINKS:-true}
+      
+      # Configuration PWA
+      NEXT_PUBLIC_PWA_ENABLED: ${NEXT_PUBLIC_PWA_ENABLED:-true}
+      NEXT_PUBLIC_APP_NAME: "VeganFlemme"
+      NEXT_PUBLIC_APP_SHORT_NAME: "VeganFlemme"
+      NEXT_PUBLIC_APP_DESCRIPTION: "Votre transition vegan simplifiée"
+      
+      # Analytics (à configurer en production)
+      NEXT_PUBLIC_GA_MEASUREMENT_ID: ${NEXT_PUBLIC_GA_MEASUREMENT_ID:-}
+      
+      # Supabase (optionnel pour données utilisateur)
+      NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL:-}
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: ${NEXT_PUBLIC_SUPABASE_ANON_KEY:-}
+    ports:
+      - "3000:3000"
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - veganflemme-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+# ===================================================================
+# 🔗 NETWORKS CONFIGURATION
+# ===================================================================
+networks:
+  veganflemme-network:
+    driver: bridge
+    name: veganflemme-network
+
+# ===================================================================
+# 💾 VOLUMES CONFIGURATION
+# ===================================================================
+volumes:
+  # Volume persistant pour PostgreSQL
+  postgres_data:
+    driver: local
+    name: veganflemme-postgres-data
