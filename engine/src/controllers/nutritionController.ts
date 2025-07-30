@@ -90,7 +90,7 @@ export const nutritionController = {
       }
 
       // TODO: Implement integration with CIQUAL database
-      // Use CIQUAL service for nutritional analysis
+      // Use CIQUAL service for nutritional analysis, with fallback mechanisms including mock data and OpenFoodFacts matches
       const nutritionAnalysis: any = {
         totalNutrition: {
           calories: 0,
