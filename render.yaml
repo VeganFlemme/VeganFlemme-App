@@ -6,7 +6,7 @@ services:
     plan: starter
     # Explicitly set root directory to repository root (not engine subdirectory)
     rootDir: .
-    buildCommand: cd engine && npm run build:render
+    buildCommand: cd engine && npm ci --production=false && npm run build
     startCommand: cd engine && npm start
     healthCheckPath: /api/health
     envVars:
