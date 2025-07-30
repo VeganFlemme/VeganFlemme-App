@@ -56,9 +56,9 @@ VeganFlemme transforme l'alimentation végane en simplifiant la planification nu
 
 ### Services Déployés
 
-- **🌐 Frontend** : https://veganflemme-app.vercel.app (Next.js)
-- **⚙️ Backend API** : https://veganflemme-engine.onrender.com/api (Express)
-- **🗄️ Base de Données** : PostgreSQL local (développement)
+- **🌐 Frontend** : https://veganflemme-app.vercel.app ✅ (Next.js sur Vercel)
+- **⚙️ Backend API** : https://veganflemme-engine.onrender.com/api ❌ (Express sur Render - À vérifier)
+- **🗄️ Base de Données** : PostgreSQL local ✅ (développement Docker)
 
 ---
 
