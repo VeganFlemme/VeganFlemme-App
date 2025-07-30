@@ -6,7 +6,8 @@ module.exports = {
   ],
   env: {
     node: true,
-    es2020: true
+    es2020: true,
+    jest: true
   },
   parserOptions: {
     ecmaVersion: 2020,
@@ -14,7 +15,9 @@ module.exports = {
   },
   rules: {
     'no-console': 'off', // Allow console in backend
-    'no-unused-vars': ['error', { varsIgnorePattern: '^_', argsIgnorePattern: '^_' }],
-    'no-undef': 'error'
-  }
+    'no-unused-vars': 'off', // Turn off base rule
+    '@typescript-eslint/no-unused-vars': ['error', { varsIgnorePattern: '^_', argsIgnorePattern: '^_' }],
+    'no-undef': 'off' // TypeScript handles this
+  },
+  ignorePatterns: ['dist/', 'node_modules/', '*.js']
 }
