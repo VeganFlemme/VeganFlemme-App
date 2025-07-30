@@ -18,11 +18,11 @@ The VeganFlemme Engine is a Node.js/Express API that provides intelligent vegan 
 ## 🎯 Overview
 
 ### Key Features
-- **Menu Generation**: AI-powered vegan menu creation based on user preferences
-- **Nutrition Analysis**: Comprehensive nutritional analysis using ANSES RNP data
-- **Profile Management**: User profile and dietary preference management
-- **Ingredient Swapping**: Smart ingredient alternatives for allergies/preferences
-- **Health Monitoring**: Daily and weekly nutrition tracking
+- **Menu Generation**: Basic vegan menu creation with genetic algorithm
+- **Quality Analysis**: Complete Nutri-Score, Eco-Score, and NOVA classification
+- **Profile Management**: User profile structure (partial implementation)
+- **Nutrition Data**: ANSES RNP reference data integration
+- **Health Monitoring**: Basic health check endpoints
 
 ### Tech Stack
 - **Runtime**: Node.js (≥18.0.0)
@@ -102,18 +102,21 @@ engine/
 │   ├── controllers/        # Request handlers
 │   │   ├── healthController.ts     # Health check endpoints
 │   │   ├── menuController.ts       # Menu generation
-│   │   ├── nutritionController.ts  # Nutrition analysis
-│   │   └── profileController.ts    # User profiles
+│   │   ├── nutritionController.ts  # Nutrition analysis (partial)
+│   │   ├── profileController.ts    # User profiles (partial)
+│   │   └── qualityController.ts    # Quality scoring (complete)
 │   ├── middleware/         # Express middleware
 │   │   └── errorHandler.ts # Global error handling
 │   ├── routes/            # Route definitions
 │   │   ├── health.ts      # Health endpoints
 │   │   ├── menu.ts        # Menu endpoints
 │   │   ├── nutrition.ts   # Nutrition endpoints
-│   │   └── profile.ts     # Profile endpoints
+│   │   ├── profile.ts     # Profile endpoints
+│   │   └── quality.ts     # Quality endpoints
 │   ├── services/          # Business logic
 │   │   ├── menuOptimizationService.ts  # Menu algorithms
-│   │   └── profileService.ts           # Profile management
+│   │   ├── profileService.ts           # Profile management (partial)
+│   │   └── qualityScorerService.ts     # Quality analysis (complete)
 │   ├── utils/             # Utilities
 │   │   └── logger.ts      # Winston logger setup
 │   ├── app.ts             # Express app configuration
@@ -193,10 +196,11 @@ Comprehensive API documentation is available in [`API.md`](./API.md).
 
 ### Quick API Overview
 - **Base URL**: `http://localhost:3001/api` (development)
-- **Health Check**: `GET /health`
-- **Menu Generation**: `POST /menu/generate`
-- **Nutrition Analysis**: `POST /nutrition/analyze`
-- **Profile Management**: CRUD operations on `/profile/*`
+- **Health Check**: `GET /health` ✅ (fully tested)
+- **Menu Generation**: `POST /menu/generate` ✅ (functional with tests)
+- **Quality Analysis**: `POST /quality/analyze` ✅ (complete with 8 endpoints)
+- **Profile Management**: CRUD operations on `/profile/*` 🟡 (partial implementation)
+- **Nutrition Analysis**: `GET /nutrition/rnp` 🟡 (data only, limited logic)
 
 ### Example API Call
 ```bash
