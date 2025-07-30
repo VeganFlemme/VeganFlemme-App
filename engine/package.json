@@ -14,7 +14,10 @@
     "test:coverage": "jest --coverage",
     "lint": "eslint src/**/*.ts",
     "lint:fix": "eslint src/**/*.ts --fix",
-    "build:production": "npm ci --production=false && npm run build",
+    "verify-types": "./scripts/verify-types.sh",
+    "build:verified": "./scripts/verify-types.sh && npm run build",
+    "build:render": "./scripts/build-render.sh",
+    "build:production": "npm ci --production=false && npm run build:verified",
     "verify-deployment": "./scripts/verify-deployment.sh"
   },
   "dependencies": {
@@ -30,7 +33,7 @@
   "devDependencies": {
     "@types/cors": "^2.8.17",
     "@types/express": "^4.17.21",
-    "@types/jest": "^29.5.8",
+    "@types/jest": "^29.5.14",
     "@types/node": "^20.8.10",
     "@types/supertest": "^6.0.3",
     "@typescript-eslint/eslint-plugin": "^7.18.0",
