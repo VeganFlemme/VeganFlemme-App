@@ -62,4 +62,27 @@ export class ApiRateLimiter {
     
     this.isProcessing = true;
     
-    while (this.requestQueue.length > 0 && this.dailyRequests < this.request
+    while (this.requestQueue.length > 0 && this.dailyRequests < this.requestsPerDay) {
+      const request = this.requestQueue.shift();
+      if (request) {
+        this.dailyRequests++;
+        await request();
+      }
+    }
+    
+    this.isProcessing = false;
+  }
+  
+  /**
+   * Reset the daily counter
+   */
+  private resetCounter(): void {
+    this.dailyRequests = 0;
+    this.lastReset = new Date();
+    
+    // If there are queued requests, start processing them
+    if (this.requestQueue.length > 0 && !this.isProcessing) {
+      this.processQueue();
+    }
+  }
+}
