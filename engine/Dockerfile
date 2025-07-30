@@ -34,8 +34,9 @@ RUN npm ci --production=false
 COPY src/ ./src/
 COPY scripts/ ./scripts/
 
-# Compiler TypeScript en utilisant le binaire local
-RUN ./node_modules/.bin/tsc
+# Compiler TypeScript directement avec le PATH Node.js
+ENV PATH="/app/node_modules/.bin:$PATH"
+RUN tsc
 
 # ===================================================================
 # 🚀 STAGE 2: Production Stage - Image finale optimisée
