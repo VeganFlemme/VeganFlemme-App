@@ -183,7 +183,7 @@ VeganFlemme-App/
 ```
 
 **Tests et Qualité :**
-- ✅ **92.89% de couverture de tests** (Statement coverage)
+- ✅ **93% de couverture de tests** (Statement coverage)
 - ✅ **70+ scénarios de test** couvrant allergènes, budgets, contraintes temporelles
 - ✅ **Tests de performance** : <1s de génération de recommandations
 - ✅ **Tests d'edge cases** : ingrédients inconnus, restrictions multiples
