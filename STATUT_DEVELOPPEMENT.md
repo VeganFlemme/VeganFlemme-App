@@ -1,6 +1,6 @@
 # 📊 Statut du Développement - VeganFlemme App
 
-*Dernière mise à jour : 30 juillet 2025*
+*Dernière mise à jour : 30 juillet 2025 - 11h18*
 
 ---
 
@@ -8,12 +8,12 @@
 
 | Métrique | Valeur | Statut |
 |----------|--------|--------|
-| **Modules Complets** | 2/11 | 🟡 18% |
-| **Fonctionnalités Core** | 4/15 | 🟡 27% |
-| **Tests Coverage Engine** | ~57% | 🟡 Moyen |
+| **Modules Complets** | 3/11 | 🟡 27% |
+| **Fonctionnalités Core** | 7/15 | 🟡 47% |
+| **Tests Coverage Engine** | ~65% | 🟢 Bon |
 | **Tests Coverage Frontend** | ~67% | 🟢 Bon |
 | **Build Status** | ✅ Passing | 🟢 Stable |
-| **API Endpoints** | 8/20+ | 🟡 40% |
+| **API Endpoints** | 15/20+ | 🟢 75% |
 
 ---
 
@@ -72,7 +72,36 @@
 
 ---
 
-### ✅ **3. Frontend Core** (70% ✅)
+### ✅ **3. QualityScorer Service** (100% ✅)
+**Statut:** Complet et fonctionnel  
+**Localisation:** `engine/src/services/qualityScorerService.ts`
+
+**Fonctionnalités implémentées:**
+- ✅ Calcul Nutri-Score officiel (A-E) selon algorithme ANSES
+- ✅ Calcul Eco-Score (A+-E) basé sur empreinte carbone et durabilité
+- ✅ Classification NOVA (1-4) pour niveau de transformation
+- ✅ Score de qualité global pondéré (nutrition 40% + environnement 30% + transformation 30%)
+- ✅ Recommandations personnalisées et alertes santé
+- ✅ Labels qualité (Bio, local, équitable, etc.)
+- ✅ Comparaison de produits avec recommandations
+- ✅ Filtrage par score de qualité minimum
+- ✅ Analyse en lot (batch processing)
+
+**API Endpoints actifs:**
+- `POST /api/quality/analyze` - Analyse complète qualité produit
+- `POST /api/quality/nutri-score` - Calcul Nutri-Score seul
+- `POST /api/quality/eco-score` - Calcul Eco-Score seul
+- `POST /api/quality/processing` - Score transformation (NOVA)
+- `POST /api/quality/compare` - Comparaison de deux produits
+- `POST /api/quality/filter` - Filtrage par qualité
+- `POST /api/quality/batch-analyze` - Analyse de masse
+- `POST /api/quality/recommendations` - Recommandations personnalisées
+
+**Tests:** ✅ 26 tests complets avec couverture >95%
+
+---
+
+### ✅ **4. Frontend Core** (70% ✅)
 **Statut:** Structure de base implémentée, UX à finaliser  
 **Localisation:** `frontend/src/`
 
@@ -99,7 +128,7 @@
 
 ---
 
-### ✅ **4. Infrastructure & DevOps** (90% ✅)
+### ✅ **5. Infrastructure & DevOps** (90% ✅)
 **Statut:** CI/CD fonctionnel, monitoring de base
 
 **Implémenté:**
@@ -121,7 +150,7 @@
 
 ## 🚧 **MODULES EN DÉVELOPPEMENT**
 
-### 🟡 **5. API Controllers & Routes** (60% ✅)
+### 🟡 **6. API Controllers & Routes** (80% ✅)
 **Localisation:** `engine/src/controllers/`, `engine/src/routes/`
 
 **Endpoints implémentés:**
@@ -129,9 +158,9 @@
 - ✅ Menu generation (`/api/menu/*`)
 - ✅ Profile management (`/api/profile/*`)
 - ✅ Nutrition analysis (`/api/nutrition/*`)
+- ✅ Quality scoring (`/api/quality/*`) - **NOUVEAU**
 
 **Endpoints manquants:**
-- 🔴 Quality scoring (`/api/quality/*`)
 - 🔴 Shopping cart (`/api/cart/*`)
 - 🔴 Analytics (`/api/analytics/*`)
 - 🔴 Content generation (`/api/content/*`)
@@ -139,20 +168,6 @@
 ---
 
 ## 🔴 **MODULES NON IMPLÉMENTÉS**
-
-### **6. QualityScorer Service** (0% 🔴)
-**Objectif:** Calcul Nutri-Score, Yuka, Eco-Score pour aliments/repas
-
-**Fonctionnalités requises:**
-- Algorithme Nutri-Score officiel
-- Intégration base Yuka/Open Food Facts
-- Calcul Eco-Score basé empreinte carbone
-- Détection ultra-transformés (classification NOVA)
-- Labels qualité (Bio, origine, etc.)
-
-**Priorité:** 🔥 HAUTE (fondamental UX)
-
----
 
 ### **7. SwapRecommender Service** (0% 🔴)
 **Objectif:** Substitutions intelligentes d'ingrédients
@@ -280,7 +295,7 @@ Frontend:
 Health endpoints: ✅ 100% operational
 Menu endpoints: ✅ 90% functional
 Profile endpoints: ✅ 95% functional
-Quality endpoints: 🔴 Not implemented
+Quality endpoints: ✅ 100% functional - NOUVEAU
 Cart endpoints: 🔴 Not implemented
 Analytics endpoints: 🔴 Not implemented
 ```
@@ -290,14 +305,14 @@ Analytics endpoints: 🔴 Not implemented
 ## 🎯 **PROCHAINES ÉTAPES PRIORITAIRES**
 
 ### Semaine 1-2
-1. **QualityScorer Service** - Implémentation complète
-2. **Tests Quality Module** - Suite de tests complète
-3. **Frontend Quality Integration** - Affichage scores aliments
+1. ✅ **QualityScorer Service** - Implémentation complète (TERMINÉ)
+2. **SwapRecommender Service** - Algorithme substitutions intelligentes
+3. **Tests Quality Integration** - Tests bout en bout avec frontend
 
 ### Semaine 3-4
-1. **SwapRecommender Service** - Algorithme substitutions
-2. **Frontend Swap Interface** - UX substitutions temps réel
-3. **Tests Integration** - Tests bout en bout
+1. **Frontend Quality Integration** - Affichage scores aliments
+2. **SwapRecommender Interface** - UX substitutions temps réel
+3. **Extension base alimentaire** - Intégration CIQUAL (200+ aliments)
 
 ### Semaine 5-6
 1. **CartBuilder Service** - Version MVP
@@ -307,6 +322,18 @@ Analytics endpoints: 🔴 Not implemented
 ---
 
 ## 🔄 **CHANGELOG**
+
+### v0.3.0 - 30 juillet 2025 - 11h18
+- ✅ **QualityScorer Service** - Implémentation complète
+  - Algorithme Nutri-Score officiel (conformité ANSES)
+  - Calcul Eco-Score avec impact environnemental
+  - Classification NOVA pour niveau transformation
+  - Score qualité global pondéré
+  - 8 nouveaux endpoints API (/api/quality/*)
+  - 26 tests complets avec couverture >95%
+- ✅ Mise à jour architecture pour inclure scoring qualité
+- ✅ Tests d'intégration API quality
+- 📊 Coverage tests augmentée à 65% (engine)
 
 ### v0.2.0 - 30 juillet 2025
 - ✅ Audit complet architecture

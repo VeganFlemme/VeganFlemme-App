@@ -71,12 +71,12 @@ Ce fichier organise toutes les tâches nécessaires pour atteindre le produit fi
 **🏆 PRIORITÉ 1 - Fondations**
 - [x] UserProfile Service (✅ Implémenté)
 - [x] NutritionEngine de base (✅ Implémenté)
-- [ ] **QualityScorer Service**
-  - Calcul Nutri-Score algorithmique
-  - Intégration données Yuka/Open Food Facts
-  - Calcul Eco-Score basé empreinte carbone
-  - Détection aliments ultra-transformés
-  - Scoring labels Bio/origine
+- [x] **QualityScorer Service** (✅ Implémenté 30/07/2025)
+  - ✅ Calcul Nutri-Score algorithmique
+  - ✅ Intégration données durabilité/Open Food Facts
+  - ✅ Calcul Eco-Score basé empreinte carbone
+  - ✅ Détection aliments ultra-transformés (NOVA)
+  - ✅ Scoring labels Bio/origine/qualité
 
 - [ ] **SwapRecommender Service**
   - Algorithme substitutions nutritionnelles
