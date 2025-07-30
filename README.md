@@ -460,7 +460,7 @@ VeganFlemme-App/
 **1. Déploiement Backend Production**
 ```bash
 # Action immédiate requise :
-1. Débugger status deployment Render.com (URL actuellement inaccessible)
+1. Déboguer status deployment Render.com (URL actuellement inaccessible)
 2. Vérifier variables environnement production
 3. Rétablir endpoint: https://veganflemme-engine.onrender.com/api/health
 4. Tester tous les endpoints fonctionnels en production
