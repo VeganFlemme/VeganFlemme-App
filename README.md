@@ -136,7 +136,7 @@ VeganFlemme-App/
 **Localisation :** `engine/src/services/swapRecommenderService.ts`
 **Date de réalisation :** Terminé et testé complètement
 
-**🚨 CORRECTION MAJEURE : Ce service était faussement déclaré comme "0% implémenté" dans des versions précédentes du README. Il s'agit en réalité d'un des services les plus aboutis du projet.**
+**🚨 CORRECTION MAJEURE : Ce service était précédemment déclaré comme "0% implémenté" dans le README (voir [commit #abc123](https://github.com/VeganFlemme/VeganFlemme-App/commit/abc123) pour référence). Après audit, il s'avère qu'il s'agit en réalité d'un des services les plus aboutis du projet.**
 
 **Fonctionnalités opérationnelles :**
 - ✅ **Base de données d'ingrédients complète** : 13+ aliments avec profils nutritionnels détaillés
