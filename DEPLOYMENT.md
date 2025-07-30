@@ -90,10 +90,13 @@ VERCEL_PROJECT_ID=<votre_project_id>
    Environment: Node
    Region: Frankfurt (EU) ou Oregon (US)
    Branch: main
-   Root Directory: engine
-   Build Command: npm install && npm run build
-   Start Command: npm start
+   Root Directory: (laissez vide - doit pointer vers la racine du repository)
+   Build Command: cd engine && npm run build:render
+   Start Command: cd engine && npm start
    ```
+
+   ⚠️ **IMPORTANT**: Le "Root Directory" doit être vide (racine du repository), pas "engine".
+   Si vous mettez "engine" comme Root Directory, la commande "cd engine" échouera.
 
 ### 2. Variables d'Environnement Render
 
@@ -245,6 +248,12 @@ GET https://veganflemme-engine.onrender.com/api/health/detailed
 
 #### Backend (Render)
 ```bash
+# Build failed: "cd: engine: No such file or directory"
+- Vérifier que Root Directory est vide (racine du repo)
+- NE PAS mettre "engine" dans Root Directory
+- La commande build doit être: cd engine && npm run build:render
+- Vérifier que render.yaml est utilisé correctement
+
 # Service won't start
 - Vérifier PORT=3001 dans les variables
 - Vérifier les logs Render

@@ -7,6 +7,21 @@ set -e
 
 echo "🚀 Starting Render build process..."
 echo "📝 Current NODE_ENV: ${NODE_ENV:-"not set"}"
+echo "📂 Current working directory: $(pwd)"
+
+# Ensure we're in the correct directory
+# If we're already in the engine directory, stay here
+# If we're in the root directory, we're already correctly positioned
+if [[ "$(basename $(pwd))" == "engine" ]]; then
+    echo "✅ Already in engine directory"
+elif [[ -d "engine" ]]; then
+    echo "🔄 Working from repository root, engine directory found"
+else
+    echo "❌ Error: engine directory not found from $(pwd)"
+    echo "📂 Available directories:"
+    ls -la
+    exit 1
+fi
 
 # Force NODE_ENV to development temporarily for dependency installation
 # This ensures devDependencies are installed even if NODE_ENV=production
