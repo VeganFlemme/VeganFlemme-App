@@ -75,8 +75,21 @@ describe('Menu Endpoints', () => {
 
       expect(response.body).toHaveProperty('success', true);
       expect(response.body.data).toHaveProperty('suggestions');
-      expect(response.body.data).toHaveProperty('preservesBalance');
+      expect(response.body.data).toHaveProperty('preservesNutritionBalance');
+      expect(response.body.data).toHaveProperty('improvesNutrition');
+      expect(response.body.data).toHaveProperty('alternativeCount');
       expect(Array.isArray(response.body.data.suggestions)).toBe(true);
+      
+      // Check structure of first suggestion
+      if (response.body.data.suggestions.length > 0) {
+        const firstSuggestion = response.body.data.suggestions[0];
+        expect(firstSuggestion).toHaveProperty('originalIngredient');
+        expect(firstSuggestion).toHaveProperty('alternative');
+        expect(firstSuggestion).toHaveProperty('reason');
+        expect(firstSuggestion).toHaveProperty('nutritionalImpact');
+        expect(firstSuggestion).toHaveProperty('compatibilityScore');
+        expect(firstSuggestion).toHaveProperty('confidence');
+      }
     });
 
     it('should return 400 when ingredient is missing', async () => {
