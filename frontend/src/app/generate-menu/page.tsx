@@ -3,7 +3,8 @@
 import { useState } from 'react'
 import { ArrowLeft, Utensils, Clock, Users, Loader2, CheckCircle } from 'lucide-react'
 import Link from 'next/link'
-import { apiClient, type MenuPreferences, type GeneratedMenu } from '../../lib/api'
+import { apiClient, type MenuPreferences, type GeneratedMenu } from '@/lib/api'
+import { trackMenuGeneration } from '@/lib/analytics'
 
 export default function GenerateMenuPage() {
   const [preferences, setPreferences] = useState<MenuPreferences>({
@@ -20,6 +21,9 @@ export default function GenerateMenuPage() {
   const handleGenerate = async () => {
     setIsGenerating(true)
     setError(null)
+    
+    // Track menu generation with analytics
+    trackMenuGeneration(preferences)
     
     try {
       const response = await apiClient.generateMenu(preferences)
