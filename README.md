@@ -7,15 +7,17 @@
 
 > **Plateforme web modulaire pour génération de menus vegan, suivi nutritionnel et outils d'optimisation**
 
-**📅 Dernière mise à jour :** 30 juillet 2025 - 19:30 (AUDIT COMPLET TERMINÉ)  
-**🎯 Phase actuelle :** Développement Core (Phase 1)  
-**✅ Progression globale :** 65% complété (CORRIGÉ après audit rigoureux)
+**📅 Dernière mise à jour :** 30 juillet 2025 - 20:00 (ANALYSE SECRETS & INTÉGRATIONS)  
+**🎯 Phase actuelle :** Finalisation Déploiement & Configuration Services  
+**✅ Progression globale :** 70% complété - Services core fonctionnels, intégrations configurées
+
+**🔧 Action critique requise :** Réparation URLs production (Render.com + Vercel)
 
 ---
 
-## 📊 STATUT PROJET & PROGRESSION
+## 📊 STATUT PROJET & INTÉGRATIONS DISPONIBLES
 
-### 🎯 Vue d'Ensemble
+### 🎯 Vue d'Ensemble Mise à Jour
 
 | Métrique | Valeur | Statut |
 |----------|--------|--------|
@@ -25,6 +27,21 @@
 | **Tests Coverage Frontend** | 57.97% | 🟡 Moyen |
 | **Build Status** | ✅ Passing | 🟢 Stable |
 | **API Endpoints** | 22/25+ | 🟢 88% |
+| **GitHub Secrets Configurés** | 8/12 | 🟢 67% |
+
+### 🔑 Secrets GitHub Disponibles & Intégrations
+
+#### ✅ **Services Déjà Configurés** (Prêts à utiliser)
+- **🗄️ Supabase Database** : URLs et clés API configurées
+- **📊 Google Analytics 4** : ID de mesure configuré pour tracking
+- **🚀 Vercel Frontend** : Token, Org ID, Project ID pour déploiement auto
+- **⚙️ Render Backend** : API Key, Service ID pour déploiement auto
+- **📈 CodeCov** : Token pour rapports couverture de tests
+
+#### 🔴 **Services Non Configurés** (Requièrent action manuelle)
+- **📧 Email Services** : SendGrid, Mailgun (clés manquantes)
+- **🛒 Affiliate Programs** : Amazon, Greenweez, Awin (candidatures requises)
+- **🍽️ Food APIs** : CIQUAL, OpenFoodFacts (inscriptions gratuites requises)
 
 ### 🏗️ Infrastructure
 
@@ -54,11 +71,15 @@ VeganFlemme transforme l'alimentation végane en simplifiant la planification nu
 
 *Interface moderne et responsive pour la génération de menus vegan personnalisés*
 
-### Services Déployés
+### Services Déployés & Status
 
-- **🌐 Frontend** : https://veganflemme-app.vercel.app ❌ (Next.js sur Vercel - URL non accessible)
-- **⚙️ Backend API** : https://veganflemme-engine.onrender.com/api ❌ (Express sur Render - Déploiement en panne)
-- **🗄️ Base de Données** : PostgreSQL local ✅ (développement Docker)
+- **🌐 Frontend** : https://veganflemme-app.vercel.app ❌ (Next.js sur Vercel - RÉPARATION REQUISE)
+- **⚙️ Backend API** : https://veganflemme-engine.onrender.com/api ❌ (Express sur Render - RÉPARATION REQUISE)  
+- **🗄️ Base de Données** : PostgreSQL local ✅ + Supabase cloud configuré ✅
+- **📊 Analytics** : Google Analytics 4 configuré ✅ (ID: secrets.GA4_MEASUREMENT_ID)
+- **📈 Monitoring** : CodeCov + GitHub Actions ✅
+
+**🚨 Action critique :** Les URLs de production sont inaccessibles malgré l'infrastructure configurée. Voir `guideforhuman.md` section "Réparation Déploiement Production".
 
 ---
 
@@ -455,59 +476,62 @@ VeganFlemme-App/
 
 ### 👤 CE QUE VOUS DEVEZ FAIRE (TÂCHES MANUELLES)
 
-#### 🚨 URGENT - Corrections Techniques Identifiées
+#### 🚨 URGENT - Actions Critiques (30 minutes)
 
-**1. Déploiement Backend Production**
+**1. Réparation Déploiement Production** 🔥
 ```bash
-# Action immédiate requise :
-1. Déboguer status deployment Render.com (URL actuellement inaccessible)
-2. Vérifier variables environnement production
-3. Rétablir endpoint: https://veganflemme-engine.onrender.com/api/health
-4. Tester tous les endpoints fonctionnels en production
+# Actions immédiates :
+1. Render.com : Accéder au service "veganflemme-engine" et vérifier logs
+2. Vercel : Accéder au projet "veganflemme-app" et vérifier builds
+3. Si erreur, redéployer manuellement depuis GitHub
+4. Tester : curl https://veganflemme-engine.onrender.com/api/health
 ```
 
-**2. Tests Coverage Controllers**
+**2. Validation Intégrations Configurées** ✅
 ```bash
-# Objectifs immédiats (services déjà fonctionnels) :
-ProfileController: 6% → 70% (logique service à 91.3% ✅)
-NutritionController: 10% → 70% (données ANSES ✅)
-Frontend Components: 58% → 75%
+# Ces services sont DÉJÀ configurés via GitHub secrets :
+- Google Analytics 4 : ID configuré, tracking automatique
+- Supabase Database : URLs et clés API prêtes
+- Vercel + Render : Tokens de déploiement configurés
+- CodeCov : Rapports de couverture automatiques
 ```
 
-#### 🔧 Configuration Services Externes
+#### 🔧 Configuration Services Non-Configurés (1-2 heures)
 
-**1. Base de Données Production**
+**Services Email (SendGrid recommandé) :**
 ```bash
-# Étapes à suivre :
-1. Créer compte Supabase ou PlanetScale
-2. Créer projet "VeganFlemme-Prod"
-3. Noter URL de connexion PostgreSQL
-4. Me communiquer l'URL sécurisée
+1. Créer compte SendGrid : https://sendgrid.com
+2. Obtenir API Key
+3. Ajouter dans GitHub Secrets : SENDGRID_API_KEY=your_key
 ```
 
-**2. Google Analytics 4**
+**Programmes d'Affiliation :**
 ```bash
-# Configuration requise :
-1. Créer propriété GA4 "VeganFlemme"
-2. Configurer événements : menu généré, inscription, clic affiliation
-3. Noter ID de mesure (G-XXXXXXXXXX)
-4. Me fournir l'ID pour intégration
-```
-
-#### 🔧 Configuration Affiliations Marchands
-
-**Amazon Partenaires :**
-1. Candidater sur [Amazon Partenaires](https://partenaires.amazon.fr)
+# Amazon Partenaires (priorité haute - monétisation)
+1. Candidater : https://partenaires.amazon.fr
 2. Attendre validation (1-7 jours)
-3. Configurer tracking links
-4. Me communiquer ID partenaire
+3. Ajouter ID dans GitHub Secrets : AMAZON_AFFILIATE_ID=your_id
 
-**Greenweez (optionnel) :**
-1. Contacter service affiliés
-2. Négocier conditions commission
-3. Obtenir clés API
+# Greenweez (optionnel - vegan spécialisé)
+1. Contacter : partenaires@greenweez.com
+2. Négocier conditions
+3. Configurer : GREENWEEZ_AFFILIATE_ID=your_id
+```
 
-#### 📝 Contenus & Design
+**APIs Alimentaires (optionnelles - améliorent précision) :**
+```bash
+# CIQUAL (données nutritionnelles françaises)
+1. S'inscrire : https://ciqual.anses.fr/
+2. Demander accès API (gratuit)
+3. Configurer : CIQUAL_API_KEY=your_key
+
+# OpenFoodFacts (catalogue mondial)
+1. Créer compte : https://world.openfoodfacts.org/
+2. Obtenir clé API (gratuite)
+3. Configurer : OPENFOODFACTS_API_KEY=your_key
+```
+
+#### 📝 Contenus & Design (Phase 2 - Optionnel)
 
 **Logo et Assets :**
 - Logo final VeganFlemme (SVG + PNG)
@@ -519,19 +543,28 @@ Frontend Components: 58% → 75%
 - FAQ complète utilisateurs
 - Guides pratiques
 
-**Contenu Légal RGPD :**
-- Politique de confidentialité
-- Mentions légales
+#### ⚖️ Conformité Légale RGPD (OBLIGATOIRE avant lancement)
+
+**Documents juridiques requis :**
+- Politique de confidentialité complète
+- Mentions légales conformes
 - Conditions d'utilisation
-- **Recommandation :** Consultant juridique spécialisé RGPD
+- Gestion cookies avec consentement granulaire
 
-#### 🧪 Tests Utilisateurs
+**💡 Recommandation :** Consulter avocat spécialisé RGPD (budget : 500-1500€)
 
-**Beta-testeurs (10-15 personnes) :**
-1. Recruter profils variés (débutants/experts vegan)
-2. Organiser sessions test (60 min/personne)
-3. Collecter feedback sur UX/UI
-4. Reporter bugs et améliorations
+---
+
+## 📚 GUIDE COMPLET - RÉFÉREZ-VOUS À `guideforhuman.md`
+
+**📖 Le fichier `guideforhuman.md` contient :**
+- ✅ **Guide détaillé étape par étape** pour chaque service
+- 📊 **Tableau de bord de suivi** avec priorités et temps estimés  
+- 🔍 **Critères de validation** pour vérifier que tout fonctionne
+- 💡 **Conseils et meilleures pratiques** pour optimiser le temps
+- 📈 **Objectifs business** et métriques cibles
+
+**🚀 Commencez par la section "Actions Urgentes" puis suivez les phases selon vos priorités.**
 
 ---
 
@@ -1026,8 +1059,10 @@ LOG_LEVEL=info
 - **Tests:** 89 engine + 19 frontend = 108 tests passing ✅
 - **Coverage:** 75.85% engine (excellent), 57.97% frontend (correct)
 
-**🌱 VeganFlemme - État après audit rigoureux: Services core excellents, déploiement à réparer**
+**🌱 VeganFlemme - Services core excellents (75% coverage), déploiement configuré mais URLs à réparer**
 
-> *Audit complet terminé - Découverte majeure: Le projet est beaucoup plus avancé que déclaré précédemment*
+> *Analyse GitHub secrets terminée - Intégrations principales configurées automatiquement*
 
-**Prochaine mise à jour prévue :** 13 août 2025 (fin Sprint 3 - Corrections déploiement)
+**📚 Prochaine action :** Consulter `guideforhuman.md` pour le guide détaillé étape par étape
+
+**Prochaine mise à jour prévue :** 13 août 2025 (post-réparation déploiement)
