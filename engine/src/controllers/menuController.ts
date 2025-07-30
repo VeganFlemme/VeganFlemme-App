@@ -69,8 +69,8 @@ export const menuController = {
         excludedIngredients: dietaryRestrictions.filter((r: any) => r.type === 'ingredient').map((r: any) => r.name) || []
       };
 
-      // Generate optimized menu
-      const optimizedResult = await menuOptimizationService.optimizeMenu(
+      // Generate optimized menu using enhanced algorithm
+      const optimizedResult = await menuOptimizationService.optimizeMenuEnhanced(
         nutritionProfile,
         menuPreferences,
         restrictions
