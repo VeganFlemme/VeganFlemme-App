@@ -3,9 +3,11 @@ import { logger } from '../utils/logger';
 import { createError } from '../middleware/errorHandler';
 import { MenuOptimizationService, NutritionProfile, MenuPreferences, DietaryRestrictions } from '../services/menuOptimizationService';
 import { ProfileService } from '../services/profileService';
+import { SwapRecommenderService, SwapContext } from '../services/swapRecommenderService';
 
 const menuOptimizationService = new MenuOptimizationService();
 const profileService = new ProfileService();
+const swapRecommenderService = new SwapRecommenderService();
 
 export const menuController = {
   /**
@@ -171,34 +173,61 @@ export const menuController = {
    */
   swapIngredient: async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { ingredient, _reason, _nutritionalTarget } = req.body;
+      const { 
+        ingredient, 
+        reason, 
+        nutritionalTarget,
+        recipeType = 'lunch',
+        cookingMethod = 'baked',
+        budget = 'medium',
+        cookingTime = 'medium',
+        userRestrictions = {
+          allergens: [],
+          intolerances: [],
+          preferences: [],
+          excludedIngredients: []
+        },
+        amount = 100
+      } = req.body;
 
       if (!ingredient) {
         return next(createError('Ingredient parameter is required', 400));
       }
 
-      // TODO: Implement intelligent swap algorithm
-      const swapSuggestions = [
-        {
-          original: ingredient,
-          alternative: 'Tempeh',
-          reason: 'Même profil protéique, moins transformé',
-          nutritionalImpact: {
-            protein: '+5%',
-            iron: '+10%',
-            calories: '-3%'
-          },
-          availability: 'Disponible chez Greenweez',
-          cost: 'Similar'
-        }
-      ];
+      logger.info('Processing ingredient swap request', {
+        ingredient,
+        recipeType,
+        restrictions: userRestrictions.allergens?.length || 0
+      });
+
+      // Build swap context
+      const swapContext: SwapContext = {
+        recipeType,
+        cookingMethod,
+        userRestrictions,
+        nutritionalTargets: nutritionalTarget,
+        budget,
+        cookingTime
+      };
+
+      // Get intelligent swap recommendations
+      const swapResult = await swapRecommenderService.getSwapRecommendations(
+        ingredient,
+        swapContext,
+        amount
+      );
+
+      logger.info('Swap recommendations generated', {
+        ingredient,
+        alternativeCount: swapResult.alternativeCount,
+        preservesBalance: swapResult.preservesNutritionBalance,
+        improvesNutrition: swapResult.improvesNutrition
+      });
 
       res.status(200).json({
         success: true,
-        data: {
-          suggestions: swapSuggestions,
-          preservesBalance: true
-        }
+        data: swapResult,
+        message: `${swapResult.alternativeCount} alternative(s) trouvée(s) pour ${ingredient}`
       });
 
     } catch (error: any) {
