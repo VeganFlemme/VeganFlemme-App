@@ -1,0 +1,49 @@
+# ===================================================================
+# 🐳 VeganFlemme Frontend - Docker Ignore Configuration  
+# ===================================================================
+# Spécifique au frontend Next.js/React
+# ===================================================================
+
+# Node.js
+node_modules/
+npm-debug.log*
+.npm/
+
+# Next.js Build
+.next/
+out/
+build/
+*.tsbuildinfo
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Tests & Coverage  
+coverage/
+__tests__/
+*.test.tsx
+*.test.ts
+*.spec.tsx
+*.spec.ts
+
+# Development
+.eslintcache
+.git/
+.github/
+*.md
+!package.json
+
+# Vercel
+.vercel/
+
+# IDE
+.vscode/
+.idea/
+
+# Backend related (pas nécessaire pour le frontend)
+../engine/
+../database/
+../docker-compose.yml
+../.dockerignore
