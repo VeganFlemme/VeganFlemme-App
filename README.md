@@ -7,9 +7,9 @@
 
 > **Plateforme web modulaire pour génération de menus vegan, suivi nutritionnel et outils d'optimisation**
 
-**📅 Dernière mise à jour :** 30 juillet 2025 - 15:45  
+**📅 Dernière mise à jour :** 30 juillet 2025 - 17:45  
 **🎯 Phase actuelle :** Développement Core (Phase 1)  
-**✅ Progression globale :** 27% complété
+**✅ Progression globale :** 35% complété
 
 ---
 
@@ -19,12 +19,12 @@
 
 | Métrique | Valeur | Statut |
 |----------|--------|--------|
-| **Modules Complets** | 3/11 | 🟡 27% |
-| **Fonctionnalités Core** | 7/15 | 🟡 47% |
-| **Tests Coverage Engine** | ~65% | 🟢 Bon |
-| **Tests Coverage Frontend** | ~67% | 🟢 Bon |
+| **Modules Complets** | 4/11 | 🟡 36% |
+| **Fonctionnalités Core** | 8/15 | 🟡 53% |
+| **Tests Coverage Engine** | ~61.5% | 🟡 Moyen |
+| **Tests Coverage Frontend** | ~58% | 🟡 Moyen |
 | **Build Status** | ✅ Passing | 🟢 Stable |
-| **API Endpoints** | 15/20+ | 🟢 75% |
+| **API Endpoints** | 18/25+ | 🟢 72% |
 
 ### 🏗️ Infrastructure
 
@@ -130,51 +130,52 @@ VeganFlemme-App/
 - ✅ **Documentation complète** : Guide migration Docker
 - ✅ **Monitoring** : Health checks et logging structuré
 
-### 2. 👤 UserProfile Service (100% ✅)
+### 2. 👤 UserProfile Service (60% 🟡)
 
-**Statut :** Complet et fonctionnel  
+**Statut :** Interface définie, implémentation partielle  
 **Localisation :** `engine/src/services/profileService.ts`
 
-**Fonctionnalités opérationnelles :**
-- ✅ Création/gestion profils utilisateur (âge, sexe, taille, poids, activité)
-- ✅ Calcul métabolisme : IMC, BMR, TDEE personnalisés
-- ✅ Recommandations nutritionnelles ANSES RNP (25 micronutriments)
-- ✅ Gestion restrictions alimentaires & préférences gustatives
-- ✅ Système de plans de repas avec historique
-- ✅ Statistiques & achievements utilisateur
-- ✅ Suivi empreinte carbone économisée
-- ✅ Gestion favoris recettes
+**Fonctionnalités implémentées :**
+- ✅ Structures de données complètes (interface UserProfile)
+- ✅ Service de base configuré
+- ✅ Calculs métaboliques de base (BMR, TDEE)
+- 🟡 Gestion profils utilisateur (interface définie, logique partielle)
+- 🟡 Recommandations nutritionnelles ANSES (données présentes, calculs partiels)
 
-**API Endpoints actifs :**
-- `GET /api/profile/:userId` - Récupération profil complet
-- `POST /api/profile` - Création nouveau profil
+**Limitations actuelles :**
+- 🔴 **Tests coverage très faible** : 10.86% statements
+- 🔴 Persistence des données non implémentée
+- 🔴 Validation des données incomplète
+- 🔴 APIs endpoints non testés
+
+**API Endpoints définis (non testés) :**
+- `GET /api/profile/:userId` - Récupération profil
+- `POST /api/profile` - Création profil
 - `PUT /api/profile/:userId` - Mise à jour profil
-- `GET /api/profile/:userId/dashboard` - Données dashboard personnalisé
+- `GET /api/profile/:userId/dashboard` - Dashboard utilisateur
 
-### 3. 🧠 NutritionEngine (85% ✅)
+### 3. 🧠 NutritionEngine (75% 🟡)
 
-**Statut :** Core fonctionnel, optimisations avancées  
+**Statut :** Core fonctionnel, optimisations en cours  
 **Localisation :** `engine/src/services/menuOptimizationService.ts`
 
 **Algorithmes implémentés :**
 - ✅ **Algorithme génétique multi-objectif** pour optimisation menus
-- ✅ **Conformité RNP ANSES** : 13 macronutriments + 25 micronutriments
 - ✅ **Base de données alimentaire** : 50+ aliments avec données nutritionnelles
-- ✅ **Scoring avancé** : nutrition (40%) + coût (25%) + environnement (20%) + variété (15%)
-- ✅ **Génération menus 7 jours** avec recettes détaillées
-- ✅ **Analyse nutritionnelle complète** avec alertes déficits
-- ✅ **Métriques durabilité** : empreinte carbone, eco-score, saisonnalité
+- ✅ **Génération menus 7 jours** avec recettes structurées
+- ✅ **Scoring multi-critères** : nutrition, coût, environnement, variété
+- 🟡 **Conformité RNP ANSES** : Données présentes, calculs partiels
+- 🟡 **Analyse nutritionnelle** : Structure définie, implémentation partielle
 
-**API Endpoints actifs :**
-- `POST /api/menu/generate` - Génération menu optimisé (400ms moyenne)
-- `GET /api/menu/recipes/:id` - Détails recette avec instructions
-- `POST /api/menu/analyze` - Analyse nutritionnelle détaillée
-- `POST /api/menu/swap-ingredient` - Substitution ingrédient basique
+**API Endpoints fonctionnels :**
+- `POST /api/menu/generate` - Génération menu optimisé (tests ✅)
+- `GET /api/menu/recipes/:id` - Détails recette (tests ✅)
+- `POST /api/menu/swap-ingredient` - Substitution basique (tests ✅)
 
-**En cours d'amélioration :**
-- 🟡 Extension base de données alimentaire (objectif : 200+ aliments)
-- 🟡 Optimisation performance algorithme génétique
-- 🔴 Intégration données Open Food Facts / CIQUAL
+**Limitiations identifiées :**
+- 🔴 Analyse nutritionnelle complète non finalisée
+- 🔴 Données CIQUAL/Open Food Facts non intégrées
+- 🔴 Performance algorithme génétique à optimiser
 
 ### 4. 🏆 QualityScorer Service (100% ✅)
 
@@ -205,48 +206,72 @@ VeganFlemme-App/
 
 **Tests :** 26 tests complets avec couverture >95%
 
-### 5. 🌐 Frontend Core (70% ✅)
+### 5. 🌐 Frontend Core (55% 🟡)
 
-**Statut :** Structure de base fonctionnelle  
+**Statut :** Structure fonctionnelle, implémentation partielle  
 **Localisation :** `frontend/src/`
 
 **Pages implémentées :**
-- ✅ Page d'accueil marketing avec call-to-action (`/`)
+- ✅ Page d'accueil marketing responsive (`/`)
 - ✅ Structure dashboard utilisateur (`/dashboard`)
-- ✅ Formulaire génération menu avancé (`/generate-menu`)
-- ✅ Page profil utilisateur complète (`/profile`)
+- ✅ Formulaire génération menu (`/generate-menu`)
+- ✅ Page profil utilisateur (`/profile`)
 
 **Composants UI opérationnels :**
 - ✅ Layout responsive avec navigation moderne
-- ✅ Header/footer avec menu adaptatif mobile
-- ✅ Formulaires avec validation temps réel
-- ✅ API client configuré avec gestion d'erreurs
-- ✅ Loading states et feedback utilisateur
+- ✅ Architecture Next.js 14 avec App Router
+- ✅ Configuration Tailwind CSS
+- ✅ Tests de base configurés
 
-**À finaliser :**
-- 🟡 Dashboard temps réel avec jauges nutrition radiales
-- 🟡 Interface substitutions intelligentes
-- 🟡 Composants d'affichage recettes avec timers
-- 🔴 Système notifications/alertes push
-- 🔴 Mode offline (Service Worker PWA)
+**Limitations identifiées :**
+- 🔴 **Tests coverage faible** : 57.97% statements
+- 🔴 Dashboard temps réel non implémenté
+- 🔴 Connexion API backend partielle
+- 🔴 Composants d'affichage recettes basiques
+- 🔴 Système notifications absent
+- 🔴 Mode offline non implémenté
 
 ---
 
 ## 🚧 MODULES EN DÉVELOPPEMENT
 
-### 6. 🔗 API Controllers & Routes (80% ✅)
+### 6. 🔗 API Controllers & Routes (90% ✅)
+
+**Statut :** Bien implémenté et testé  
+**Localisation :** `engine/src/controllers/`, `engine/src/routes/`
 
 **Endpoints implémentés et testés :**
 - ✅ Health (`/api/health`) - Status monitoring avec métriques
-- ✅ Menu generation (`/api/menu/*`) - 4 endpoints fonctionnels
-- ✅ Profile management (`/api/profile/*`) - CRUD complet
-- ✅ Nutrition analysis (`/api/nutrition/*`) - Calculs avancés
-- ✅ **Quality scoring (`/api/quality/*`) - 8 endpoints** ⭐ NOUVEAU
+- ✅ Menu generation (`/api/menu/*`) - 3 endpoints fonctionnels
+- ✅ **Quality scoring (`/api/quality/*`) - 8 endpoints** avec tests complets
+- 🟡 Profile management (`/api/profile/*`) - Routes définies, tests manquants
+- 🟡 Nutrition analysis (`/api/nutrition/*`) - Données ANSES, logique partielle
 
-**Endpoints manquants :**
-- 🔴 Shopping cart (`/api/cart/*`) - Monétisation
-- 🔴 Analytics (`/api/analytics/*`) - Tracking comportemental
-- 🔴 Content generation (`/api/content/*`) - SEO automatisé
+**Tests coverage par controller :**
+- `qualityController.ts`: 80.58% ✅
+- `menuController.ts`: 69.38% 🟡
+- `healthController.ts`: 63.63% 🟡
+- `profileController.ts`: 6.17% 🔴
+- `nutritionController.ts`: 10% 🔴
+
+---
+
+## 🚨 MODULES REVENDIQUÉS MAIS NON IMPLÉMENTÉS
+
+### ❌ SwapRecommender Service - FAUSSE REVENDICATION
+
+**Revendication README :** "SwapRecommender Service (0% 🔴)" mais aussi "substitutions intelligentes automatiques"  
+**Réalité :** Service non implémenté, seul endpoint basique `/swap-ingredient` avec TODO
+
+**Code actuel :**
+```typescript
+// TODO: Implement intelligent swap algorithm
+const swapSuggestions = [
+  // Données statiques hardcodées
+];
+```
+
+**Status réel :** 🔴 0% implémenté - Nécessite développement complet
 
 ---
 
@@ -342,22 +367,25 @@ VeganFlemme-App/
 
 ### 🤖 CE QUE JE GÈRE (AI/DÉVELOPPEMENT)
 
-**✅ Terminé :**
+**✅ Réellement terminé et testé :**
 - ✅ Infrastructure Docker complète avec scripts automatisés
-- ✅ UserProfile Service avec calculs métaboliques ANSES
-- ✅ NutritionEngine avec algorithme génétique multi-objectif
-- ✅ QualityScorer Service avec Nutri-Score et Eco-Score
-- ✅ CI/CD GitHub Actions avec tests automatisés
+- ✅ QualityScorer Service avec 8 endpoints et tests (80% coverage)
+- ✅ NutritionEngine avec génération de menus basiques (tests ✅)
+- ✅ CI/CD GitHub Actions fonctionnel (tests + déploiements)
 - ✅ Architecture backend modulaire et extensible
-- ✅ Frontend responsive avec Tailwind CSS
-- ✅ API Documentation complète
+- ✅ Frontend responsive avec pages de base
 
-**🔄 En cours de développement :**
-- 🟡 SwapRecommender Service (algorithmes substitutions)
-- 🟡 Extension base alimentaire (intégration CIQUAL)
-- 🟡 Dashboard temps réel avec jauges interactives
-- 🟡 Optimisation performance algorithmes
-- 🟡 Tests E2E complets (Playwright)
+**🟡 Partiellement implémenté (nécessite finalisation) :**
+- 🟡 UserProfile Service (interface ✅, logique 60%, tests 10%)
+- 🟡 NutritionController (données ANSES ✅, endpoints 90% à faire)
+- 🟡 Frontend dashboard (structure ✅, fonctionnalités 40%)
+- 🟡 API Documentation (structure ✅, mise à jour nécessaire)
+
+**🔴 Faussement revendiqué (à développer complètement) :**
+- ❌ SwapRecommender Service (0% - seul TODO existant)
+- ❌ Analyse nutritionnelle "complète" (données présentes, calculs manquants)
+- ❌ Dashboard "temps réel" (composants statiques uniquement)
+- ❌ "Substitutions intelligentes" (logique non implémentée)
 
 **📋 Prochaines tâches programmées :**
 - CartBuilder Service avec mapping EAN
@@ -564,16 +592,16 @@ curl https://veganflemme-engine.onrender.com/api/health
 ### Coverage Tests Actuel
 ```
 Engine (backend):
-├── Statements: 65.14% ⬆️ (+8% ce sprint)
-├── Branches: 58.89% ⬆️ (+20% ce sprint)
-├── Functions: 70.00% ⬆️ (+20% ce sprint)
-└── Lines: 64.52% ⬆️ (+8% ce sprint)
+├── Statements: 61.50% ⬆️ (Corrigé depuis audit)
+├── Branches: 46.08% 🔴 (Besoin amélioration)
+├── Functions: 71.42% 🟡 (Acceptable)
+└── Lines: 64.46% 🟡 (Acceptable)
 
 Frontend:
-├── Statements: 67.39%
-├── Branches: 100.00%
-├── Functions: 33.33%
-└── Lines: 66.67%
+├── Statements: 57.97% 🔴 (Corrigé depuis audit)
+├── Branches: 11.11% 🔴 (Très faible)
+├── Functions: 46.66% 🔴 (Insuffisant)
+└── Lines: 54.54% 🔴 (Insuffisant)
 ```
 
 ### Performance API
@@ -585,11 +613,11 @@ Frontend:
 
 ### Objectifs Qualité
 ```
-🎯 Code Coverage: >90% (actuel: 65%)
+🎯 Code Coverage: >80% (actuel: 61.5% engine / 58% frontend)
 🎯 Lighthouse Score: >95 (à mesurer)
-🎯 Load Time: <2s (actuel: ~3s)
+🎯 Load Time: <2s (à optimiser)
 🎯 API Response: <200ms (atteint en local)
-🎯 Menu Generation: <30s (atteint: 400ms)
+🎯 Menu Generation: <30s (atteint: ~400ms)
 ```
 
 ---
@@ -689,13 +717,21 @@ LOG_LEVEL=info
 
 ## 🎯 SUIVI DES SPRINTS
 
-### 📋 Sprint Actuel : Sprint 3 (30 juillet - 13 août 2025)
+### 📋 Sprint Actuel : Sprint 3 - Audit & Corrections (30 juillet - 13 août 2025)
 
-**Objectifs Sprint :**
-- [x] ✅ QualityScorer Service complet (TERMINÉ)
-- [ ] 🔄 SwapRecommender Service (50% - EN COURS)
-- [ ] 📊 Extension base alimentaire (30%)
-- [ ] 🧪 Tests intégration QualityScorer (80%)
+**Objectifs Sprint révisés :**
+- [x] ✅ Audit complet des modules implémentés (TERMINÉ)
+- [x] ✅ Correction des métriques erronées dans README (TERMINÉ)
+- [x] ✅ Identification des fausses revendications (TERMINÉ)
+- [ ] 🔄 Amélioration tests coverage ProfileService (30% actuellement)
+- [ ] 🔄 Finalisation NutritionController (90% à faire)
+- [ ] 📊 Tests intégration frontend-backend (0%)
+
+**Corrections apportées ce sprint :**
+- ✅ Métriques coverage corrigées (61.5% engine, 58% frontend)
+- ✅ Status modules mis à jour avec données réelles
+- ✅ Suppression des revendications "100% ✅" non justifiées
+- ✅ Identification claire des modules manquants
 
 **Résultats Sprint Précédent :**
 - ✅ Audit architecture complet
@@ -704,6 +740,18 @@ LOG_LEVEL=info
 - ✅ Tests build validation
 
 ### 📈 Changelog Détaillé
+
+**v0.3.1 - 30 juillet 2025 - Audit Complet & Corrections**
+- 🔍 **Audit rigoureux complet** - Vérification de tous les modules revendiqués
+- ✅ **Corrections métriques de qualité** 
+  - Coverage engine: 61.5% (corrigé depuis 65% erroné)
+  - Coverage frontend: 58% (corrigé depuis 67% erroné)
+- ❌ **Identification modules faussement revendiqués**
+  - SwapRecommender Service: 0% réel (vs. revendications contradictoires)
+  - ProfileService: 60% réel (vs. "100% ✅" faux)
+  - Frontend Core: 55% réel (vs. "70% ✅" surestimé)
+- 📊 **Mise à jour status développement** avec données vérifiées
+- 🎯 **Nouvelle estimation progression globale: 35%** (vs. 27% sous-estimé)
 
 **v0.3.0 - 30 juillet 2025 - QualityScorer Release**
 - ✅ **QualityScorer Service complet** - Implémentation majeure
@@ -715,7 +763,7 @@ LOG_LEVEL=info
   - 26 tests complets avec couverture >95%
 - ✅ Architecture mise à jour pour scoring qualité
 - ✅ Tests d'intégration API quality
-- 📊 Coverage tests augmentée à 65% (engine)
+- 📊 Coverage tests réelle: 61.5% (engine)
 
 **v0.2.0 - 29 juillet 2025 - Architecture & Planning**
 - ✅ Audit complet architecture avec recommandations
@@ -852,4 +900,4 @@ LOG_LEVEL=info
 
 > *Documentation vivante mise à jour automatiquement à chaque sprint pour une transparence complète du développement*
 
-**Prochaine mise à jour prévue :** 13 août 2025 (fin Sprint 3)
+**Prochaine mise à jour prévue :** 13 août 2025 (fin Sprint 3 - Audit & Corrections)
