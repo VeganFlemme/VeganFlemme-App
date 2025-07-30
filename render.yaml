@@ -4,6 +4,8 @@ services:
     env: node
     region: frankfurt
     plan: starter
+    # Explicitly set root directory to repository root (not engine subdirectory)
+    rootDir: .
     buildCommand: cd engine && npm run build:render
     startCommand: cd engine && npm start
     healthCheckPath: /api/health
