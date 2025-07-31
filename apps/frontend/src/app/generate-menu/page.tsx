@@ -1,24 +1,25 @@
 'use client'
 
 import { useState } from 'react'
-import { ArrowLeft, Utensils, Clock, Users, Loader2, CheckCircle } from 'lucide-react'
+import { ArrowLeft, Utensils, Clock, Leaf, Loader2, CheckCircle, Sparkles } from 'lucide-react'
 import Link from 'next/link'
 import { apiClient, type MenuPreferences, type GeneratedMenu } from '@/lib/api'
 import { trackMenuGeneration } from '@/lib/analytics'
 import { useUserJourney } from '@/hooks/useUserJourney'
 
 export default function GenerateMenuPage() {
-  const { actions } = useUserJourney()
+  const { actions, state } = useUserJourney()
   const [preferences, setPreferences] = useState<MenuPreferences>({
-    people: 2,
+    people: 1, // Default to 1 person, hidden from UI
     budget: 'medium',
     cookingTime: 'medium',
-    dietaryRestrictions: [],
+    dietaryRestrictions: state.profile?.allergies || [],
   })
   
   const [isGenerating, setIsGenerating] = useState(false)
   const [generatedMenu, setGeneratedMenu] = useState<GeneratedMenu | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [showCustomization, setShowCustomization] = useState(false)
 
   const handleGenerate = async () => {
     setIsGenerating(true)
@@ -58,10 +59,10 @@ export default function GenerateMenuPage() {
               <div>
                 <h1 className="text-3xl font-bold text-gray-900 mb-2 flex items-center">
                   <CheckCircle className="h-8 w-8 text-green-500 mr-3" />
-                  Menu généré avec succès !
+                  Votre menu vegan parfait !
                 </h1>
                 <p className="text-gray-600">
-                  Voici votre menu personnalisé pour {preferences.people} personne(s)
+                  Félicitations ! Voici votre plan alimentaire vegan parfaitement équilibré
                 </p>
               </div>
               <button 
@@ -197,12 +198,12 @@ export default function GenerateMenuPage() {
 
         <div className="bg-white rounded-2xl shadow-lg p-8">
           <div className="text-center mb-8">
-            <Utensils className="h-16 w-16 text-primary-500 mx-auto mb-4" />
+            <Sparkles className="h-16 w-16 text-primary-500 mx-auto mb-4" />
             <h1 className="text-3xl font-bold text-gray-900 mb-2">
-              Générer votre menu vegan
+              Votre menu vegan parfait
             </h1>
             <p className="text-gray-600">
-              Personnalisez vos préférences pour un menu 100% adapté à vos besoins
+              Le meilleur plan alimentaire vegan, conçu pour tout le monde
             </p>
           </div>
 
@@ -212,106 +213,130 @@ export default function GenerateMenuPage() {
             </div>
           )}
 
-          <div className="space-y-8">
-            {/* Number of people */}
-            <div>
-              <label className="block text-lg font-semibold text-gray-900 mb-3">
-                <Users className="h-5 w-5 inline mr-2" />
-                Nombre de personnes
-              </label>
-              <div className="flex gap-3">
-                {[1, 2, 3, 4, 5, 6].map((num) => (
-                  <button
-                    key={num}
-                    onClick={() => setPreferences(prev => ({ ...prev, people: num }))}
-                    className={`w-12 h-12 rounded-lg border-2 font-semibold transition-colors ${
-                      preferences.people === num
-                        ? 'border-primary-500 bg-primary-500 text-white'
-                        : 'border-gray-200 text-gray-600 hover:border-primary-300'
-                    }`}
-                  >
-                    {num}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Budget */}
-            <div>
-              <label className="block text-lg font-semibold text-gray-900 mb-3">
-                Budget par semaine
-              </label>
-              <div className="grid grid-cols-3 gap-3">
-                {[
-                  { value: 'low', label: 'Économique', price: '< 50€' },
-                  { value: 'medium', label: 'Modéré', price: '50-80€' },
-                  { value: 'high', label: 'Confort', price: '> 80€' }
-                ].map((option) => (
-                  <button
-                    key={option.value}
-                    onClick={() => setPreferences(prev => ({ ...prev, budget: option.value }))}
-                    className={`p-4 rounded-lg border-2 text-center transition-colors ${
-                      preferences.budget === option.value
-                        ? 'border-primary-500 bg-primary-50'
-                        : 'border-gray-200 hover:border-primary-300'
-                    }`}
-                  >
-                    <div className="font-semibold">{option.label}</div>
-                    <div className="text-sm text-gray-500">{option.price}</div>
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Cooking time */}
-            <div>
-              <label className="block text-lg font-semibold text-gray-900 mb-3">
-                <Clock className="h-5 w-5 inline mr-2" />
-                Temps de cuisine
-              </label>
-              <div className="grid grid-cols-3 gap-3">
-                {[
-                  { value: 'quick', label: 'Express', time: '< 15 min' },
-                  { value: 'medium', label: 'Classique', time: '15-30 min' },
-                  { value: 'long', label: 'Gourmet', time: '> 30 min' }
-                ].map((option) => (
-                  <button
-                    key={option.value}
-                    onClick={() => setPreferences(prev => ({ ...prev, cookingTime: option.value }))}
-                    className={`p-4 rounded-lg border-2 text-center transition-colors ${
-                      preferences.cookingTime === option.value
-                        ? 'border-primary-500 bg-primary-50'
-                        : 'border-gray-200 hover:border-primary-300'
-                    }`}
-                  >
-                    <div className="font-semibold">{option.label}</div>
-                    <div className="text-sm text-gray-500">{option.time}</div>
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Generate button */}
-            <div className="text-center pt-6">
-              <button
-                onClick={handleGenerate}
-                disabled={isGenerating}
-                className="brand-gradient text-white px-12 py-4 rounded-lg font-semibold text-lg hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center"
-              >
-                {isGenerating ? (
-                  <>
-                    <Loader2 className="h-5 w-5 mr-2 animate-spin" />
-                    Génération en cours...
-                  </>
-                ) : (
-                  'Générer mon menu vegan'
-                )}
-              </button>
-              <p className="text-sm text-gray-500 mt-3">
-                Génération conforme aux recommandations ANSES
+          {/* Main CTA */}
+          <div className="text-center mb-8">
+            <div className="bg-gradient-to-r from-green-50 to-primary-50 border border-primary-200 rounded-xl p-6 mb-6">
+              <h2 className="text-xl font-semibold text-gray-900 mb-3 flex items-center justify-center">
+                <Leaf className="h-6 w-6 text-primary-500 mr-2" />
+                Menu universel VeganFlemme
+              </h2>
+              <p className="text-gray-700 mb-4">
+                Notre menu par défaut est parfait pour tous : équilibré nutritionnellement selon les RNP ANSES, 
+                délicieux, et conçu pour satisfaire tous les goûts. Aucune personnalisation nécessaire !
               </p>
+              <div className="flex items-center justify-center space-x-6 text-sm text-green-600 mb-4">
+                <div className="flex items-center">
+                  <CheckCircle className="h-4 w-4 mr-1" />
+                  <span>100% équilibré</span>
+                </div>
+                <div className="flex items-center">
+                  <CheckCircle className="h-4 w-4 mr-1" />
+                  <span>Pour tous les goûts</span>
+                </div>
+                <div className="flex items-center">
+                  <CheckCircle className="h-4 w-4 mr-1" />
+                  <span>Zéro effort</span>
+                </div>
+              </div>
             </div>
+
+            <button
+              onClick={handleGenerate}
+              disabled={isGenerating}
+              className="brand-gradient text-white px-12 py-4 rounded-lg font-semibold text-xl hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center mb-4"
+            >
+              {isGenerating ? (
+                <>
+                  <Loader2 className="h-6 w-6 mr-2 animate-spin" />
+                  Génération en cours...
+                </>
+              ) : (
+                <>
+                  <Sparkles className="h-6 w-6 mr-2" />
+                  Générer mon menu vegan !
+                </>
+              )}
+            </button>
+            
+            <p className="text-sm text-gray-500 mb-6">
+              Génération conforme aux recommandations ANSES - Parfait pour débuter !
+            </p>
+
+            {/* Optional customization toggle */}
+            <button
+              onClick={() => setShowCustomization(!showCustomization)}
+              className="text-primary-500 hover:text-primary-600 text-sm font-medium underline"
+            >
+              {showCustomization ? 'Masquer les options' : 'Personnaliser mon menu (optionnel)'}
+            </button>
           </div>
+
+          {/* Optional customization section */}
+          {showCustomization && (
+            <div className="border-t border-gray-200 pt-6 space-y-6">
+              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                <p className="text-yellow-800 text-sm">
+                  <strong>Ces options sont entièrement optionnelles !</strong> Notre menu par défaut 
+                  est déjà parfait. Personnalisez seulement si vous avez des besoins spécifiques.
+                </p>
+              </div>
+
+              {/* Budget */}
+              <div>
+                <label className="block text-lg font-semibold text-gray-900 mb-3">
+                  Budget par semaine (optionnel)
+                </label>
+                <div className="grid grid-cols-3 gap-3">
+                  {[
+                    { value: 'low', label: 'Économique', price: '< 50€' },
+                    { value: 'medium', label: 'Modéré', price: '50-80€' },
+                    { value: 'high', label: 'Confort', price: '> 80€' }
+                  ].map((option) => (
+                    <button
+                      key={option.value}
+                      onClick={() => setPreferences(prev => ({ ...prev, budget: option.value }))}
+                      className={`p-4 rounded-lg border-2 text-center transition-colors ${
+                        preferences.budget === option.value
+                          ? 'border-primary-500 bg-primary-50'
+                          : 'border-gray-200 hover:border-primary-300'
+                      }`}
+                    >
+                      <div className="font-semibold">{option.label}</div>
+                      <div className="text-sm text-gray-500">{option.price}</div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Cooking time */}
+              <div>
+                <label className="block text-lg font-semibold text-gray-900 mb-3">
+                  <Clock className="h-5 w-5 inline mr-2" />
+                  Temps de cuisine (optionnel)
+                </label>
+                <div className="grid grid-cols-3 gap-3">
+                  {[
+                    { value: 'quick', label: 'Express', time: '< 15 min' },
+                    { value: 'medium', label: 'Classique', time: '15-30 min' },
+                    { value: 'long', label: 'Gourmet', time: '> 30 min' }
+                  ].map((option) => (
+                    <button
+                      key={option.value}
+                      onClick={() => setPreferences(prev => ({ ...prev, cookingTime: option.value }))}
+                      className={`p-4 rounded-lg border-2 text-center transition-colors ${
+                        preferences.cookingTime === option.value
+                          ? 'border-primary-500 bg-primary-50'
+                          : 'border-gray-200 hover:border-primary-300'
+                      }`}
+                    >
+                      <div className="font-semibold">{option.label}</div>
+                      <div className="text-sm text-gray-500">{option.time}</div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </main>
