@@ -119,7 +119,7 @@ CREATE TABLE IF NOT EXISTS recipes (
     
     -- Recipe metadata
     tags VARCHAR(100)[],
-    meal_type VARCHAR(50)[] CHECK (meal_type <@ ARRAY['breakfast', 'lunch', 'dinner', 'snack']),
+    meal_type VARCHAR(50)[] CHECK (meal_type <@ ARRAY['breakfast', 'lunch', 'dinner', 'snack']::VARCHAR(50)[]),
     cuisine_type VARCHAR(100),
     image_url VARCHAR(500),
     
