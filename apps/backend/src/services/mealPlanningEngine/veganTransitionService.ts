@@ -178,4 +178,7 @@ export class VeganTransitionService {
       exploration: Math.round(totalDays * explorationFactor),
       transition: Math.round(totalDays * transitionFactor),
       adaptation: Math.round(totalDays * adaptationFactor),
-      optimization: Math.round(total
+      optimization: Math.round(totalDays * optimizationFactor)
+    };
+  }
+}
