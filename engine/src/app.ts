@@ -65,6 +65,23 @@ app.get('/', (req: Request, res: Response) => {
   });
 });
 
+// API base endpoint
+app.get('/api', (req: Request, res: Response) => {
+  res.json({
+    name: 'VeganFlemme Engine API',
+    version: '1.0.0',
+    description: 'API for vegan nutrition and menu generation',
+    endpoints: {
+      health: '/api/health',
+      menu: '/api/menu',
+      profile: '/api/profile',
+      nutrition: '/api/nutrition',
+      quality: '/api/quality',
+      recipe: '/api/recipe'
+    }
+  });
+});
+
 // 404 handler
 app.use('*', (req: Request, res: Response) => {
   res.status(404).json({

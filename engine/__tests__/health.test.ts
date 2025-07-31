@@ -1,6 +1,27 @@
 import request from 'supertest';
 import app from '../src/app';
 
+describe('API Base Endpoints', () => {
+  describe('GET /api', () => {
+    it('should return 200 and API information', async () => {
+      const response = await request(app)
+        .get('/api')
+        .expect(200);
+
+      expect(response.body).toHaveProperty('name', 'VeganFlemme Engine API');
+      expect(response.body).toHaveProperty('version', '1.0.0');
+      expect(response.body).toHaveProperty('description', 'API for vegan nutrition and menu generation');
+      expect(response.body).toHaveProperty('endpoints');
+      expect(response.body.endpoints).toHaveProperty('health', '/api/health');
+      expect(response.body.endpoints).toHaveProperty('menu', '/api/menu');
+      expect(response.body.endpoints).toHaveProperty('profile', '/api/profile');
+      expect(response.body.endpoints).toHaveProperty('nutrition', '/api/nutrition');
+      expect(response.body.endpoints).toHaveProperty('quality', '/api/quality');
+      expect(response.body.endpoints).toHaveProperty('recipe', '/api/recipe');
+    });
+  });
+});
+
 describe('Health Endpoints', () => {
   describe('GET /api/health', () => {
     it('should return 200 and health status', async () => {
