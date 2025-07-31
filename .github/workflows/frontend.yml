@@ -4,12 +4,14 @@ on:
   push:
     branches: [ main, develop ]
     paths: 
-      - 'frontend/**'
+      - 'apps/frontend/**'
+      - 'packages/**'
       - '.github/workflows/frontend.yml'
   pull_request:
     branches: [ main ]
     paths: 
-      - 'frontend/**'
+      - 'apps/frontend/**'
+      - 'packages/**'
 
 jobs:
   test-and-build:
@@ -17,7 +19,7 @@ jobs:
     
     defaults:
       run:
-        working-directory: ./frontend
+        working-directory: ./apps/frontend
 
     strategy:
       matrix:

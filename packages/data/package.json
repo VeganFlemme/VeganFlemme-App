@@ -1,0 +1,25 @@
+{
+  "name": "@veganflemme/data",
+  "version": "1.0.0",
+  "description": "Data files and processing utilities for VeganFlemme",
+  "main": "src/index.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "process-ciqual": "node scripts/process-ciqual.js",
+    "validate-data": "node scripts/validate-data.js"
+  },
+  "keywords": [
+    "veganflemme",
+    "data",
+    "ciqual",
+    "nutrition",
+    "database"
+  ],
+  "author": "VeganFlemme Team",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
+  }
+}
