@@ -33,7 +33,7 @@ services:
       # Persistance des données
       - postgres_data:/var/lib/postgresql/data
       # Scripts d'initialisation (optionnel)
-      - ./packages/data/database/init:/docker-entrypoint-initdb.d:ro
+      - ../../packages/data/database/init:/docker-entrypoint-initdb.d:ro
     networks:
       - veganflemme-network
     healthcheck:
@@ -48,7 +48,7 @@ services:
   # ===================================================================
   backend:
     build:
-      context: ./apps/backend
+      context: ../../apps/backend
       dockerfile: Dockerfile
       target: production
     container_name: veganflemme-backend
@@ -101,7 +101,7 @@ services:
   # ===================================================================
   frontend:
     build:
-      context: ./apps/frontend
+      context: ../../apps/frontend
       dockerfile: Dockerfile
       target: runner
     container_name: veganflemme-frontend

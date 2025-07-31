@@ -1,15 +1,17 @@
-name: Engine CI/CD
+name: Backend CI/CD
 
 on:
   push:
     branches: [ main, develop ]
     paths: 
-      - 'engine/**'
+      - 'apps/backend/**'
+      - 'packages/**'
       - '.github/workflows/engine.yml'
   pull_request:
     branches: [ main ]
     paths: 
-      - 'engine/**'
+      - 'apps/backend/**'
+      - 'packages/**'
 
 jobs:
   test-and-build:
@@ -17,7 +19,7 @@ jobs:
     
     defaults:
       run:
-        working-directory: ./engine
+        working-directory: ./apps/backend
 
     strategy:
       matrix:

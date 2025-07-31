@@ -1,0 +1,70 @@
+{
+  "name": "veganflemme-app",
+  "version": "1.0.0",
+  "description": "VeganFlemme - Plateforme web modulaire pour génération de menus vegan, suivi nutritionnel et outils d'optimisation",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:backend": "npm run dev --workspace=apps/backend",
+    "dev:frontend": "npm run dev --workspace=apps/frontend",
+    "build": "npm run build --workspaces --if-present",
+    "build:backend": "npm run build --workspace=apps/backend",
+    "build:frontend": "npm run build --workspace=apps/frontend",
+    "test": "npm run test --workspaces --if-present",
+    "test:backend": "npm run test --workspace=apps/backend",
+    "test:frontend": "npm run test --workspace=apps/frontend",
+    "lint": "npm run lint --workspaces --if-present",
+    "lint:fix": "npm run lint:fix --workspaces --if-present",
+    "docker:up": "./start.sh",
+    "docker:up:build": "./start.sh --build",
+    "docker:up:detach": "./start.sh --detach",
+    "docker:down": "docker-compose down",
+    "docker:logs": "docker-compose logs -f",
+    "docker:clean": "docker-compose down -v --remove-orphans",
+    "prepare": "husky install",
+    "postinstall": "npm run build --workspace=packages/shared"
+  },
+  "keywords": [
+    "vegan",
+    "nutrition",
+    "menu-planning",
+    "health",
+    "sustainability",
+    "typescript",
+    "nextjs",
+    "express"
+  ],
+  "author": "VeganFlemme Team",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.0",
+    "husky": "^8.0.3",
+    "lint-staged": "^13.2.0"
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "eslint --fix",
+      "git add"
+    ],
+    "*.{json,md}": [
+      "prettier --write",
+      "git add"
+    ]
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/VeganFlemme/VeganFlemme-App"
+  },
+  "bugs": {
+    "url": "https://github.com/VeganFlemme/VeganFlemme-App/issues"
+  },
+  "homepage": "https://veganflemme.vercel.app"
+}

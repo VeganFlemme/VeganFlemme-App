@@ -1,8 +1,13 @@
-# Dependencies
+# ===================================================================
+# 🌱 VeganFlemme App - GitIgnore Configuration
+# ===================================================================
+
+# Node.js Dependencies
 node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+pnpm-debug.log*
 
 # Environment files
 .env
@@ -10,16 +15,19 @@ yarn-error.log*
 .env.development
 .env.test
 .env.production
+.env.*.local
 
 # Build outputs
 dist/
 build/
 .next/
 out/
+*.tsbuildinfo
 
 # Logs
 logs/
 *.log
+lerna-debug.log*
 
 # Runtime data
 pids/
@@ -30,12 +38,15 @@ pids/
 # Coverage directory used by tools like istanbul
 coverage/
 .nyc_output/
+.coverage/
 
 # IDE files
 .vscode/
 .idea/
 *.swp
 *.swo
+*.sublime-project
+*.sublime-workspace
 
 # OS generated files
 .DS_Store
@@ -48,10 +59,46 @@ Thumbs.db
 
 # Testing
 .coverage/
+junit.xml
 
 # Cache
 .cache/
 .parcel-cache/
+.eslintcache
+.stylelintcache
+
+# Docker
+.docker/
+docker-compose.override.yml
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Temporary files
+tmp/
+temp/
+.tmp/
+
+# Package manager
+.pnpm-store/
+.yarn/
+.pnp.*
+
+# Monorepo specific
+lerna-debug.log*
+.rush/
 
 # Guide status tracking (internal use)
 .guide_status.md
+
+# Data files (keep in source but ignore processed)
+packages/data/processed/
+packages/data/temp/
+
+# Application specific
+apps/*/dist/
+apps/*/.next/
+apps/*/out/
+apps/*/build/
