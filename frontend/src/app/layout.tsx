@@ -2,6 +2,8 @@ import type { Metadata, Viewport } from 'next'
 import Script from 'next/script'
 import './globals.css'
 import { GA_MEASUREMENT_ID } from '@/lib/analytics'
+import { AuthProvider } from '../hooks/useAuth'
+import Navigation from '../components/Navigation'
 
 export const metadata: Metadata = {
   title: 'VeganFlemme - Votre transition vegan simplifiée',
@@ -46,9 +48,12 @@ export default function RootLayout({
         )}
       </head>
       <body className="font-sans">
-        <div className="min-h-screen bg-gradient-to-br from-neutral-50 to-white">
-          {children}
-        </div>
+        <AuthProvider>
+          <div className="min-h-screen bg-gradient-to-br from-neutral-50 to-white">
+            <Navigation />
+            {children}
+          </div>
+        </AuthProvider>
       </body>
     </html>
   )
