@@ -1,4 +1,24 @@
-        <div>
+import React from 'react';
+import { ShoppingBag, X, Check } from 'react-feather';
+import { ShoppingList } from '../../types';
+
+interface ShoppingListSelectorProps {
+  activeLists: ShoppingList[];
+  completedLists?: ShoppingList[];
+  activeList?: ShoppingList;
+  onSelectList: (list: ShoppingList) => void;
+  onDeleteList: (listId: string) => void;
+}
+
+const ShoppingListSelector: React.FC<ShoppingListSelectorProps> = ({
+  activeLists,
+  completedLists = [],
+  activeList,
+  onSelectList,
+  onDeleteList
+}) => {
+  return (
+    <div>
           {activeLists.length > 0 && (
             <div className="mb-4">
               <h3 className="text-sm font-medium text-gray-500 mb-2">Active Lists</h3>
@@ -76,8 +96,6 @@
               </div>
             </div>
           )}
-        </div>
-      )}
     </div>
   );
 };

@@ -293,10 +293,9 @@ const ShoppingAssistant: React.FC = () => {
         <div className="lg:col-span-2">
           <div className="bg-white rounded-lg shadow p-4 mb-6">
             <ShoppingListSelector 
-              lists={shoppingLists}
+              activeLists={shoppingLists}
               activeList={activeList}
               onSelectList={setActiveList}
-              onCreateList={handleCreateList}
               onDeleteList={handleDeleteList}
             />
           </div>

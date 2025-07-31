@@ -88,6 +88,19 @@ export interface Meal {
   mealType: 'breakfast' | 'lunch' | 'dinner' | 'snack';
   recipeId: string;
   servings: number;
+  name?: string;
+  type?: string;
+  ingredients?: any[];
+  nutrition?: Record<string, number>;
+  cost?: number;
+  carbonFootprint?: number;
+  qualityScore?: {
+    overallScore: number;
+    nutritionScore?: number;
+    sustainabilityScore?: number;
+  };
+  preparationMethod?: string;
+  cookingTime?: number;
 }
 
 export interface ShoppingList {
@@ -202,4 +215,71 @@ export interface TrackedMeal {
   mealType: 'breakfast' | 'lunch' | 'dinner' | 'snack';
   servings: number;
   nutrients: NutritionalInfo;
+}
+
+// Additional types for menu optimization service
+export interface FoodItem {
+  id: string;
+  name: string;
+  category: string;
+  nutrition: Record<string, number>;
+  sustainabilityScore?: number;
+  cost?: number;
+  carbonFootprint?: number;
+  availability?: boolean;
+  categories?: string[];
+}
+
+export interface MenuDay {
+  date: Date;
+  day?: number;
+  meals: {
+    breakfast?: Meal;
+    lunch?: Meal;
+    dinner?: Meal;
+    morningSnack?: Meal;
+    afternoonSnack?: Meal;
+    [key: string]: Meal | undefined;
+  };
+}
+
+export interface Menu {
+  id: string;
+  days: MenuDay[];
+  userId: string;
+  createdAt: Date;
+  updatedAt: Date;
+  summary?: any;
+}
+
+export interface NutritionProfile {
+  calories: number;
+  protein: number;
+  carbs: number;
+  fat: number;
+  fiber: number;
+  vitamins: Record<string, number>;
+  minerals: Record<string, number>;
+  weight?: number;
+  gender?: 'male' | 'female';
+  activityProfile?: any;
+}
+
+export interface UserPreferences {
+  dietaryRestrictions: string[];
+  allergies: string[];
+  preferredFoods: string[];
+  dislikedFoods: string[];
+  budgetConstraints?: {
+    maxDailyCost: number;
+  };
+  nutritionalGoals?: Partial<NutritionProfile>;
+  mealTypes: string[];
+  cuisinePreferences: string[];
+  includeSnacks?: boolean;
+  budget?: string;
+  cookingTime?: number;
+  restrictions?: string[] | number;
+  favoriteIngredients?: string[];
+  dislikedIngredients?: string[];
 }
