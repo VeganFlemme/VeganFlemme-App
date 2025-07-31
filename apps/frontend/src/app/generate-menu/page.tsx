@@ -5,8 +5,10 @@ import { ArrowLeft, Utensils, Clock, Users, Loader2, CheckCircle } from 'lucide-
 import Link from 'next/link'
 import { apiClient, type MenuPreferences, type GeneratedMenu } from '@/lib/api'
 import { trackMenuGeneration } from '@/lib/analytics'
+import { useUserJourney } from '@/hooks/useUserJourney'
 
 export default function GenerateMenuPage() {
+  const { actions } = useUserJourney()
   const [preferences, setPreferences] = useState<MenuPreferences>({
     people: 2,
     budget: 'medium',
@@ -30,6 +32,8 @@ export default function GenerateMenuPage() {
       
       if (response.success && response.data) {
         setGeneratedMenu(response.data)
+        // Mark the menu generation step as complete
+        actions.setHasGeneratedMenu(true)
       } else {
         setError(response.error || 'Failed to generate menu')
       }

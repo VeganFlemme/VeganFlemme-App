@@ -8,29 +8,39 @@ import {
   PieChart, 
   Calendar, 
   ShoppingCart, 
-  BookOpen, 
-  TrendingUp, 
   User,
   Menu,
   X,
-  Zap // Using Zap instead of Leaf
+  Zap, // Using Zap instead of Leaf
+  CheckCircle,
+  Circle
 } from 'react-feather';
+import { useUserJourney } from '@/hooks/useUserJourney';
 
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
+  const { state } = useUserJourney();
 
-  const navItems = [
-    { href: '/', label: 'Accueil', icon: Home },
-    { href: '/dashboard', label: 'Dashboard', icon: PieChart },
-    { href: '/generate-menu', label: 'Générer Menu', icon: Calendar },
-    { href: '/meal-planner', label: 'Planificateur', icon: Calendar },
-    { href: '/recipe-explorer', label: 'Recettes', icon: BookOpen },
-    { href: '/shopping-assistant', label: 'Shopping', icon: ShoppingCart },
-    { href: '/transition-planner', label: 'Transition', icon: TrendingUp },
-    { href: '/profile', label: 'Profil', icon: User },
-  ];
+  // Simplified navigation based on user journey
+  const getNavItems = () => {
+    if (!state.profile || !state.profile.isComplete) {
+      return [
+        { href: '/', label: 'Accueil', icon: Home },
+        { href: '/onboarding', label: 'Commencer', icon: User },
+      ];
+    }
 
+    return [
+      { href: '/', label: 'Accueil', icon: Home },
+      { href: '/dashboard', label: 'Dashboard', icon: PieChart, completed: true },
+      { href: '/generate-menu', label: 'Générer Menu', icon: Calendar, completed: state.hasGeneratedMenu },
+      { href: '/shopping-assistant', label: 'Shopping', icon: ShoppingCart, completed: state.hasCreatedShoppingList },
+      { href: '/profile', label: 'Profil', icon: User, completed: state.profile?.isComplete },
+    ];
+  };
+
+  const navItems = getNavItems();
   const isActive = (href: string) => pathname === href;
 
   return (
@@ -42,12 +52,28 @@ const Navigation = () => {
               <Zap className="h-8 w-8 text-white" />
               <span className="text-white text-xl font-bold">VeganFlemme</span>
             </Link>
+            
+            {/* Progress indicator for logged in users */}
+            {state.profile?.isComplete && (
+              <div className="hidden lg:flex items-center ml-8 text-white text-sm">
+                <span className="mr-2">Progression:</span>
+                <div className="w-20 bg-green-700 rounded-full h-2 mr-2">
+                  <div 
+                    className="bg-white h-2 rounded-full transition-all duration-300"
+                    style={{ width: `${state.completionPercentage}%` }}
+                  />
+                </div>
+                <span>{state.completionPercentage}%</span>
+              </div>
+            )}
           </div>
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-1">
-            {navItems.slice(1, -1).map((item) => {
+            {navItems.slice(1).map((item) => {
               const Icon = item.icon;
+              const isCompleted = 'completed' in item ? item.completed : false;
+              
               return (
                 <Link
                   key={item.href}
@@ -60,20 +86,18 @@ const Navigation = () => {
                 >
                   <Icon className="h-4 w-4 mr-2" />
                   {item.label}
+                  {'completed' in item && (
+                    <div className="ml-2">
+                      {isCompleted ? (
+                        <CheckCircle className="h-3 w-3 text-green-200" />
+                      ) : (
+                        <Circle className="h-3 w-3 text-green-300" />
+                      )}
+                    </div>
+                  )}
                 </Link>
               );
             })}
-            <Link
-              href="/profile"
-              className={`flex items-center px-3 py-2 rounded-md text-sm font-medium ml-4 transition-colors ${
-                isActive('/profile')
-                  ? 'bg-green-700 text-white'
-                  : 'text-green-100 hover:bg-green-500 hover:text-white'
-              }`}
-            >
-              <User className="h-4 w-4 mr-2" />
-              Profil
-            </Link>
           </div>
 
           {/* Mobile menu button */}
@@ -94,6 +118,8 @@ const Navigation = () => {
           <div className="px-2 pt-2 pb-3 space-y-1 bg-green-700">
             {navItems.map((item) => {
               const Icon = item.icon;
+              const isCompleted = 'completed' in item ? item.completed : false;
+              
               return (
                 <Link
                   key={item.href}
@@ -107,6 +133,15 @@ const Navigation = () => {
                 >
                   <Icon className="h-5 w-5 mr-3" />
                   {item.label}
+                  {'completed' in item && (
+                    <div className="ml-auto">
+                      {isCompleted ? (
+                        <CheckCircle className="h-4 w-4 text-green-200" />
+                      ) : (
+                        <Circle className="h-4 w-4 text-green-300" />
+                      )}
+                    </div>
+                  )}
                 </Link>
               );
             })}
