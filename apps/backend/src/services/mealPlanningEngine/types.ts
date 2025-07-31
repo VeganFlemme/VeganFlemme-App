@@ -1,4 +1,5 @@
 export interface NutrientProfile {
+  [key: string]: number;
   calories: number;
   protein: number;
   carbohydrates: number;

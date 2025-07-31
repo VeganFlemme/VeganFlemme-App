@@ -81,7 +81,6 @@ export class VeganTransitionService {
     // Phase 3: Adaptation
     phases.push(await this.createAdaptationPhase(
       userProfile,
-      options.motivations,
       options.challengeAreas || [],
       phaseDurations.adaptation,
       recipes,
@@ -105,15 +104,15 @@ export class VeganTransitionService {
     
     // Identify expected challenges
     const expectedChallenges = this.identifyChallenges(
+      userProfile,
       options.currentDiet,
-      options.challengeAreas || [],
       options.motivations
     );
     
     // Define success metrics
     const successMetrics = this.defineSuccessMetrics(
-      options.motivations,
-      userProfile
+      userProfile,
+      options.motivations
     );
     
     return {
@@ -179,6 +178,120 @@ export class VeganTransitionService {
       transition: Math.round(totalDays * transitionFactor),
       adaptation: Math.round(totalDays * adaptationFactor),
       optimization: Math.round(totalDays * optimizationFactor)
+    };
+  }
+
+  /**
+   * Create exploration phase meal plan
+   */
+  private async createExplorationPhase(
+    userProfile: UserProfile,
+    currentDiet: string,
+    motivations: string[],
+    duration: number,
+    recipes: Recipe[],
+    foods: Map<string, Food>
+  ): Promise<any> {
+    // Implementation for exploration phase
+    return {
+      name: 'Exploration Phase',
+      duration,
+      description: 'Discover vegan alternatives and build foundations',
+      mealPlans: [] // Would generate specific meal plans for this phase
+    };
+  }
+
+  /**
+   * Create transition phase meal plan
+   */
+  private async createTransitionPhase(
+    userProfile: UserProfile,
+    currentDiet: string,
+    challengeAreas: string[],
+    duration: number,
+    recipes: Recipe[],
+    foods: Map<string, Food>
+  ): Promise<any> {
+    // Implementation for transition phase
+    return {
+      name: 'Transition Phase',
+      duration,
+      description: 'Gradual shift to plant-based eating',
+      mealPlans: [] // Would generate specific meal plans for this phase
+    };
+  }
+
+  /**
+   * Create adaptation phase meal plan
+   */
+  private async createAdaptationPhase(
+    userProfile: UserProfile,
+    preferences: any[],
+    duration: number,
+    recipes: Recipe[],
+    foods: Map<string, Food>
+  ): Promise<any> {
+    // Implementation for adaptation phase
+    return {
+      name: 'Adaptation Phase',
+      duration,
+      description: 'Adapt to sustainable vegan lifestyle',
+      mealPlans: [] // Would generate specific meal plans for this phase
+    };
+  }
+
+  /**
+   * Create optimization phase meal plan
+   */
+  private async createOptimizationPhase(
+    userProfile: UserProfile,
+    goals: any[],
+    duration: number,
+    recipes: Recipe[],
+    foods: Map<string, Food>
+  ): Promise<any> {
+    // Implementation for optimization phase
+    return {
+      name: 'Optimization Phase',
+      duration,
+      description: 'Optimize nutrition and variety',
+      mealPlans: [] // Would generate specific meal plans for this phase
+    };
+  }
+
+  /**
+   * Identify potential challenges for the user
+   */
+  private identifyChallenges(
+    userProfile: UserProfile,
+    currentDiet: string,
+    motivations: string[]
+  ): string[] {
+    const challenges: string[] = [];
+    
+    if (currentDiet === 'omnivore') {
+      challenges.push('protein-sources', 'meal-variety', 'social-situations');
+    }
+    
+    if (userProfile.allergies?.includes('soy')) {
+      challenges.push('protein-alternatives');
+    }
+    
+    return challenges;
+  }
+
+  /**
+   * Define success metrics for the transition
+   */
+  private defineSuccessMetrics(
+    userProfile: UserProfile,
+    goals: any[]
+  ): any {
+    return {
+      nutritionalBalance: 0.8,
+      adherenceRate: 0.9,
+      satisfactionScore: 0.85,
+      energyLevels: 0.8
     };
   }
 }

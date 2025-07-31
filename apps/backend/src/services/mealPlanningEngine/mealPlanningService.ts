@@ -188,7 +188,9 @@ export class MealPlanningService {
         this.updateProteinSourcesUsed(selectedRecipe, proteinSourcesUsed, availableFoods);
         
         // Update remaining nutrients for the day
-        this.subtractNutrients(remainingDayNutrients, meal.nutrients);
+        if (meal.nutrients) {
+          this.subtractNutrients(remainingDayNutrients, meal.nutrients);
+        }
         
         // Update prep time for the day
         totalPrepTimeForDay += selectedRecipe.prepTime + selectedRecipe.cookTime;
@@ -278,7 +280,7 @@ export class MealPlanningService {
     const mealTargets = { ...remainingDayNutrients };
     
     // Distribute nutrients based on meal type
-    const mealDistribution = {
+    const mealDistribution: { [key: string]: number } = {
       'breakfast': 0.25,
       'lunch': 0.3,
       'dinner': 0.35,
