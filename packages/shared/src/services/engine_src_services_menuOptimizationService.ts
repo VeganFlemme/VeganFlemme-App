@@ -120,6 +120,9 @@ export class MenuOptimizationService {
       const menu: Menu = {
         id: `menu_${i}`,
         days: [],
+        userId: 'temp_user',
+        createdAt: new Date(),
+        updatedAt: new Date(),
         summary: {
           totalCost: 0,
           nutritionScore: 0,
@@ -183,6 +186,9 @@ export class MenuOptimizationService {
     const child: Menu = {
       id: `menu_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`,
       days: [],
+      userId: parent1.userId,
+      createdAt: new Date(),
+      updatedAt: new Date(),
       summary: { ...parent1.summary }
     };
     
@@ -228,7 +234,7 @@ export class MenuOptimizationService {
       const randomMealType = mealTypes[Math.floor(Math.random() * mealTypes.length)];
       
       // Replace with a new random meal
-      day.meals[randomMealType] = this.generateRandomMeal(randomMealType, preferences);
+      day.meals[randomMealType] = this.generateRandomMeal(randomMealType as string, preferences);
     }
   }
   
@@ -277,7 +283,7 @@ export class MenuOptimizationService {
       
       for (const mealType of mealTypes) {
         if (Math.random() < 0.5) {
-          day.meals[mealType] = this.generateRandomMeal(mealType, preferences);
+          day.meals[mealType] = this.generateRandomMeal(mealType as string, preferences);
         }
       }
     }
@@ -533,7 +539,7 @@ export class MenuOptimizationService {
     let score = 0;
     
     // Check cooking time preference
-    const cookingTimeScore = this.calculateCookingTimeScore(menu, preferences.cookingTime);
+    const cookingTimeScore = this.calculateCookingTimeScore(menu, String(preferences.cookingTime || 'medium'));
     
     // Check dietary restrictions
     const restrictionsScore = this.calculateRestrictionsScore(menu, preferences.restrictions);
@@ -1573,3 +1579,31 @@ export class MenuOptimizationService {
           for (const [nutrient, amount] of Object.entries(meal.nutrition)) {
             totalNutrients[nutrient] = (totalNutrients[nutrient] || 0) + amount;
           }
+        }
+      }
+    }
+
+    return metrics;
+  }
+
+  // Missing methods - stub implementations
+  private getDateForDay(day: number): Date {
+    const today = new Date();
+    return new Date(today.getTime() + day * 24 * 60 * 60 * 1000);
+  }
+
+  private generateRandomMeal(mealType: string, preferences: UserPreferences): any {
+    return {
+      id: Math.random().toString(36),
+      name: `Random ${mealType}`,
+      type: mealType,
+      ingredients: [],
+      nutrition: {},
+      cost: Math.random() * 10,
+      carbonFootprint: Math.random() * 5,
+      qualityScore: {
+        overallScore: Math.random() * 100
+      }
+    };
+  }
+}

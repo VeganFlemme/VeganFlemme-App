@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Lightbulb, RefreshCw } from 'react-feather';
+import { Info, RefreshCw } from 'react-feather';
 
 const TipOfTheDay: React.FC = () => {
   const [tip, setTip] = useState<{
@@ -98,7 +98,7 @@ const TipOfTheDay: React.FC = () => {
       {tip ? (
         <div className="bg-yellow-50 p-4 rounded-lg">
           <div className="flex">
-            <Lightbulb className="text-yellow-500 mr-3 flex-shrink-0" size={24} />
+            <Info className="text-yellow-500 mr-3 flex-shrink-0" size={24} />
             <div>
               <p className="text-gray-800">{tip.text}</p>
               <span className={`inline-block mt-2 text-xs px-2 py-0.5 rounded-full ${getCategoryColor(tip.category)}`}>
