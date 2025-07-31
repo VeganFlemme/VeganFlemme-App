@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Leaf, ChefHat, ShoppingCart, TrendingUp, ArrowRight, CheckCircle, Clock, Users, Sparkles } from 'lucide-react'
+import { Leaf, ChefHat, ShoppingCart, TrendingUp, ArrowRight, CheckCircle, Clock, Users, Sparkles, BarChart3 } from 'lucide-react'
 import Link from 'next/link'
 import { useUserJourney } from '@/hooks/useUserJourney'
 import JourneyProgress from '@/components/JourneyProgress'
@@ -42,15 +42,15 @@ function WelcomeView() {
             Devenez <span className="text-primary-500">vegan</span> sans effort
           </h1>
           <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
-            VeganFlemme est l'outil ultime pour les plus flemmes : un seul clic pour 
-            obtenir le meilleur plan alimentaire vegan, parfait pour tout le monde.
+            Plan alimentaire quotidien aléatoirement généré, parfaitement équilibré. 
+            Personnalisations optionnelles disponibles.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link 
               href="/generate-menu" 
               className="brand-gradient text-white px-8 py-4 rounded-lg font-semibold text-lg hover:opacity-90 transition-opacity inline-flex items-center"
             >
-              Générer mon menu vegan !
+              Voir mon plan alimentaire
               <ArrowRight className="ml-2 h-5 w-5" />
             </Link>
             <Link 
@@ -67,11 +67,11 @@ function WelcomeView() {
       <section id="journey" className="py-20 bg-neutral-50 px-4">
         <div className="container mx-auto max-w-6xl">
           <h2 className="text-3xl md:text-4xl font-bold text-center text-gray-900 mb-12">
-            Votre transition vegan simplifiée
+            Votre plan alimentaire épuré
           </h2>
           
           <div className="space-y-8">
-            {/* Step 1: Instant Menu */}
+            {/* Step 1: Immediate Display */}
             <div className="flex flex-col md:flex-row items-center bg-white rounded-xl shadow-lg p-8">
               <div className="flex-shrink-0 mb-6 md:mb-0 md:mr-8">
                 <div className="bg-primary-500 text-white w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold">
@@ -80,15 +80,15 @@ function WelcomeView() {
               </div>
               <div className="flex-1 text-center md:text-left">
                 <h3 className="text-2xl font-semibold text-gray-900 mb-2">
-                  Générer votre menu parfait
+                  Plan alimentaire directement affiché
                 </h3>
                 <p className="text-gray-600 mb-4">
-                  Un seul clic suffit ! Notre menu universel est parfait pour tous : 
-                  équilibré selon les RNP ANSES, délicieux et sans effort de personnalisation.
+                  Menu quotidien aléatoire mais équilibré visible immédiatement. 
+                  Options de swap intelligents sur chaque repas.
                 </p>
                 <div className="flex items-center justify-center md:justify-start text-sm text-primary-600">
                   <Sparkles className="h-4 w-4 mr-1" />
-                  <span>Instantané - 0 effort</span>
+                  <span>Direct - Zéro attente</span>
                 </div>
               </div>
             </div>
@@ -102,11 +102,11 @@ function WelcomeView() {
               </div>
               <div className="flex-1 text-center md:text-left">
                 <h3 className="text-2xl font-semibold text-gray-900 mb-2">
-                  Personnaliser si vous voulez (optionnel)
+                  Personnalisations à gauche (optionnel)
                 </h3>
                 <p className="text-gray-600 mb-4">
-                  Envie d'ajuster ? Pas de problème ! Vous pouvez mentionner vos allergies, 
-                  préférences gustatives ou objectifs depuis votre tableau de bord.
+                  Allergies, temps de cuisson, budget, objectifs poids, restrictions. 
+                  Toutes options à choisir ou non.
                 </p>
                 <div className="flex items-center justify-center md:justify-start text-sm text-green-600">
                   <CheckCircle className="h-4 w-4 mr-1" />
@@ -115,7 +115,7 @@ function WelcomeView() {
               </div>
             </div>
 
-            {/* Step 3: Shopping List */}
+            {/* Step 3: Nutrition info */}
             <div className="flex flex-col md:flex-row items-center bg-white rounded-xl shadow-lg p-8">
               <div className="flex-shrink-0 mb-6 md:mb-0 md:mr-8">
                 <div className="bg-purple-500 text-white w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold">
@@ -124,37 +124,15 @@ function WelcomeView() {
               </div>
               <div className="flex-1 text-center md:text-left">
                 <h3 className="text-2xl font-semibold text-gray-900 mb-2">
-                  Créer votre liste de courses
+                  Dashboard nutritionnel à droite
                 </h3>
                 <p className="text-gray-600 mb-4">
-                  Génération automatique de tous les ingrédients nécessaires, 
-                  quantités optimisées et prix estimés pour votre menu.
+                  Infos nutritionnelles complètes, couverture RNP, impact environnemental 
+                  et coût estimé.
                 </p>
                 <div className="flex items-center justify-center md:justify-start text-sm text-purple-600">
-                  <ShoppingCart className="h-4 w-4 mr-1" />
-                  <span>Automatique depuis le menu</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Step 4: Purchase */}
-            <div className="flex flex-col md:flex-row-reverse items-center bg-white rounded-xl shadow-lg p-8">
-              <div className="flex-shrink-0 mb-6 md:mb-0 md:ml-8">
-                <div className="bg-orange-500 text-white w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold">
-                  4
-                </div>
-              </div>
-              <div className="flex-1 text-center md:text-left">
-                <h3 className="text-2xl font-semibold text-gray-900 mb-2">
-                  Commander chez nos partenaires
-                </h3>
-                <p className="text-gray-600 mb-4">
-                  Transformation de votre liste en panier pré-rempli 
-                  chez Greenweez, Amazon et autres partenaires bio.
-                </p>
-                <div className="flex items-center justify-center md:justify-start text-sm text-orange-600">
-                  <Leaf className="h-4 w-4 mr-1" />
-                  <span>Produits bio et locaux</span>
+                  <BarChart3 className="h-4 w-4 mr-1" />
+                  <span>Dashboard complet</span>
                 </div>
               </div>
             </div>
@@ -165,7 +143,7 @@ function WelcomeView() {
               href="/generate-menu"
               className="brand-gradient text-white px-12 py-4 rounded-lg font-semibold text-xl hover:opacity-90 transition-opacity inline-flex items-center"
             >
-              Générer mon menu maintenant !
+              Voir mon plan alimentaire
               <ArrowRight className="ml-2 h-6 w-6" />
             </Link>
           </div>
@@ -176,28 +154,28 @@ function WelcomeView() {
       <section className="py-20 px-4">
         <div className="container mx-auto max-w-6xl">
           <h2 className="text-3xl md:text-4xl font-bold text-center text-gray-900 mb-12">
-            Pourquoi VeganFlemme est parfait pour vous ?
+            Pourquoi cette approche épurée ?
           </h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             <div className="text-center p-6 bg-white rounded-xl shadow-sm">
               <Sparkles className="h-12 w-12 text-primary-500 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold mb-2">Zéro Effort</h3>
-              <p className="text-gray-600">L'outil ultime pour les flemmes : un clic = un menu parfait</p>
+              <h3 className="text-xl font-semibold mb-2">Page épurée</h3>
+              <p className="text-gray-600">Plan alimentaire directement visible, sans formulaires</p>
             </div>
             <div className="text-center p-6 bg-white rounded-xl shadow-sm">
               <Leaf className="h-12 w-12 text-primary-500 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold mb-2">Pour Tout le Monde</h3>
-              <p className="text-gray-600">Notre menu universel satisfait tous les goûts et besoins nutritionnels</p>
+              <h3 className="text-xl font-semibold mb-2">Swaps intelligents</h3>
+              <p className="text-gray-600">Chaque repas peut être échangé pour plus de variété</p>
             </div>
             <div className="text-center p-6 bg-white rounded-xl shadow-sm">
               <CheckCircle className="h-12 w-12 text-primary-500 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold mb-2">100% Équilibré</h3>
-              <p className="text-gray-600">Conforme aux RNP ANSES, sans stress ni calculs compliqués</p>
+              <h3 className="text-xl font-semibold mb-2">Options à droite</h3>
+              <p className="text-gray-600">Personnalisations disponibles si besoin, mais optionnelles</p>
             </div>
             <div className="text-center p-6 bg-white rounded-xl shadow-sm">
-              <ShoppingCart className="h-12 w-12 text-primary-500 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold mb-2">Service Gratuit</h3>
-              <p className="text-gray-600">Monétisation transparente via partenaires, gratuit pour vous</p>
+              <BarChart3 className="h-12 w-12 text-primary-500 mx-auto mb-4" />
+              <h3 className="text-xl font-semibold mb-2">Dashboard nutritionnel</h3>
+              <p className="text-gray-600">Toutes les infos nutritionnelles à portée de vue</p>
             </div>
           </div>
         </div>
@@ -246,7 +224,7 @@ function DashboardView() {
                   className="brand-gradient text-white px-6 py-3 rounded-lg hover:opacity-90 transition-opacity inline-flex items-center font-semibold"
                 >
                   <Sparkles className="h-5 w-5 mr-2" />
-                  Nouveau menu vegan
+                  Mon plan alimentaire
                 </Link>
               </div>
 
