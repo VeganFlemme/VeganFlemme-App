@@ -25,6 +25,14 @@ export default function HomePage() {
 }
 
 function WelcomeView() {
+  const [email, setEmail] = useState('')
+
+  const handleNewsletterSignup = (e: React.FormEvent) => {
+    e.preventDefault()
+    // TODO: Implement newsletter signup
+    setEmail('')
+  }
+
   return (
     <main className="min-h-screen">
       {/* Hero Section - Journey-focused */}
