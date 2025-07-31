@@ -1,359 +1,395 @@
 'use client'
 
-import { useState } from 'react'
-import { Leaf, ChefHat, ShoppingCart, TrendingUp, ArrowRight, CheckCircle, Clock, Users, Sparkles, BarChart3 } from 'lucide-react'
-import Link from 'next/link'
+import { useState, useEffect } from 'react'
+import { RefreshCw, Clock, DollarSign, Activity, AlertTriangle, BarChart3, ShoppingCart } from 'lucide-react'
 import { useUserJourney } from '@/hooks/useUserJourney'
-import JourneyProgress from '@/components/JourneyProgress'
+
+// Type definition for menu preferences
+type MenuPreferences = {
+  people: number
+  budget: string
+  cookingTime: string
+  dietaryRestrictions: string[]
+}
+
+// Mock meal data for immediate display (replace with API call later)
+const mockDailyMeals = [
+  {
+    id: '1',
+    name: 'Porridge aux fruits rouges et graines',
+    type: 'breakfast',
+    time: '8h00',
+    cookingTime: 10,
+    calories: 420,
+    protein: 15,
+    carbs: 65,
+    fat: 12,
+    ingredients: ['Flocons d\'avoine', 'Fruits rouges', 'Graines de chia', 'Lait d\'amande']
+  },
+  {
+    id: '2', 
+    name: 'Salade de quinoa aux légumes grillés',
+    type: 'lunch',
+    time: '12h30',
+    cookingTime: 25,
+    calories: 520,
+    protein: 18,
+    carbs: 70,
+    fat: 16,
+    ingredients: ['Quinoa', 'Courgettes', 'Poivrons', 'Pois chiches', 'Huile d\'olive']
+  },
+  {
+    id: '3',
+    name: 'Houmous de betterave et légumes croquants',
+    type: 'snack', 
+    time: '16h00',
+    cookingTime: 5,
+    calories: 180,
+    protein: 8,
+    carbs: 22,
+    fat: 7,
+    ingredients: ['Betterave cuite', 'Haricots blancs', 'Tahini', 'Carottes', 'Concombre']
+  },
+  {
+    id: '4',
+    name: 'Curry de lentilles aux épinards et riz complet',
+    type: 'dinner',
+    time: '19h30', 
+    cookingTime: 30,
+    calories: 580,
+    protein: 22,
+    carbs: 85,
+    fat: 14,
+    ingredients: ['Lentilles corail', 'Épinards frais', 'Riz complet', 'Lait de coco', 'Épices curry']
+  }
+]
 
 export default function HomePage() {
-  const [email, setEmail] = useState('')
-  const { state, actions } = useUserJourney()
-
-  const handleNewsletterSignup = (e: React.FormEvent) => {
-    e.preventDefault()
-    // TODO: Implement newsletter signup
-    setEmail('')
-  }
-
-  // Show different content based on user journey state
-  if (state.profile?.isComplete) {
-    return <DashboardView />
-  }
-
-  return <WelcomeView />
-}
-
-function WelcomeView() {
-  const [email, setEmail] = useState('')
-
-  const handleNewsletterSignup = (e: React.FormEvent) => {
-    e.preventDefault()
-    // TODO: Implement newsletter signup
-    setEmail('')
-  }
-
-  return (
-    <main className="min-h-screen">
-      {/* Hero Section - Journey-focused */}
-      <section className="py-20 px-4">
-        <div className="container mx-auto text-center max-w-4xl">
-          <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
-            Devenez <span className="text-primary-500">vegan</span> sans effort
-          </h1>
-          <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
-            Plan alimentaire quotidien aléatoirement généré, parfaitement équilibré. 
-            Personnalisations optionnelles disponibles.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link 
-              href="/generate-menu" 
-              className="brand-gradient text-white px-8 py-4 rounded-lg font-semibold text-lg hover:opacity-90 transition-opacity inline-flex items-center"
-            >
-              Voir mon plan alimentaire
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </Link>
-            <Link 
-              href="#journey" 
-              className="border-2 border-primary-500 text-primary-500 px-8 py-4 rounded-lg font-semibold text-lg hover:bg-primary-50 transition-colors"
-            >
-              Comment ça marche ?
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* Journey Steps Section */}
-      <section id="journey" className="py-20 bg-neutral-50 px-4">
-        <div className="container mx-auto max-w-6xl">
-          <h2 className="text-3xl md:text-4xl font-bold text-center text-gray-900 mb-12">
-            Votre plan alimentaire épuré
-          </h2>
-          
-          <div className="space-y-8">
-            {/* Step 1: Immediate Display */}
-            <div className="flex flex-col md:flex-row items-center bg-white rounded-xl shadow-lg p-8">
-              <div className="flex-shrink-0 mb-6 md:mb-0 md:mr-8">
-                <div className="bg-primary-500 text-white w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold">
-                  1
-                </div>
-              </div>
-              <div className="flex-1 text-center md:text-left">
-                <h3 className="text-2xl font-semibold text-gray-900 mb-2">
-                  Plan alimentaire directement affiché
-                </h3>
-                <p className="text-gray-600 mb-4">
-                  Menu quotidien aléatoire mais équilibré visible immédiatement. 
-                  Options de swap intelligents sur chaque repas.
-                </p>
-                <div className="flex items-center justify-center md:justify-start text-sm text-primary-600">
-                  <Sparkles className="h-4 w-4 mr-1" />
-                  <span>Direct - Zéro attente</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Step 2: Optional customization */}
-            <div className="flex flex-col md:flex-row-reverse items-center bg-white rounded-xl shadow-lg p-8">
-              <div className="flex-shrink-0 mb-6 md:mb-0 md:ml-8">
-                <div className="bg-green-500 text-white w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold">
-                  2
-                </div>
-              </div>
-              <div className="flex-1 text-center md:text-left">
-                <h3 className="text-2xl font-semibold text-gray-900 mb-2">
-                  Personnalisations à gauche (optionnel)
-                </h3>
-                <p className="text-gray-600 mb-4">
-                  Allergies, temps de cuisson, budget, objectifs poids, restrictions. 
-                  Toutes options à choisir ou non.
-                </p>
-                <div className="flex items-center justify-center md:justify-start text-sm text-green-600">
-                  <CheckCircle className="h-4 w-4 mr-1" />
-                  <span>100% optionnel</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Step 3: Nutrition info */}
-            <div className="flex flex-col md:flex-row items-center bg-white rounded-xl shadow-lg p-8">
-              <div className="flex-shrink-0 mb-6 md:mb-0 md:mr-8">
-                <div className="bg-purple-500 text-white w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold">
-                  3
-                </div>
-              </div>
-              <div className="flex-1 text-center md:text-left">
-                <h3 className="text-2xl font-semibold text-gray-900 mb-2">
-                  Dashboard nutritionnel à droite
-                </h3>
-                <p className="text-gray-600 mb-4">
-                  Infos nutritionnelles complètes, couverture RNP, impact environnemental 
-                  et coût estimé.
-                </p>
-                <div className="flex items-center justify-center md:justify-start text-sm text-purple-600">
-                  <BarChart3 className="h-4 w-4 mr-1" />
-                  <span>Dashboard complet</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="text-center mt-12">
-            <Link 
-              href="/generate-menu"
-              className="brand-gradient text-white px-12 py-4 rounded-lg font-semibold text-xl hover:opacity-90 transition-opacity inline-flex items-center"
-            >
-              Voir mon plan alimentaire
-              <ArrowRight className="ml-2 h-6 w-6" />
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* Benefits Section */}
-      <section className="py-20 px-4">
-        <div className="container mx-auto max-w-6xl">
-          <h2 className="text-3xl md:text-4xl font-bold text-center text-gray-900 mb-12">
-            Pourquoi cette approche épurée ?
-          </h2>
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            <div className="text-center p-6 bg-white rounded-xl shadow-sm">
-              <Sparkles className="h-12 w-12 text-primary-500 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold mb-2">Page épurée</h3>
-              <p className="text-gray-600">Plan alimentaire directement visible, sans formulaires</p>
-            </div>
-            <div className="text-center p-6 bg-white rounded-xl shadow-sm">
-              <Leaf className="h-12 w-12 text-primary-500 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold mb-2">Swaps intelligents</h3>
-              <p className="text-gray-600">Chaque repas peut être échangé pour plus de variété</p>
-            </div>
-            <div className="text-center p-6 bg-white rounded-xl shadow-sm">
-              <CheckCircle className="h-12 w-12 text-primary-500 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold mb-2">Options à droite</h3>
-              <p className="text-gray-600">Personnalisations disponibles si besoin, mais optionnelles</p>
-            </div>
-            <div className="text-center p-6 bg-white rounded-xl shadow-sm">
-              <BarChart3 className="h-12 w-12 text-primary-500 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold mb-2">Dashboard nutritionnel</h3>
-              <p className="text-gray-600">Toutes les infos nutritionnelles à portée de vue</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Newsletter Section */}
-      <NewsletterSection email={email} setEmail={setEmail} onSubmit={handleNewsletterSignup} />
-
-      {/* Footer */}
-      <Footer />
-    </main>
-  )
-}
-
-function DashboardView() {
-  const { state, actions } = useUserJourney()
+  const { actions, state } = useUserJourney()
+  const [preferences, setPreferences] = useState<MenuPreferences>({
+    people: 1,
+    budget: 'medium',
+    cookingTime: 'medium',
+    dietaryRestrictions: state.profile?.allergies || [],
+  })
   
+  const [dailyMeals, setDailyMeals] = useState(mockDailyMeals)
+  const [isSwapping, setIsSwapping] = useState<string | null>(null)
+
+  // Initialize with meal plan on load
+  useEffect(() => {
+    actions.setHasGeneratedMenu(true)
+  }, [])
+
+  const swapMeal = async (mealId: string) => {
+    setIsSwapping(mealId)
+    
+    // Simulate API call for meal swap
+    setTimeout(() => {
+      const alternatives = {
+        '1': { name: 'Smoothie bowl aux superfruits', calories: 380, protein: 12 },
+        '2': { name: 'Buddha bowl aux légumineuses', calories: 580, protein: 22 },
+        '3': { name: 'Energy balls aux dattes et noix', calories: 200, protein: 6 },
+        '4': { name: 'Risotto de quinoa aux champignons', calories: 620, protein: 20 }
+      }
+      
+      const newMeal = alternatives[mealId as keyof typeof alternatives]
+      if (newMeal) {
+        setDailyMeals(prev => prev.map(meal => 
+          meal.id === mealId 
+            ? { ...meal, name: newMeal.name, calories: newMeal.calories, protein: newMeal.protein }
+            : meal
+        ))
+      }
+      setIsSwapping(null)
+    }, 1000)
+  }
+
+  const generateNewDay = () => {
+    // Simulate generating a new random day
+    const newMeals = [...mockDailyMeals].map(meal => ({
+      ...meal,
+      id: Math.random().toString()
+    }))
+    setDailyMeals(newMeals)
+  }
+
+  const generateShoppingList = () => {
+    // TODO: Implement shopping list generation with affiliate links
+    const allIngredients = dailyMeals.flatMap(meal => meal.ingredients)
+    alert(`Liste de courses générée !\n\nIngrédients nécessaires:\n${allIngredients.join('\n')}\n\n(Redirection vers partenaire affilié à venir...)`)
+  }
+
+  const totalNutrition = dailyMeals.reduce((acc, meal) => ({
+    calories: acc.calories + meal.calories,
+    protein: acc.protein + meal.protein,
+    carbs: acc.carbs + meal.carbs,
+    fat: acc.fat + meal.fat
+  }), { calories: 0, protein: 0, carbs: 0, fat: 0 })
+
   return (
-    <main className="min-h-screen">
-      {/* Welcome Back Section */}
-      <section className="py-12 px-4">
-        <div className="container mx-auto max-w-6xl">
-          <div className="bg-gradient-to-r from-primary-500 to-green-500 rounded-2xl text-white p-8 mb-8">
-            <h1 className="text-3xl font-bold mb-2">
-              Salut {state.profile?.name === 'Utilisateur VeganFlemme' ? 'vegan flemme' : state.profile?.name?.split(' ')[0]} !
-            </h1>
-            <p className="text-primary-100 mb-4">
-              Votre transition vegan se déroule parfaitement. Voici vos outils pour rester sur la bonne voie !
-            </p>
+    <main className="min-h-screen bg-gray-50">
+      {/* Header with generation button */}
+      <div className="bg-white border-b border-gray-200 px-6 py-4">
+        <div className="max-w-7xl mx-auto flex items-center justify-between">
+          <h1 className="text-xl font-bold text-gray-900">VeganFlemme - Plan alimentaire du jour</h1>
+          <button
+            onClick={generateNewDay}
+            className="inline-flex items-center bg-primary-500 text-white px-4 py-2 rounded-lg hover:bg-primary-600 transition-colors"
+          >
+            <RefreshCw className="h-4 w-4 mr-2" />
+            Nouveau jour aléatoire
+          </button>
+        </div>
+      </div>
+
+      <div className="flex h-screen">
+        {/* Left Sidebar - Optional Customization */}
+        <div className="w-80 bg-white border-r border-gray-200 p-6 overflow-y-auto">
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">Personnalisation</h2>
+          <p className="text-sm text-gray-600 mb-6">Optionnel - à choisir ou non</p>
+
+          {/* Allergies */}
+          <div className="mb-6">
+            <h3 className="text-sm font-medium text-gray-900 mb-3 flex items-center">
+              <AlertTriangle className="h-4 w-4 mr-2" />
+              Allergies
+            </h3>
+            <div className="space-y-2">
+              {['Gluten', 'Soja', 'Noix', 'Graines'].map((allergy) => (
+                <label key={allergy} className="flex items-center">
+                  <input type="checkbox" className="rounded text-primary-500 mr-2" />
+                  <span className="text-sm">{allergy}</span>
+                </label>
+              ))}
+            </div>
           </div>
 
-          <div className="grid lg:grid-cols-3 gap-8">
-            {/* Main Actions */}
-            <div className="lg:col-span-2 space-y-6">
-              {/* Quick Menu Generation */}
-              <div className="bg-white rounded-xl shadow-lg p-6">
-                <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
-                  <Sparkles className="h-6 w-6 text-primary-500 mr-2" />
-                  Génération de menu
-                </h2>
-                <p className="text-gray-600 mb-4">
-                  Générez instantanément votre prochain menu vegan parfait !
-                </p>
-                <Link 
-                  href="/generate-menu"
-                  className="brand-gradient text-white px-6 py-3 rounded-lg hover:opacity-90 transition-opacity inline-flex items-center font-semibold"
+          {/* Cooking Time */}
+          <div className="mb-6">
+            <h3 className="text-sm font-medium text-gray-900 mb-3 flex items-center">
+              <Clock className="h-4 w-4 mr-2" />
+              Temps de cuisson
+            </h3>
+            <div className="grid grid-cols-3 gap-2">
+              {[
+                { value: 'quick', label: 'Express', time: '<15min' },
+                { value: 'medium', label: 'Classique', time: '15-30min' },
+                { value: 'long', label: 'Gourmet', time: '>30min' }
+              ].map((option) => (
+                <button
+                  key={option.value}
+                  onClick={() => setPreferences(prev => ({ ...prev, cookingTime: option.value }))}
+                  className={`p-2 text-xs rounded border text-center ${
+                    preferences.cookingTime === option.value
+                      ? 'border-primary-500 bg-primary-50 text-primary-700'
+                      : 'border-gray-200 hover:border-gray-300'
+                  }`}
                 >
-                  <Sparkles className="h-5 w-5 mr-2" />
-                  Mon plan alimentaire
-                </Link>
-              </div>
-
-              {/* Shopping and Tools */}
-              <div className="bg-white rounded-xl shadow-lg p-6">
-                <h2 className="text-xl font-semibold text-gray-900 mb-4">Vos outils</h2>
-                <div className="grid md:grid-cols-2 gap-4">
-                  <Link 
-                    href="/shopping-assistant"
-                    className="block p-4 border border-gray-200 rounded-lg hover:border-primary-300 transition-colors text-center"
-                  >
-                    <ShoppingCart className="h-8 w-8 text-primary-500 mx-auto mb-2" />
-                    <h3 className="font-semibold text-gray-900 mb-1">Liste de courses</h3>
-                    <p className="text-sm text-gray-600">Générer automatiquement</p>
-                  </Link>
-                  <Link 
-                    href="/recipe-explorer"
-                    className="block p-4 border border-gray-200 rounded-lg hover:border-primary-300 transition-colors text-center"
-                  >
-                    <ChefHat className="h-8 w-8 text-primary-500 mx-auto mb-2" />
-                    <h3 className="font-semibold text-gray-900 mb-1">Explorer recettes</h3>
-                    <p className="text-sm text-gray-600">Découvrir de nouveaux plats</p>
-                  </Link>
-                </div>
-              </div>
+                  <div className="font-medium">{option.label}</div>
+                  <div className="text-gray-500">{option.time}</div>
+                </button>
+              ))}
             </div>
+          </div>
 
-            {/* Sidebar */}
-            <div className="space-y-6">
-              {/* Personalization (Optional) */}
-              <div className="bg-white rounded-xl shadow-lg p-6">
-                <h3 className="font-semibold text-gray-900 mb-4 flex items-center">
-                  <TrendingUp className="h-5 w-5 text-amber-500 mr-2" />
-                  Personnalisation (optionnel)
-                </h3>
-                <p className="text-sm text-gray-600 mb-4">
-                  Envie d'ajuster vos menus ? Ces options sont entièrement facultatives !
-                </p>
-                <div className="space-y-3">
-                  <Link 
-                    href="/profile"
-                    className="block w-full text-left bg-amber-50 border border-amber-200 text-amber-700 px-4 py-3 rounded-lg hover:bg-amber-100 transition-colors"
-                  >
-                    <div className="font-medium">Objectifs personnels</div>
-                    <div className="text-xs text-amber-600">Poids, activité, préférences</div>
-                  </Link>
-                  <button className="block w-full text-left bg-blue-50 border border-blue-200 text-blue-700 px-4 py-3 rounded-lg hover:bg-blue-100 transition-colors">
-                    <div className="font-medium">Allergies & restrictions</div>
-                    <div className="text-xs text-blue-600">Personnaliser vos menus</div>
-                  </button>
-                </div>
-              </div>
+          {/* Budget */}
+          <div className="mb-6">
+            <h3 className="text-sm font-medium text-gray-900 mb-3 flex items-center">
+              <DollarSign className="h-4 w-4 mr-2" />
+              Budget
+            </h3>
+            <div className="grid grid-cols-3 gap-2">
+              {[
+                { value: 'low', label: 'Éco', price: '<50€' },
+                { value: 'medium', label: 'Modéré', price: '50-80€' },
+                { value: 'high', label: 'Confort', price: '>80€' }
+              ].map((option) => (
+                <button
+                  key={option.value}
+                  onClick={() => setPreferences(prev => ({ ...prev, budget: option.value }))}
+                  className={`p-2 text-xs rounded border text-center ${
+                    preferences.budget === option.value
+                      ? 'border-primary-500 bg-primary-50 text-primary-700'
+                      : 'border-gray-200 hover:border-gray-300'
+                  }`}
+                >
+                  <div className="font-medium">{option.label}</div>
+                  <div className="text-gray-500">{option.price}</div>
+                </button>
+              ))}
+            </div>
+          </div>
 
-              {/* Progress Stats */}
-              <div className="bg-white rounded-xl shadow-lg p-6">
-                <h3 className="font-semibold text-gray-900 mb-4">Votre progression</h3>
-                <div className="space-y-3">
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Menus générés</span>
-                    <span className="font-semibold">{state.hasGeneratedMenu ? '1+' : '0'}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Transition vegan</span>
-                    <span className="font-semibold text-green-600">En cours ✨</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Facilité d'usage</span>
-                    <span className="font-semibold text-primary-600">Flemme mode ON</span>
-                  </div>
-                </div>
-              </div>
+          {/* Weight Goal */}
+          <div className="mb-6">
+            <h3 className="text-sm font-medium text-gray-900 mb-3 flex items-center">
+              <Activity className="h-4 w-4 mr-2" />
+              Objectif poids
+            </h3>
+            <div className="space-y-2">
+              {['Maintenir', 'Perdre', 'Prendre'].map((goal) => (
+                <label key={goal} className="flex items-center">
+                  <input type="radio" name="weight-goal" className="text-primary-500 mr-2" />
+                  <span className="text-sm">{goal}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+
+          {/* Restrictions */}
+          <div className="mb-6">
+            <h3 className="text-sm font-medium text-gray-900 mb-3">Restrictions</h3>
+            <div className="space-y-2">
+              {['Sans sucre', 'Faible sel', 'Cru seulement'].map((restriction) => (
+                <label key={restriction} className="flex items-center">
+                  <input type="checkbox" className="rounded text-primary-500 mr-2" />
+                  <span className="text-sm">{restriction}</span>
+                </label>
+              ))}
             </div>
           </div>
         </div>
-      </section>
+
+        {/* Center - Daily Meal Plan */}
+        <div className="flex-1 p-6 overflow-y-auto">
+          <div className="max-w-2xl mx-auto">
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">Menu aléatoire d'aujourd'hui</h2>
+            <p className="text-gray-600 mb-8">Équilibré automatiquement - aucun effort requis</p>
+
+            <div className="space-y-4">
+              {dailyMeals.map((meal) => (
+                <div key={meal.id} className="bg-white rounded-lg border border-gray-200 p-6">
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-center mb-2">
+                        <span className="text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded">
+                          {meal.time}
+                        </span>
+                        <span className="text-sm text-gray-500 ml-2 capitalize">
+                          {meal.type}
+                        </span>
+                      </div>
+                      <h3 className="text-lg font-semibold text-gray-900 mb-2">{meal.name}</h3>
+                      <div className="flex items-center space-x-4 text-sm text-gray-600 mb-3">
+                        <span>{meal.calories} kcal</span>
+                        <span>{meal.protein}g protéines</span>
+                        <span>{meal.cookingTime} min</span>
+                      </div>
+                      <div className="flex flex-wrap gap-1">
+                        {meal.ingredients.map((ingredient, idx) => (
+                          <span key={idx} className="text-xs bg-green-50 text-green-700 px-2 py-1 rounded">
+                            {ingredient}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => swapMeal(meal.id)}
+                      disabled={isSwapping === meal.id}
+                      className="ml-4 p-2 text-gray-400 hover:text-primary-500 disabled:animate-spin"
+                      title="Échanger ce repas"
+                    >
+                      <RefreshCw className="h-5 w-5" />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Shopping List Generation Button */}
+            <div className="mt-8 text-center">
+              <button
+                onClick={generateShoppingList}
+                className="inline-flex items-center bg-green-600 text-white px-8 py-4 rounded-lg hover:bg-green-700 transition-colors text-lg font-semibold"
+              >
+                <ShoppingCart className="h-6 w-6 mr-3" />
+                Générer liste de courses chez partenaire
+              </button>
+              <p className="text-sm text-gray-500 mt-2">
+                Commande automatique avec tous les ingrédients nécessaires
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Right Sidebar - Nutrition Dashboard */}
+        <div className="w-80 bg-white border-l border-gray-200 p-6 overflow-y-auto">
+          <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+            <BarChart3 className="h-5 w-5 mr-2" />
+            Dashboard nutritionnel
+          </h2>
+
+          {/* Daily Totals */}
+          <div className="mb-6">
+            <h3 className="text-sm font-medium text-gray-900 mb-3">Total du jour</h3>
+            <div className="space-y-3">
+              <div className="flex justify-between">
+                <span className="text-sm text-gray-600">Calories</span>
+                <span className="text-sm font-semibold">{totalNutrition.calories} kcal</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-sm text-gray-600">Protéines</span>
+                <span className="text-sm font-semibold">{totalNutrition.protein}g</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-sm text-gray-600">Glucides</span>
+                <span className="text-sm font-semibold">{totalNutrition.carbs}g</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-sm text-gray-600">Lipides</span>
+                <span className="text-sm font-semibold">{totalNutrition.fat}g</span>
+              </div>
+            </div>
+          </div>
+
+          {/* RNP Coverage */}
+          <div className="mb-6">
+            <h3 className="text-sm font-medium text-gray-900 mb-3">Couverture RNP</h3>
+            <div className="space-y-3">
+              {[
+                { nutrient: 'Protéines', coverage: 95 },
+                { nutrient: 'Fer', coverage: 88 },
+                { nutrient: 'B12', coverage: 100 },
+                { nutrient: 'Calcium', coverage: 92 },
+                { nutrient: 'Zinc', coverage: 85 }
+              ].map((item) => (
+                <div key={item.nutrient}>
+                  <div className="flex justify-between text-sm mb-1">
+                    <span className="text-gray-600">{item.nutrient}</span>
+                    <span className="font-semibold">{item.coverage}%</span>
+                  </div>
+                  <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div 
+                      className="bg-green-500 h-2 rounded-full"
+                      style={{ width: `${Math.min(item.coverage, 100)}%` }}
+                    ></div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Eco Score */}
+          <div className="mb-6">
+            <h3 className="text-sm font-medium text-gray-900 mb-3">Impact environnemental</h3>
+            <div className="text-center p-4 bg-green-50 rounded-lg">
+              <div className="text-2xl font-bold text-green-600 mb-1">A</div>
+              <div className="text-xs text-green-700">Très faible impact carbone</div>
+            </div>
+          </div>
+
+          {/* Cost */}
+          <div>
+            <h3 className="text-sm font-medium text-gray-900 mb-3">Coût estimé</h3>
+            <div className="text-center p-4 bg-blue-50 rounded-lg">
+              <div className="text-2xl font-bold text-blue-600 mb-1">12,50€</div>
+              <div className="text-xs text-blue-700">Pour aujourd'hui</div>
+            </div>
+          </div>
+        </div>
+      </div>
     </main>
   )
 }
 
-function NewsletterSection({ email, setEmail, onSubmit }: { 
-  email: string, 
-  setEmail: (email: string) => void, 
-  onSubmit: (e: React.FormEvent) => void 
-}) {
-  return (
-    <section className="py-20 px-4">
-      <div className="container mx-auto max-w-2xl text-center">
-        <h2 className="text-3xl font-bold text-gray-900 mb-4">
-          Restez informé de nos nouveautés
-        </h2>
-        <p className="text-gray-600 mb-8">
-          Recevez nos derniers conseils nutrition et nos nouvelles fonctionnalités
-        </p>
-        <form onSubmit={onSubmit} className="flex flex-col sm:flex-row gap-4">
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="Votre adresse email"
-            className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-            required
-          />
-          <button
-            type="submit"
-            className="bg-primary-500 text-white px-8 py-3 rounded-lg hover:bg-primary-600 transition-colors font-semibold"
-          >
-            S&apos;inscrire
-          </button>
-        </form>
-      </div>
-    </section>
-  )
-}
-
-function Footer() {
-  return (
-    <footer className="bg-gray-900 text-white py-12 px-4">
-      <div className="container mx-auto max-w-6xl">
-        <div className="flex flex-col md:flex-row justify-between items-center">
-          <div className="flex items-center space-x-2 mb-4 md:mb-0">
-            <Leaf className="h-6 w-6 text-primary-500" />
-            <span className="text-xl font-bold">VeganFlemme</span>
-          </div>
-          <div className="text-sm text-gray-400 text-center md:text-right">
-            <p>&copy; 2024 VeganFlemme. Tous droits réservés.</p>
-            <p className="mt-1">Conformité RGPD • Mentions légales • CGU</p>
-          </div>
-        </div>
-      </div>
-    </footer>
-  )
-}
