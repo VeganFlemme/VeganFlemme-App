@@ -6,6 +6,64 @@
 
 ---
 
+## 🚨 URGENT - Reconfiguration Déploiements (Suite Restructuration)
+
+### Render - Configuration Backend
+```bash
+# Status: Configuration mise à jour, redéploiement requis
+1. Se connecter à Render Dashboard
+   → URL : https://dashboard.render.com
+   → Sélectionner service : veganflemme-engine
+   
+2. Vérifier/Mettre à jour les Build Settings
+   → Build Command: cd apps/backend && npm ci --production=false && npm run build
+   → Start Command: cd apps/backend && npm start
+   → Root Directory: . (racine du repo)
+   
+3. Déclencher nouveau déploiement
+   → Settings → Deploy → "Manual Deploy" from main branch
+   → Vérifier logs : "Build succeeded" + API accessible
+   → Test santé : https://veganflemme-engine.onrender.com/api/health
+```
+
+### Vercel - Configuration Frontend  
+```bash
+# Status: Root Directory à mettre à jour
+1. Se connecter à Vercel Dashboard
+   → URL : https://vercel.com/dashboard
+   → Sélectionner projet : VeganFlemme-App
+   
+2. Mettre à jour Project Settings
+   → Settings → General → Root Directory
+   → Changer de "frontend" vers "apps/frontend"
+   → Build Command: npm run build (auto-détecté)
+   → Output Directory: .next (auto-détecté)
+   
+3. Re-déployer depuis dashboard
+   → Deployments → "Redeploy" sur dernier commit
+   → Vérifier build : "Deployment completed"
+   → Test frontend : https://veganflemme.vercel.app
+```
+
+### Validation Post-Reconfiguration ✅
+```bash
+# Tests à effectuer après reconfiguration
+1. Backend Render
+   → GET https://veganflemme-engine.onrender.com/api/health
+   → Réponse attendue : {"status": "ok", "timestamp": "..."}
+   
+2. Frontend Vercel  
+   → Accès https://veganflemme.vercel.app
+   → Page d'accueil s'affiche correctement
+   → Test génération menu fonctionnel
+   
+3. Communication Frontend ↔ Backend
+   → Depuis frontend : Test appel API génération menu
+   → Vérifier dans Network tab : Appels vers render.com réussis
+```
+
+---
+
 ## 🎯 Actions Immédiates Requises
 
 ### 1. **Configuration Services d'Affiliation** 🔥 PRIORITÉ HAUTE
