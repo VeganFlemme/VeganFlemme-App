@@ -1,11 +1,14 @@
 'use client'
 
 import { useState } from 'react'
-import { Leaf, ChefHat, ShoppingCart, TrendingUp, ArrowRight } from 'lucide-react'
+import { Leaf, ChefHat, ShoppingCart, TrendingUp, ArrowRight, CheckCircle, Clock, Users } from 'lucide-react'
 import Link from 'next/link'
+import { useUserJourney } from '@/hooks/useUserJourney'
+import JourneyProgress from '@/components/JourneyProgress'
 
 export default function HomePage() {
   const [email, setEmail] = useState('')
+  const { state, actions } = useUserJourney()
 
   const handleNewsletterSignup = (e: React.FormEvent) => {
     e.preventDefault()
@@ -13,32 +16,178 @@ export default function HomePage() {
     setEmail('')
   }
 
+  // Show different content based on user journey state
+  if (state.profile?.isComplete) {
+    return <DashboardView />
+  }
+
+  return <WelcomeView />
+}
+
+function WelcomeView() {
   return (
     <main className="min-h-screen">
-      {/* Hero Section */}
+      {/* Hero Section - Journey-focused */}
       <section className="py-20 px-4">
         <div className="container mx-auto text-center max-w-4xl">
           <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
-            Votre transition <span className="text-primary-500">vegan</span> simplifiée
+            Votre transition <span className="text-primary-500">vegan</span> en 5 étapes simples
           </h1>
           <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
-            Générez des menus 100% vegan avec suivi nutritionnel ANSES, 
-            jauges écologiques et création de panier intelligent.
+            De la création de votre profil nutritionnel à votre premier panier, 
+            nous vous accompagnons à chaque étape de votre transition.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/generate-menu" className="brand-gradient text-white px-8 py-4 rounded-lg font-semibold text-lg hover:opacity-90 transition-opacity inline-flex items-center">
-              Générer mon premier menu
+            <Link 
+              href="/onboarding" 
+              className="brand-gradient text-white px-8 py-4 rounded-lg font-semibold text-lg hover:opacity-90 transition-opacity inline-flex items-center"
+            >
+              Commencer mon parcours
               <ArrowRight className="ml-2 h-5 w-5" />
             </Link>
-            <Link href="/dashboard" className="border-2 border-primary-500 text-primary-500 px-8 py-4 rounded-lg font-semibold text-lg hover:bg-primary-50 transition-colors">
-              Voir mon dashboard
+            <Link 
+              href="#journey" 
+              className="border-2 border-primary-500 text-primary-500 px-8 py-4 rounded-lg font-semibold text-lg hover:bg-primary-50 transition-colors"
+            >
+              Découvrir le parcours
             </Link>
           </div>
         </div>
       </section>
 
-      {/* Features Section */}
-      <section className="py-20 bg-neutral-50 px-4">
+      {/* Journey Steps Section */}
+      <section id="journey" className="py-20 bg-neutral-50 px-4">
+        <div className="container mx-auto max-w-6xl">
+          <h2 className="text-3xl md:text-4xl font-bold text-center text-gray-900 mb-12">
+            Votre parcours en 5 étapes
+          </h2>
+          
+          <div className="space-y-8">
+            {/* Step 1: Onboarding */}
+            <div className="flex flex-col md:flex-row items-center bg-white rounded-xl shadow-lg p-8">
+              <div className="flex-shrink-0 mb-6 md:mb-0 md:mr-8">
+                <div className="bg-primary-500 text-white w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold">
+                  1
+                </div>
+              </div>
+              <div className="flex-1 text-center md:text-left">
+                <h3 className="text-2xl font-semibold text-gray-900 mb-2">
+                  Créer votre profil nutritionnel
+                </h3>
+                <p className="text-gray-600 mb-4">
+                  5 minutes pour définir vos besoins : âge, poids, objectifs, allergies. 
+                  Calcul automatique de votre IMC et besoins selon les RNP ANSES.
+                </p>
+                <div className="flex items-center justify-center md:justify-start text-sm text-primary-600">
+                  <Clock className="h-4 w-4 mr-1" />
+                  <span>5 minutes</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Step 2: Menu Generation */}
+            <div className="flex flex-col md:flex-row-reverse items-center bg-white rounded-xl shadow-lg p-8">
+              <div className="flex-shrink-0 mb-6 md:mb-0 md:ml-8">
+                <div className="bg-green-500 text-white w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold">
+                  2
+                </div>
+              </div>
+              <div className="flex-1 text-center md:text-left">
+                <h3 className="text-2xl font-semibold text-gray-900 mb-2">
+                  Générer votre premier menu
+                </h3>
+                <p className="text-gray-600 mb-4">
+                  Menu complet 7 jours, 100% personnalisé selon votre profil. 
+                  Équilibre nutritionnel garanti et recettes adaptées à vos goûts.
+                </p>
+                <div className="flex items-center justify-center md:justify-start text-sm text-green-600">
+                  <ChefHat className="h-4 w-4 mr-1" />
+                  <span>1 minute de génération</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Step 3: Daily Usage */}
+            <div className="flex flex-col md:flex-row items-center bg-white rounded-xl shadow-lg p-8">
+              <div className="flex-shrink-0 mb-6 md:mb-0 md:mr-8">
+                <div className="bg-blue-500 text-white w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold">
+                  3
+                </div>
+              </div>
+              <div className="flex-1 text-center md:text-left">
+                <h3 className="text-2xl font-semibold text-gray-900 mb-2">
+                  Explorer et personnaliser
+                </h3>
+                <p className="text-gray-600 mb-4">
+                  Consultez vos repas, accédez aux recettes détaillées, 
+                  utilisez la fonction "swap" pour remplacer un aliment.
+                </p>
+                <div className="flex items-center justify-center md:justify-start text-sm text-blue-600">
+                  <TrendingUp className="h-4 w-4 mr-1" />
+                  <span>Usage quotidien</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Step 4: Shopping List */}
+            <div className="flex flex-col md:flex-row-reverse items-center bg-white rounded-xl shadow-lg p-8">
+              <div className="flex-shrink-0 mb-6 md:mb-0 md:ml-8">
+                <div className="bg-purple-500 text-white w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold">
+                  4
+                </div>
+              </div>
+              <div className="flex-1 text-center md:text-left">
+                <h3 className="text-2xl font-semibold text-gray-900 mb-2">
+                  Créer votre liste de courses
+                </h3>
+                <p className="text-gray-600 mb-4">
+                  Génération automatique de tous les ingrédients nécessaires, 
+                  quantités optimisées et prix estimés.
+                </p>
+                <div className="flex items-center justify-center md:justify-start text-sm text-purple-600">
+                  <ShoppingCart className="h-4 w-4 mr-1" />
+                  <span>Automatique depuis le menu</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Step 5: Purchase */}
+            <div className="flex flex-col md:flex-row items-center bg-white rounded-xl shadow-lg p-8">
+              <div className="flex-shrink-0 mb-6 md:mb-0 md:mr-8">
+                <div className="bg-orange-500 text-white w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold">
+                  5
+                </div>
+              </div>
+              <div className="flex-1 text-center md:text-left">
+                <h3 className="text-2xl font-semibold text-gray-900 mb-2">
+                  Commander chez nos partenaires
+                </h3>
+                <p className="text-gray-600 mb-4">
+                  Transformation de votre liste en panier pré-rempli 
+                  chez Greenweez, Amazon et autres partenaires bio.
+                </p>
+                <div className="flex items-center justify-center md:justify-start text-sm text-orange-600">
+                  <Leaf className="h-4 w-4 mr-1" />
+                  <span>Produits bio et locaux</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="text-center mt-12">
+            <Link 
+              href="/onboarding"
+              className="brand-gradient text-white px-12 py-4 rounded-lg font-semibold text-xl hover:opacity-90 transition-opacity inline-flex items-center"
+            >
+              Démarrer maintenant
+              <ArrowRight className="ml-2 h-6 w-6" />
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Benefits Section */}
+      <section className="py-20 px-4">
         <div className="container mx-auto max-w-6xl">
           <h2 className="text-3xl md:text-4xl font-bold text-center text-gray-900 mb-12">
             Pourquoi choisir VeganFlemme ?
@@ -46,189 +195,195 @@ export default function HomePage() {
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             <div className="text-center p-6 bg-white rounded-xl shadow-sm">
               <ChefHat className="h-12 w-12 text-primary-500 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold mb-2">Menus Personnalisés</h3>
-              <p className="text-gray-600">100% conformes aux RNP ANSES, adaptés à votre profil et vos goûts</p>
+              <h3 className="text-xl font-semibold mb-2">Personnalisation Extrême</h3>
+              <p className="text-gray-600">Menus 100% conformes aux RNP ANSES, adaptés à votre profil unique</p>
             </div>
             <div className="text-center p-6 bg-white rounded-xl shadow-sm">
               <TrendingUp className="h-12 w-12 text-primary-500 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold mb-2">Suivi Nutritionnel</h3>
-              <p className="text-gray-600">Jauges temps réel pour macro/micro-nutriments et alertes préventives</p>
+              <h3 className="text-xl font-semibold mb-2">Simplicité Radicale</h3>
+              <p className="text-gray-600">5 étapes seulement, de votre profil à votre panier livré</p>
             </div>
             <div className="text-center p-6 bg-white rounded-xl shadow-sm">
               <Leaf className="h-12 w-12 text-primary-500 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold mb-2">Impact Écologique</h3>
-              <p className="text-gray-600">Empreinte carbone et eau calculée pour chaque repas</p>
+              <h3 className="text-xl font-semibold mb-2">Flexibilité & Plaisir</h3>
+              <p className="text-gray-600">Fonction "swap" intelligente pour remplacer selon vos envies</p>
             </div>
             <div className="text-center p-6 bg-white rounded-xl shadow-sm">
               <ShoppingCart className="h-12 w-12 text-primary-500 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold mb-2">Panier Intelligent</h3>
-              <p className="text-gray-600">Génération automatique avec liens affiliés Greenweez &amp; partenaires</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Tools Section */}
-      <section className="py-20 px-4">
-        <div className="container mx-auto max-w-6xl">
-          <h2 className="text-3xl md:text-4xl font-bold text-center text-gray-900 mb-12">
-            Vos outils pour une transition réussie
-          </h2>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow">
-              <div className="text-center">
-                <div className="bg-gradient-to-r from-green-500 to-emerald-500 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                  </svg>
-                </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">Recipe Explorer</h3>
-                <p className="text-gray-600 mb-4">Découvrez des milliers de recettes véganes délicieuses</p>
-                <Link
-                  href="/recipe-explorer"
-                  className="inline-block bg-gradient-to-r from-green-500 to-emerald-500 text-white px-6 py-2 rounded-lg hover:from-green-600 hover:to-emerald-600 transition-all"
-                >
-                  Explorer
-                </Link>
-              </div>
-            </div>
-
-            <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow">
-              <div className="text-center">
-                <div className="bg-gradient-to-r from-blue-500 to-indigo-500 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3a1 1 0 011-1h6a1 1 0 011 1v4m-9 4h10m-5 6v-4" />
-                  </svg>
-                </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">Planificateur de Repas</h3>
-                <p className="text-gray-600 mb-4">Organisez vos repas de la semaine facilement</p>
-                <Link
-                  href="/meal-planner"
-                  className="inline-block bg-gradient-to-r from-blue-500 to-indigo-500 text-white px-6 py-2 rounded-lg hover:from-blue-600 hover:to-indigo-600 transition-all"
-                >
-                  Planifier
-                </Link>
-              </div>
-            </div>
-
-            <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow">
-              <div className="text-center">
-                <div className="bg-gradient-to-r from-purple-500 to-pink-500 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                  </svg>
-                </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">Assistant Shopping</h3>
-                <p className="text-gray-600 mb-4">Créez vos listes de courses avec des produits véganes</p>
-                <Link
-                  href="/shopping-assistant"
-                  className="inline-block bg-gradient-to-r from-purple-500 to-pink-500 text-white px-6 py-2 rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all"
-                >
-                  Commencer
-                </Link>
-              </div>
-            </div>
-
-            <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow">
-              <div className="text-center">
-                <div className="bg-gradient-to-r from-orange-500 to-red-500 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                  </svg>
-                </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">Planificateur de Transition</h3>
-                <p className="text-gray-600 mb-4">Suivez votre progression vers un mode de vie végan</p>
-                <Link
-                  href="/transition-planner"
-                  className="inline-block bg-gradient-to-r from-orange-500 to-red-500 text-white px-6 py-2 rounded-lg hover:from-orange-600 hover:to-red-600 transition-all"
-                >
-                  Débuter
-                </Link>
-              </div>
-            </div>
-
-            <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow">
-              <div className="text-center">
-                <div className="bg-gradient-to-r from-teal-500 to-cyan-500 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                  </svg>
-                </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">Dashboard Nutrition</h3>
-                <p className="text-gray-600 mb-4">Suivez vos apports nutritionnels en temps réel</p>
-                <Link
-                  href="/dashboard"
-                  className="inline-block bg-gradient-to-r from-teal-500 to-cyan-500 text-white px-6 py-2 rounded-lg hover:from-teal-600 hover:to-cyan-600 transition-all"
-                >
-                  Analyser
-                </Link>
-              </div>
-            </div>
-
-            <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow">
-              <div className="text-center">
-                <div className="bg-gradient-to-r from-primary-500 to-green-500 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100-4m0 4v2m0-6V4" />
-                  </svg>
-                </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">Générateur de Menus</h3>
-                <p className="text-gray-600 mb-4">IA avancée pour des menus équilibrés et optimisés</p>
-                <Link
-                  href="/generate-menu"
-                  className="inline-block bg-gradient-to-r from-primary-500 to-green-500 text-white px-6 py-2 rounded-lg hover:from-primary-600 hover:to-green-600 transition-all"
-                >
-                  Générer
-                </Link>
-              </div>
+              <h3 className="text-xl font-semibold mb-2">Service Gratuit</h3>
+              <p className="text-gray-600">Monétisation transparente via partenaires, gratuit pour vous</p>
             </div>
           </div>
         </div>
       </section>
 
       {/* Newsletter Section */}
-      <section className="py-20 px-4">
-        <div className="container mx-auto max-w-2xl text-center">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">
-            Restez informé de nos nouveautés
-          </h2>
-          <p className="text-gray-600 mb-8">
-            Recevez nos derniers conseils nutrition et nos nouvelles fonctionnalités
-          </p>
-          <form onSubmit={handleNewsletterSignup} className="flex flex-col sm:flex-row gap-4">
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Votre adresse email"
-              className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-              required
-            />
-            <button
-              type="submit"
-              className="bg-primary-500 text-white px-8 py-3 rounded-lg hover:bg-primary-600 transition-colors font-semibold"
-            >
-              S&apos;inscrire
-            </button>
-          </form>
-        </div>
-      </section>
+      <NewsletterSection email={email} setEmail={setEmail} onSubmit={handleNewsletterSignup} />
 
       {/* Footer */}
-      <footer className="bg-gray-900 text-white py-12 px-4">
+      <Footer />
+    </main>
+  )
+}
+
+function DashboardView() {
+  const { state, actions } = useUserJourney()
+  
+  return (
+    <main className="min-h-screen">
+      {/* Welcome Back Section */}
+      <section className="py-12 px-4">
         <div className="container mx-auto max-w-6xl">
-          <div className="flex flex-col md:flex-row justify-between items-center">
-            <div className="flex items-center space-x-2 mb-4 md:mb-0">
-              <Leaf className="h-6 w-6 text-primary-500" />
-              <span className="text-xl font-bold">VeganFlemme</span>
+          <div className="bg-gradient-to-r from-primary-500 to-green-500 rounded-2xl text-white p-8 mb-8">
+            <h1 className="text-3xl font-bold mb-2">
+              Bon retour, {state.profile?.name?.split(' ')[0]} !
+            </h1>
+            <p className="text-primary-100 mb-4">
+              Continuons votre parcours vers une alimentation végane équilibrée
+            </p>
+            
+            {/* Progress Bar */}
+            <div className="bg-white/20 rounded-full h-3 mb-2">
+              <div 
+                className="bg-white h-3 rounded-full transition-all duration-500"
+                style={{ width: `${state.completionPercentage}%` }}
+              />
             </div>
-            <div className="text-sm text-gray-400 text-center md:text-right">
-              <p>&copy; 2024 VeganFlemme. Tous droits réservés.</p>
-              <p className="mt-1">Conformité RGPD • Mentions légales • CGU</p>
+            <div className="text-sm text-primary-100">
+              {state.steps.filter(s => s.completed).length} / {state.steps.length} étapes terminées
+            </div>
+          </div>
+
+          <div className="grid lg:grid-cols-3 gap-8">
+            {/* Journey Progress */}
+            <div className="lg:col-span-2">
+              <JourneyProgress showTitle={false} />
+            </div>
+
+            {/* Quick Actions */}
+            <div className="space-y-6">
+              {/* Next Action */}
+              {(() => {
+                const nextStep = actions.getNextRequiredStep()
+                if (nextStep) {
+                  return (
+                    <div className="bg-amber-50 border border-amber-200 rounded-xl p-6">
+                      <h3 className="font-semibold text-amber-800 mb-2">Prochaine étape</h3>
+                      <p className="text-amber-700 mb-4">{nextStep.description}</p>
+                      <Link 
+                        href={nextStep.id === 'menu' ? '/generate-menu' : '/dashboard'}
+                        className="bg-amber-500 text-white px-4 py-2 rounded-lg hover:bg-amber-600 transition-colors inline-flex items-center"
+                      >
+                        {nextStep.title}
+                        <ArrowRight className="h-4 w-4 ml-2" />
+                      </Link>
+                    </div>
+                  )
+                }
+                return null
+              })()}
+
+              {/* Quick Stats */}
+              <div className="bg-white rounded-xl shadow-lg p-6">
+                <h3 className="font-semibold text-gray-900 mb-4">Vos statistiques</h3>
+                <div className="space-y-3">
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">IMC</span>
+                    <span className="font-semibold">{state.profile?.bmi}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Besoins énergétiques</span>
+                    <span className="font-semibold">{state.profile?.tdee} kcal/j</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Menus générés</span>
+                    <span className="font-semibold">{state.hasGeneratedMenu ? '1+' : '0'}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Quick Actions */}
+              <div className="bg-white rounded-xl shadow-lg p-6">
+                <h3 className="font-semibold text-gray-900 mb-4">Actions rapides</h3>
+                <div className="space-y-3">
+                  <Link 
+                    href="/generate-menu"
+                    className="block w-full bg-primary-500 text-white px-4 py-3 rounded-lg hover:bg-primary-600 transition-colors text-center"
+                  >
+                    Nouveau menu
+                  </Link>
+                  <Link 
+                    href="/shopping-assistant"
+                    className="block w-full border border-primary-500 text-primary-500 px-4 py-3 rounded-lg hover:bg-primary-50 transition-colors text-center"
+                  >
+                    Liste de courses
+                  </Link>
+                  <Link 
+                    href="/profile"
+                    className="block w-full border border-gray-300 text-gray-700 px-4 py-3 rounded-lg hover:bg-gray-50 transition-colors text-center"
+                  >
+                    Modifier profil
+                  </Link>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-      </footer>
+      </section>
     </main>
+  )
+}
+
+function NewsletterSection({ email, setEmail, onSubmit }: { 
+  email: string, 
+  setEmail: (email: string) => void, 
+  onSubmit: (e: React.FormEvent) => void 
+}) {
+  return (
+    <section className="py-20 px-4">
+      <div className="container mx-auto max-w-2xl text-center">
+        <h2 className="text-3xl font-bold text-gray-900 mb-4">
+          Restez informé de nos nouveautés
+        </h2>
+        <p className="text-gray-600 mb-8">
+          Recevez nos derniers conseils nutrition et nos nouvelles fonctionnalités
+        </p>
+        <form onSubmit={onSubmit} className="flex flex-col sm:flex-row gap-4">
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Votre adresse email"
+            className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+            required
+          />
+          <button
+            type="submit"
+            className="bg-primary-500 text-white px-8 py-3 rounded-lg hover:bg-primary-600 transition-colors font-semibold"
+          >
+            S&apos;inscrire
+          </button>
+        </form>
+      </div>
+    </section>
+  )
+}
+
+function Footer() {
+  return (
+    <footer className="bg-gray-900 text-white py-12 px-4">
+      <div className="container mx-auto max-w-6xl">
+        <div className="flex flex-col md:flex-row justify-between items-center">
+          <div className="flex items-center space-x-2 mb-4 md:mb-0">
+            <Leaf className="h-6 w-6 text-primary-500" />
+            <span className="text-xl font-bold">VeganFlemme</span>
+          </div>
+          <div className="text-sm text-gray-400 text-center md:text-right">
+            <p>&copy; 2024 VeganFlemme. Tous droits réservés.</p>
+            <p className="mt-1">Conformité RGPD • Mentions légales • CGU</p>
+          </div>
+        </div>
+      </div>
+    </footer>
   )
 }

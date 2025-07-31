@@ -3,7 +3,9 @@ import Script from 'next/script'
 import './globals.css'
 import { GA_MEASUREMENT_ID } from '@/lib/analytics'
 import { AuthProvider } from '../hooks/useAuth'
+import { UserJourneyProvider } from '../hooks/useUserJourney'
 import Navigation from '../components/Navigation'
+import JourneyGuard from '../components/JourneyGuard'
 
 export const metadata: Metadata = {
   title: 'VeganFlemme - Votre transition vegan simplifiée',
@@ -49,10 +51,14 @@ export default function RootLayout({
       </head>
       <body className="font-sans">
         <AuthProvider>
-          <div className="min-h-screen bg-gradient-to-br from-neutral-50 to-white">
-            <Navigation />
-            {children}
-          </div>
+          <UserJourneyProvider>
+            <JourneyGuard>
+              <div className="min-h-screen bg-gradient-to-br from-neutral-50 to-white">
+                <Navigation />
+                {children}
+              </div>
+            </JourneyGuard>
+          </UserJourneyProvider>
         </AuthProvider>
       </body>
     </html>
