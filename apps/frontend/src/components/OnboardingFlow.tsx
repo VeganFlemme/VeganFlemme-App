@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { ArrowRight, ArrowLeft, CheckCircle, User, Target, AlertTriangle } from 'lucide-react'
+import { ArrowRight, ArrowLeft, CheckCircle, Leaf, Target, AlertTriangle } from 'lucide-react'
 import { useUserJourney, UserProfile } from '@/hooks/useUserJourney'
 import { useRouter } from 'next/navigation'
 
@@ -95,12 +95,12 @@ export default function OnboardingFlow() {
   const router = useRouter()
   const [currentStep, setCurrentStep] = useState(1)
   const [profile, setProfile] = useState<Partial<UserProfile>>({
-    name: '',
-    email: '',
-    age: 0,
-    gender: undefined,
-    height: 0,
-    weight: 0,
+    name: 'Utilisateur VeganFlemme', // Default name for lazy users
+    email: '', // Optional
+    age: 30, // Default age
+    gender: 'other', // Default to inclusive option
+    height: 170, // Default height
+    weight: 70, // Default weight
     activity: 'moderate',
     goal: 'maintain',
     allergies: [],
@@ -111,14 +111,15 @@ export default function OnboardingFlow() {
     setProfile(prev => ({ ...prev, ...updates }))
   }
 
-  const canProceedStep1 = profile.name && profile.email && profile.age && profile.gender
-  const canProceedStep2 = profile.height && profile.weight && profile.activity && profile.goal
-  const canProceedStep3 = true // Allergies are optional
+  // Simplified validation - only basic info needed
+  const canProceedStep1 = true // Skip to preferences immediately 
+  const canProceedStep2 = true // All optional now
+  const canProceedStep3 = true // Allergies always optional
 
   const completeOnboarding = () => {
     const completeProfile: UserProfile = {
       name: profile.name!,
-      email: profile.email!,
+      email: profile.email || 'user@veganflemme.com', // Optional email with default
       age: profile.age!,
       gender: profile.gender!,
       height: profile.height!,
@@ -131,81 +132,56 @@ export default function OnboardingFlow() {
     }
 
     actions.setProfile(completeProfile)
-    router.push('/dashboard')
+    router.push('/generate-menu') // Go directly to menu generation
   }
 
   if (currentStep === 1) {
     return (
       <OnboardingStep
         step={1}
-        totalSteps={3}
-        title="Faisons connaissance !"
-        subtitle="Quelques informations pour personnaliser votre expérience"
+        totalSteps={2}
+        title="Bienvenue dans votre transition vegan !"
+        subtitle="L'outil ultime pour devenir vegan sans effort"
         onNext={() => setCurrentStep(2)}
         nextDisabled={!canProceedStep1}
+        nextLabel="Générer mon premier menu"
       >
         <div className="space-y-6">
           <div className="flex items-center justify-center mb-6">
-            <User className="h-16 w-16 text-primary-500" />
+            <Leaf className="h-16 w-16 text-primary-500" />
           </div>
 
-          <div className="grid md:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Prénom et nom <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                value={profile.name || ''}
-                onChange={(e) => updateProfile({ name: e.target.value })}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                placeholder="Marie Dupont"
-              />
+          <div className="text-center bg-green-50 border border-green-200 rounded-lg p-6">
+            <h3 className="text-xl font-semibold text-green-800 mb-3">
+              VeganFlemme - Pour les plus flemmes !
+            </h3>
+            <p className="text-green-700 mb-4">
+              Nous savons que vous voulez devenir vegan sans vous prendre la tête. 
+              Pas besoin de remplir 50 formulaires ! Cliquez sur "Générer mon premier menu" 
+              et découvrez immédiatement le meilleur plan alimentaire vegan adapté à tous.
+            </p>
+            <div className="flex items-center justify-center space-x-6 text-sm text-green-600">
+              <div className="flex items-center">
+                <CheckCircle className="h-4 w-4 mr-1" />
+                <span>0 effort</span>
+              </div>
+              <div className="flex items-center">
+                <CheckCircle className="h-4 w-4 mr-1" />
+                <span>100% équilibré</span>
+              </div>
+              <div className="flex items-center">
+                <CheckCircle className="h-4 w-4 mr-1" />
+                <span>Pour tout le monde</span>
+              </div>
             </div>
+          </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Email <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="email"
-                value={profile.email || ''}
-                onChange={(e) => updateProfile({ email: e.target.value })}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                placeholder="marie@exemple.com"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Âge <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="number"
-                value={profile.age || ''}
-                onChange={(e) => updateProfile({ age: parseInt(e.target.value) || 0 })}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                placeholder="30"
-                min="16"
-                max="100"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Genre <span className="text-red-500">*</span>
-              </label>
-              <select
-                value={profile.gender || ''}
-                onChange={(e) => updateProfile({ gender: e.target.value as any })}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-              >
-                <option value="">Choisir</option>
-                <option value="female">Femme</option>
-                <option value="male">Homme</option>
-                <option value="other">Autre</option>
-              </select>
-            </div>
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <p className="text-blue-700 text-sm">
+              <strong>Optionnel :</strong> Vous pourrez personnaliser vos préférences plus tard 
+              depuis le tableau de bord. Pour l'instant, profitez de notre menu universel 
+              conçu pour satisfaire tous les goûts et besoins nutritionnels !
+            </p>
           </div>
         </div>
       </OnboardingStep>
@@ -213,127 +189,31 @@ export default function OnboardingFlow() {
   }
 
   if (currentStep === 2) {
-    const bmi = profile.height && profile.weight ? 
-      actions.calculateBMI(profile.height, profile.weight) : 0
-    const tdee = canProceedStep2 ? actions.calculateTDEE(profile) : 0
-
     return (
       <OnboardingStep
         step={2}
-        totalSteps={3}
-        title="Votre profil physique"
-        subtitle="Pour calculer vos besoins nutritionnels selon les RNP ANSES"
-        onNext={() => setCurrentStep(3)}
-        onBack={() => setCurrentStep(1)}
-        nextDisabled={!canProceedStep2}
-      >
-        <div className="space-y-6">
-          <div className="flex items-center justify-center mb-6">
-            <Target className="h-16 w-16 text-primary-500" />
-          </div>
-
-          <div className="grid md:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Taille (cm) <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="number"
-                value={profile.height || ''}
-                onChange={(e) => updateProfile({ height: parseInt(e.target.value) || 0 })}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                placeholder="170"
-                min="120"
-                max="220"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Poids (kg) <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="number"
-                value={profile.weight || ''}
-                onChange={(e) => updateProfile({ weight: parseInt(e.target.value) || 0 })}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                placeholder="70"
-                min="35"
-                max="200"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Niveau d'activité <span className="text-red-500">*</span>
-              </label>
-              <select
-                value={profile.activity || 'moderate'}
-                onChange={(e) => updateProfile({ activity: e.target.value as any })}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-              >
-                <option value="sedentary">Sédentaire (bureau, peu d'exercice)</option>
-                <option value="light">Activité légère (exercice 1-3x/semaine)</option>
-                <option value="moderate">Activité modérée (exercice 3-5x/semaine)</option>
-                <option value="intense">Activité intense (exercice 6-7x/semaine)</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Objectif <span className="text-red-500">*</span>
-              </label>
-              <select
-                value={profile.goal || 'maintain'}
-                onChange={(e) => updateProfile({ goal: e.target.value as any })}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-              >
-                <option value="lose">Perte de poids</option>
-                <option value="maintain">Maintien du poids</option>
-                <option value="gain">Prise de poids/masse</option>
-              </select>
-            </div>
-          </div>
-
-          {bmi > 0 && (
-            <div className="mt-6 p-4 bg-primary-50 border border-primary-200 rounded-lg">
-              <h4 className="font-semibold text-primary-800 mb-2">Vos indicateurs calculés</h4>
-              <div className="grid grid-cols-2 gap-4 text-sm">
-                <div>
-                  <span className="text-primary-700">IMC: </span>
-                  <span className="font-semibold">{bmi}</span>
-                </div>
-                <div>
-                  <span className="text-primary-700">Besoin énergétique: </span>
-                  <span className="font-semibold">{tdee} kcal/jour</span>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-      </OnboardingStep>
-    )
-  }
-
-  if (currentStep === 3) {
-    return (
-      <OnboardingStep
-        step={3}
-        totalSteps={3}
-        title="Restrictions alimentaires"
-        subtitle="Pour adapter parfaitement vos menus (étape optionnelle)"
+        totalSteps={2}
+        title="Personnalisez votre menu (optionnel)"
+        subtitle="Ajoutez vos restrictions alimentaires si vous en avez"
         onNext={completeOnboarding}
-        onBack={() => setCurrentStep(2)}
-        nextLabel="Terminer mon profil"
+        onBack={() => setCurrentStep(1)}
+        nextLabel="Générer mon menu vegan !"
       >
         <div className="space-y-6">
           <div className="flex items-center justify-center mb-6">
             <AlertTriangle className="h-16 w-16 text-amber-500" />
           </div>
 
+          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+            <p className="text-yellow-800 text-sm">
+              <strong>Cette étape est entièrement optionnelle !</strong> Vous pouvez cliquer directement sur 
+              "Générer mon menu vegan" pour obtenir notre menu universel parfait pour tous.
+            </p>
+          </div>
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-3">
-              Allergies alimentaires
+              Allergies ou intolérances alimentaires
             </label>
             <div className="flex flex-wrap gap-2 p-4 border border-gray-300 rounded-lg min-h-[60px]">
               {['Gluten', 'Soja', 'Noix', 'Graines', 'Légumineuses', 'Fruits à coque'].map((allergy) => (
@@ -357,7 +237,37 @@ export default function OnboardingFlow() {
               ))}
             </div>
             <p className="text-xs text-gray-500 mt-2">
-              Sélectionnez vos allergies pour éviter ces ingrédients dans vos menus
+              Cliquez pour sélectionner vos allergies (optionnel)
+            </p>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-3">
+              Goûts alimentaires
+            </label>
+            <div className="flex flex-wrap gap-2 p-4 border border-gray-300 rounded-lg min-h-[60px]">
+              {['Épicé', 'Sucré', 'Méditerranéen', 'Asiatique', 'Cru/Raw', 'Comfort Food'].map((taste) => (
+                <button
+                  key={taste}
+                  onClick={() => {
+                    const currentDislikes = profile.dislikes || []
+                    const newDislikes = currentDislikes.includes(taste)
+                      ? currentDislikes.filter(d => d !== taste)
+                      : [...currentDislikes, taste]
+                    updateProfile({ dislikes: newDislikes })
+                  }}
+                  className={`px-3 py-2 rounded-full text-sm border transition-colors ${
+                    (profile.dislikes || []).includes(taste)
+                      ? 'bg-green-100 border-green-300 text-green-700'
+                      : 'bg-gray-100 border-gray-300 text-gray-600 hover:border-green-300'
+                  }`}
+                >
+                  {taste}
+                </button>
+              ))}
+            </div>
+            <p className="text-xs text-gray-500 mt-2">
+              Sélectionnez vos préférences gustatives (optionnel)
             </p>
           </div>
 
@@ -365,10 +275,10 @@ export default function OnboardingFlow() {
             <div className="flex items-start">
               <CheckCircle className="h-5 w-5 text-green-500 mt-0.5 mr-3" />
               <div>
-                <h4 className="font-semibold text-green-800 mb-1">Prêt à commencer !</h4>
+                <h4 className="font-semibold text-green-800 mb-1">Prêt à découvrir votre menu !</h4>
                 <p className="text-green-700 text-sm">
-                  Votre profil sera utilisé pour générer des menus 100% personnalisés 
-                  conformes aux recommandations nutritionnelles ANSES.
+                  Nous allons générer votre premier menu vegan parfaitement équilibré, 
+                  que vous ayez personnalisé ou non. La transition vegan n'a jamais été aussi simple !
                 </p>
               </div>
             </div>
