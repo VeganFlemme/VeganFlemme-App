@@ -25,7 +25,7 @@
     "docker:down": "docker-compose down",
     "docker:logs": "docker-compose logs -f",
     "docker:clean": "docker-compose down -v --remove-orphans",
-    "prepare": "husky install",
+    "prepare": "node -e \"if(!process.env.CI && !process.env.VERCEL && !process.env.RENDER){try{require('husky').install()}catch{}}\"",
     "postinstall": "npm run build --workspace=packages/shared"
   },
   "keywords": [
