@@ -1,8 +1,10 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "types": ["node", "jest"],
-    "noEmit": true
+    "types": ["node", "jest", "@types/jest"],
+    "typeRoots": ["./node_modules/@types", "../../../node_modules/@types"],
+    "noEmit": true,
+    "isolatedModules": true
   },
   "include": [
     "src/**/*",
