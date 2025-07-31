@@ -15,24 +15,6 @@ export default function HomePage() {
 
   return (
     <main className="min-h-screen">
-      {/* Header */}
-      <header className="border-b bg-white/80 backdrop-blur-lg sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <Leaf className="h-8 w-8 text-primary-500" />
-            <span className="text-2xl font-bold text-gray-900">VeganFlemme</span>
-          </div>
-          <nav className="hidden md:flex items-center space-x-6">
-            <Link href="/generate-menu" className="text-gray-600 hover:text-primary-500">Générer Menu</Link>
-            <Link href="/profile" className="text-gray-600 hover:text-primary-500">Profil</Link>
-            <Link href="/dashboard" className="text-gray-600 hover:text-primary-500">Dashboard</Link>
-          </nav>
-          <button className="bg-primary-500 text-white px-6 py-2 rounded-lg hover:bg-primary-600 transition-colors">
-            Commencer
-          </button>
-        </div>
-      </header>
-
       {/* Hero Section */}
       <section className="py-20 px-4">
         <div className="container mx-auto text-center max-w-4xl">
@@ -48,9 +30,9 @@ export default function HomePage() {
               Générer mon premier menu
               <ArrowRight className="ml-2 h-5 w-5" />
             </Link>
-            <button className="border-2 border-primary-500 text-primary-500 px-8 py-4 rounded-lg font-semibold text-lg hover:bg-primary-50 transition-colors">
-              Voir la démo
-            </button>
+            <Link href="/dashboard" className="border-2 border-primary-500 text-primary-500 px-8 py-4 rounded-lg font-semibold text-lg hover:bg-primary-50 transition-colors">
+              Voir mon dashboard
+            </Link>
           </div>
         </div>
       </section>
