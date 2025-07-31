@@ -4,10 +4,10 @@ services:
     env: node
     region: frankfurt
     plan: starter
-    # Explicitly set root directory to repository root (not engine subdirectory)
+    # Explicitly set root directory to repository root (not apps/backend subdirectory)
     rootDir: .
-    buildCommand: cd engine && npm ci --production=false && npm run build
-    startCommand: cd engine && npm start
+    buildCommand: cd apps/backend && npm ci --production=false && npm run build
+    startCommand: cd apps/backend && npm start
     healthCheckPath: /api/health
     envVars:
       - key: NODE_ENV
@@ -30,9 +30,9 @@ services:
     autoDeploy: true
     buildFilter:
       paths:
-        - engine/**
+        - apps/backend/**
       ignoredPaths:
-        - frontend/**
+        - apps/frontend/**
         - docs/**
         - README.md
     domains:
