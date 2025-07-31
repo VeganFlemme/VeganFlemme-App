@@ -76,7 +76,12 @@ export default function TestMenuPage() {
                 protein: Math.round((meal as any).nutrition?.protein || 0),
                 carbs: Math.round((meal as any).nutrition?.carbs || 0),
                 fat: Math.round((meal as any).nutrition?.fat || 0),
-                ingredients: ((meal as any).ingredients?.map((ing: any) => ing.name || ing) || []).slice(0, 5)
+                ingredients: ((meal as any).ingredients?.map((ing: any) => {
+                  if (typeof ing === 'string') return ing;
+                  if (ing && ing.name) return ing.name;
+                  if (ing && ing.foodId) return ing.foodId;
+                  return 'Ingrédient';
+                }) || []).slice(0, 5)
               })
             }
           })
