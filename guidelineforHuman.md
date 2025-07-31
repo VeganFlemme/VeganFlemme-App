@@ -3,16 +3,27 @@
 ## 📋 Overview
 This document provides clear, step-by-step instructions for all tasks that require human intervention in the VeganFlemme project. Each task is designed to be completed efficiently and will advance the project toward its MVP goals.
 
+### 🗄️ **Database Setup - New Simplified Process**
+✅ **Ready for Supabase**: A complete database schema file `supabase-schema.sql` has been created at the root of the repository. This file contains:
+- Complete database schema (18 tables)
+- Sample data for testing
+- Performance indexes
+- Row Level Security (RLS) policies
+- Supabase-optimized configuration
+
+Execute this file directly in the Supabase SQL Editor web platform - no local terminal needed!
+
 ---
 
 ## 🎯 Human Task Progress Tracker
 
 ### ✅ COMPLETED HUMAN TASKS
-- [ ] *(None yet - ready to begin!)*
+- [x] **GitHub Secrets Configuration**: DATABASE_URL, SPOONACULAR_API_KEY, and AMAZON_AFFILIATE_ID are now available in repository secrets
+- [x] **Database Schema Preparation**: Complete SQL schema ready for Supabase deployment (`supabase-schema.sql`)
 
 ### 🔥 IMMEDIATE PRIORITY TASKS (Next 1-2 Days)
 
-#### Task H1: Database Setup (30 minutes) ⚡ CRITICAL
+#### Task H1: Database Setup (20 minutes) ⚡ CRITICAL
 **Purpose**: Enable data persistence for user profiles and menu storage
 
 **Step-by-step instructions:**
@@ -28,22 +39,31 @@ This document provides clear, step-by-step instructions for all tasks that requi
 
 3. **Configure GitHub Secrets**:
    - Go to GitHub repository: Settings → Secrets and Variables → Actions
-   - Create new repository secret: `DATABASE_URL`
-   - Paste the Supabase connection string as the value
+   - ✅ **Already configured**: `DATABASE_URL` secret is available
+   - If needed, update with your Supabase connection string
 
-4. **Initialize Database Schema**:
-   - In your local terminal, run: `cd /path/to/VeganFlemme-App`
-   - Run: `npx prisma db push`
-   - Verify: You should see tables created in Supabase dashboard
+4. **Initialize Database Schema via Supabase Web Platform**:
+   - In Supabase dashboard → SQL Editor
+   - Click "New Query"
+   - Copy the complete contents of `/supabase-schema.sql` file from the repository
+   - Paste into the SQL Editor
+   - Click "Run" to execute the schema
+   - ✅ **Verification**: You should see success message and 18 tables created
+   - Check Tables tab to confirm all tables are present
 
-**Success Criteria**: ✅ Database shows tables in Supabase, no connection errors
-**Estimated Time**: 30 minutes
-**Dependencies**: None
+5. **Enable Authentication** (if not already enabled):
+   - Go to Authentication → Settings
+   - Enable "Email" provider
+   - Set Site URL to your deployment domain (e.g., `https://veganflemme.vercel.app`)
+
+**Success Criteria**: ✅ Database shows 18 tables in Supabase, schema execution successful, RLS policies active
+**Estimated Time**: 20 minutes
+**Dependencies**: GitHub secrets already configured
 **Next Task**: H2 (Spoonacular API)
 
 ---
 
-#### Task H2: Spoonacular API Key (15 minutes) ⚡ CRITICAL
+#### Task H2: Spoonacular API Key (10 minutes) ⚡ CRITICAL
 **Purpose**: Enable recipe integration and enhanced menu generation
 
 **Step-by-step instructions:**
@@ -58,21 +78,21 @@ This document provides clear, step-by-step instructions for all tasks that requi
 
 3. **Configure in GitHub**:
    - Repository Settings → Secrets and Variables → Actions
-   - Create new secret: `SPOONACULAR_API_KEY`
-   - Paste your API key as the value
+   - ✅ **Already configured**: `SPOONACULAR_API_KEY` secret is available
+   - If needed, update the secret with your API key
 
 4. **Validate Integration**:
    - Next AI agent will test this automatically
    - You'll see recipe data in generated menus
 
-**Success Criteria**: ✅ API key works in test URL, secret configured
-**Estimated Time**: 15 minutes
-**Dependencies**: None
+**Success Criteria**: ✅ API key works in test URL, secret configured in GitHub
+**Estimated Time**: 10 minutes
+**Dependencies**: GitHub secrets already configured
 **Next Task**: H3 (Amazon Affiliate)
 
 ---
 
-#### Task H3: Amazon Affiliate Program (Variable - 1 hour to 2 weeks) 📈 BUSINESS
+#### Task H3: Amazon Affiliate Program (Variable - 10 minutes to 2 weeks) 📈 BUSINESS
 **Purpose**: Enable monetization through affiliate commissions
 
 **Step-by-step instructions:**
@@ -84,7 +104,8 @@ This document provides clear, step-by-step instructions for all tasks that requi
 2. **If Already Approved**:
    - Navigate to "Liens" → "Générateur de liens"
    - Get your Associate ID (looks like: `yourname-21`)
-   - Configure GitHub secret: `AMAZON_AFFILIATE_ID`
+   - ✅ **Already configured**: `AMAZON_AFFILIATE_ID` secret is available in GitHub
+   - If needed, update the secret with your Associate ID
 
 3. **If Pending/Rejected**:
    - Complete profile with VeganFlemme website details
@@ -97,9 +118,9 @@ This document provides clear, step-by-step instructions for all tasks that requi
    - Generate some demo traffic to the site
    - Follow up with Amazon after 1 week
 
-**Success Criteria**: ✅ Affiliate ID configured, can generate product links
-**Estimated Time**: 1 hour (if approved) to 2 weeks (if pending)
-**Dependencies**: MVP deployment for approval
+**Success Criteria**: ✅ Affiliate ID configured in GitHub secrets, can generate product links
+**Estimated Time**: 10 minutes (if approved) to 2 weeks (if pending)
+**Dependencies**: MVP deployment for approval, GitHub secrets already configured
 **Next Task**: H4 (Greenweez Partnership)
 
 ---
