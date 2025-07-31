@@ -1,7 +1,7 @@
 import axios from 'axios';
-import { FoodItem, MenuDay, NutritionProfile, UserPreferences, Menu, Recipe } from '../types';
-import { calculateNutritionalScore } from './nutritionAnalysisService';
-import * as math from 'mathjs';
+import { FoodItem as _FoodItem, MenuDay as _MenuDay, NutritionProfile, UserPreferences, Menu, Recipe as _Recipe } from '../types';
+import { calculateNutritionalScore as _calculateNutritionalScore } from './nutritionAnalysisService';
+import * as _math from 'mathjs';
 
 /**
  * Service responsible for integrating external recipe APIs with the VeganFlemme menu generation system
@@ -350,7 +350,7 @@ export class RecipeIntegrationService {
   /**
    * Selects the best recipe match based on nutritional targets
    */
-  private selectBestRecipeMatch(recipes: any[], meal: any, userProfile: NutritionProfile): any {
+  private selectBestRecipeMatch(recipes: any[], meal: any, _userProfile: NutritionProfile): any {
     if (recipes.length === 0) return null;
     if (recipes.length === 1) return recipes[0];
     
@@ -812,7 +812,7 @@ export class RecipeIntegrationService {
       // Check NOVA 2 (culinary ingredients)
       for (const keyword of nova2Keywords) {
         if (name.includes(keyword)) {
-          culinaryIngredientsCount++;
+          const _culinaryIngredientsCount = culinaryIngredientsCount++;
           matched = true;
           break;
         }

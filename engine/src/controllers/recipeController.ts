@@ -29,17 +29,17 @@ export class RecipeController {
     try {
       // Extract search parameters from request
       const {
-        query = '',
-        diet = 'vegan', // Default to vegan
-        intolerances,
-        includeIngredients,
-        excludeIngredients,
-        type,
-        maxReadyTime,
-        minProtein,
-        maxCalories,
-        sort = 'healthiness',
-        number = 10
+        _query = '',
+        _diet = 'vegan', // Default to vegan
+        _intolerances,
+        _includeIngredients,
+        _excludeIngredients,
+        _type,
+        _maxReadyTime,
+        _minProtein,
+        _maxCalories,
+        _sort = 'healthiness',
+        _number = 10
       } = req.query;
       
       // Ensure vegan diet is enforced

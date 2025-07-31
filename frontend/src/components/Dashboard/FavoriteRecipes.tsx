@@ -1,4 +1,5 @@
 import React from 'react';
+import Image from 'next/image';
 import { Recipe } from '../../types';
 import { Clock, ChevronRight } from 'react-feather';
 
@@ -34,9 +35,11 @@ const FavoriteRecipes: React.FC<FavoriteRecipesProps> = ({ recipes }) => {
                 className="flex items-start border rounded-lg p-3 hover:bg-gray-50 transition-colors"
               >
                 {recipe.imageUrl ? (
-                  <img 
+                  <Image 
                     src={recipe.imageUrl} 
                     alt={recipe.title}
+                    width={64}
+                    height={64}
                     className="w-16 h-16 object-cover rounded-md mr-3"
                   />
                 ) : (

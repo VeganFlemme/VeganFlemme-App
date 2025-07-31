@@ -1,5 +1,5 @@
 import { logger } from '../utils/logger';
-import { ANSES_RNP } from './menuOptimizationService';
+import { ANSES_RNP as _ANSES_RNP } from './menuOptimizationService';
 
 export interface NutritionProfile {
   calories: number;
@@ -808,7 +808,7 @@ export class SwapRecommenderService {
   private generateCookingAdjustments(
     original: IngredientData,
     alternative: IngredientData,
-    context: SwapContext
+    _context: SwapContext
   ): string[] {
     const adjustments: string[] = [];
 

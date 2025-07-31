@@ -1,9 +1,9 @@
 import { FoodItem, MenuDay, NutritionProfile, UserPreferences, Menu, Meal, Ingredient } from '../types';
 import { calculateNutritionalScore } from './nutritionAnalysisService';
-import { QualityScorerService } from './qualityScorerService';
-import { SwapRecommenderService } from './swapRecommenderService';
+import { QualityScorerService as _QualityScorerService } from './qualityScorerService';
+import { SwapRecommenderService as _SwapRecommenderService } from './swapRecommenderService';
 import { logger } from '../utils/logger';
-import * as math from 'mathjs';
+import * as _math from 'mathjs';
 
 /**
  * Enhanced Multi-Objective Menu Optimization Algorithm for VeganFlemme
@@ -261,7 +261,7 @@ export class EnhancedMenuOptimizationService {
     for (const food of foods) {
       if (food.nutrition) {
         for (const [nutrient, value] of Object.entries(food.nutrition)) {
-          if (typeof value === 'number' && nutrition.hasOwnProperty(nutrient)) {
+          if (typeof value === 'number' && Object.prototype.hasOwnProperty.call(nutrition, nutrient)) {
             nutrition[nutrient] += value * mealMultiplier;
           }
         }
@@ -274,7 +274,7 @@ export class EnhancedMenuOptimizationService {
   /**
    * Generate appropriate portion size for an ingredient
    */
-  private generatePortionSize(food: FoodItem, mealType: string): string {
+  private generatePortionSize(_food: FoodItem, _mealType: string): string {
     const portions = [
       '1 portion', '1 tasse', '100g', '150g', '80g', '1 unité', '2 c. à soupe'
     ];
@@ -895,7 +895,7 @@ export class EnhancedMenuOptimizationService {
   /**
    * Post-process the menu to enhance it further
    */
-  private postProcessMenu(menu: Menu, userProfile: NutritionProfile, preferences: UserPreferences): Menu {
+  private postProcessMenu(menu: Menu, userProfile: NutritionProfile, _preferences: UserPreferences): Menu {
     // Create a deep copy
     const enhancedMenu: Menu = JSON.parse(JSON.stringify(menu));
     

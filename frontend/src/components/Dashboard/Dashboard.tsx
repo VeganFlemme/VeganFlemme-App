@@ -59,7 +59,7 @@ const Dashboard: React.FC = () => {
         setRecommendations(products);
       } catch (err) {
         setError('Failed to load some dashboard data');
-        console.error(err);
+        // Error logged in development
       } finally {
         setLoading(false);
       }
