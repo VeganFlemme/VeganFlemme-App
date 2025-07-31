@@ -175,7 +175,7 @@ export const menuController = {
     try {
       const { 
         ingredient, 
-        reason, 
+        _reason, 
         nutritionalTarget,
         recipeType = 'lunch',
         cookingMethod = 'baked',

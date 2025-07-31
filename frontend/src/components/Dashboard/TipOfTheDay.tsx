@@ -65,7 +65,7 @@ const TipOfTheDay: React.FC = () => {
   
   useEffect(() => {
     loadRandomTip();
-  }, []);
+  }, [loadRandomTip]);
   
   const getCategoryColor = (category: string) => {
     switch (category) {
@@ -109,7 +109,7 @@ const TipOfTheDay: React.FC = () => {
         </div>
       ) : (
         <div className="bg-gray-50 p-4 rounded-lg text-center">
-          <p className="text-gray-500">Loading today's tip...</p>
+          <p className="text-gray-500">Loading today&apos;s tip...</p>
         </div>
       )}
       
