@@ -130,7 +130,7 @@ export class RecipeRecommendationService {
     mealType: string
   ): number {
     // Define approximate percentage of daily nutrients by meal type
-    const mealPercentages = {
+    const mealPercentages: { [key: string]: number } = {
       'breakfast': 0.25,
       'lunch': 0.3,
       'dinner': 0.35,
@@ -307,14 +307,17 @@ export class RecipeRecommendationService {
    * Calculate how well the recipe matches user's cooking skill level
    */
   private calculateSkillMatchScore(recipe: Recipe, userProfile: UserProfile): number {
-    const difficultyLevels = {
+    const difficultyLevels: { [key: string]: number } = {
+      'easy': 1,
+      'medium': 2,
+      'hard': 3,
       'beginner': 1,
       'intermediate': 2,
       'advanced': 3
     };
     
-    const recipeDifficulty = difficultyLevels[recipe.difficulty];
-    const userSkill = difficultyLevels[userProfile.cookingSkill];
+    const recipeDifficulty = difficultyLevels[recipe.difficulty] || 2;
+    const userSkill = difficultyLevels[userProfile.cookingSkill] || 2;
     
     // Perfect match if recipe difficulty matches user skill
     if (recipeDifficulty === userSkill) return 1.0;

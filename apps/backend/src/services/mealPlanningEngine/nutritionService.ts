@@ -1,4 +1,4 @@
-import { NutrientProfile, Food, Recipe, UserProfile } from './types';
+import { NutrientProfile, Food, Recipe, UserProfile, MealPlan } from './types';
 
 export class NutritionService {
   /**
@@ -106,8 +106,8 @@ export class NutritionService {
       const scaleFactor = ingredient.amount / baseAmount;
       
       // Add scaled nutrients to the recipe total
-      for (const [nutrient, value] of Object.entries(food.nutrients)) {
-        nutrients[nutrient] += value * scaleFactor;
+      for (const nutrient in food.nutrients) {
+        nutrients[nutrient] += food.nutrients[nutrient] * scaleFactor;
       }
     }
     
