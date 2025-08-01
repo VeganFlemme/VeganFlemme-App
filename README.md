@@ -20,6 +20,8 @@ VeganFlemme est l'outil ultime pour les plus flemmes : devenir vegan n'a jamais 
 
 - **✅ Application Complète** : Interface utilisateur professionnelle avec génération de menus en temps réel
 - **✅ Backend API Opérationnel** : 6+ endpoints REST fonctionnels testés et validés
+- **✅ PA-API Proxy** : Proxy Supabase sécurisé pour Amazon Product Advertising API
+- **✅ Recherche Vegan** : API endpoint `/api/vegan-search` avec interface de test
 - **✅ Génération de Menus** : Algorithmes génétiques avancés pour l'optimisation nutritionnelle
 - **✅ Échange de Repas** : Fonctionnalité de swap des repas avec mise à jour temps réel
 - **✅ Dashboard Nutritionnel** : Calculs RNP, impact carbone, coût estimé en temps réel
@@ -74,15 +76,29 @@ L'application fonctionne immédiatement en mode démonstration. Pour les intégr
 # 4. Exécuter (✅ Script sécurisé, peut être relancé)
 ```
 
+### PA-API Proxy (Supabase Functions)
+```bash
+# 1. Déployer la fonction Supabase
+supabase functions deploy paapi-proxy
+
+# 2. Configurer les variables d'environnement Supabase :
+# PAAPI_ACCESS_KEY_ID=your-amazon-access-key
+# PAAPI_SECRET_ACCESS_KEY=your-amazon-secret-key
+# PAAPI_PARTNER_TAG=your-associate-tag
+# FRONTEND_FUNCTION_SHARED_SECRET=your-secure-secret
+```
+
 ### Variables d'Environnement (Optionnelles)
 ```bash
 # Frontend (.env.local)
 NEXT_PUBLIC_API_URL=http://localhost:3001/api
+VEGANFLEMME_PAAPI_PROXY_URL=https://project.supabase.co/functions/v1/paapi-proxy
+VEGANFLEMME_FUNCTION_SHARED_SECRET=your-secure-secret
 
 # Backend (.env)
 DATABASE_URL=your_supabase_url
 SPOONACULAR_API_KEY=your_key  # Pour plus de recettes
-AMAZON_ACCESS_KEY_ID=your_key  # Pour l'affiliation
+AMAZON_ACCESS_KEY_ID=your_key  # Pour l'affiliation directe (optionnel)
 ```
 
 ## 📊 MÉTRIQUES TECHNIQUES (Vérifiées - Janvier 2025)
@@ -98,6 +114,53 @@ AMAZON_ACCESS_KEY_ID=your_key  # Pour l'affiliation
 - **✅ Real-time Updates**: Dashboard nutritionnel temps réel
 - **✅ Swap System**: Échange de repas instantané
 - **✅ Shopping List**: Génération automatique d'ingrédients
+
+## 🛠️ TESTS ET VALIDATION
+
+### 🧪 Test de l'API Vegan Search
+
+L'application inclut un endpoint sécurisé pour la recherche de produits vegan via Amazon PA-API.
+
+#### Interface de Test
+Visitez `/vegan-search-test` pour tester l'interface de recherche :
+
+![Test de Recherche Vegan](https://github.com/user-attachments/assets/928d9cea-69ee-4beb-8a68-5b09887c13d2)
+
+#### Test via cURL
+```bash
+# Test de l'endpoint vegan-search
+curl -X POST http://localhost:3000/api/vegan-search \
+  -H "Content-Type: application/json" \
+  -d '{
+    "q": "vegan protein powder",
+    "searchIndex": "Grocery",
+    "resources": ["ItemInfo.Title", "Offers.Listings.Price"]
+  }'
+```
+
+#### Test de Production
+```bash
+# Test sur le domaine de production (remplacez par votre URL)
+curl -X POST https://your-domain.com/api/vegan-search \
+  -H "Content-Type: application/json" \
+  -d '{
+    "q": "plant based milk",
+    "searchIndex": "Grocery"
+  }'
+```
+
+### 🔧 Architecture PA-API Proxy
+
+L'architecture sécurisée suit ce pattern :
+1. **Client** → Next.js API Route (`/api/vegan-search`)
+2. **Next.js** → Supabase Edge Function (`/functions/v1/paapi-proxy`)
+3. **Supabase** → Amazon PA-API (avec authentification SigV4)
+
+**Avantages** :
+- ✅ Clés API sécurisées côté serveur
+- ✅ CORS configuré correctement
+- ✅ Authentification par shared secret
+- ✅ Logs et monitoring centralisés
 
 ## 🛠️ TECHNOLOGIES
 
