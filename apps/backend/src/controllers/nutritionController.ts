@@ -1,72 +1,126 @@
 import { Request, Response } from 'express';
 import { logger } from '../utils/logger';
 import { createError } from '../middleware/errorHandler';
-import { ciqualService } from '../services/ciqualService';
-import { openFoodFactsService } from '../services/openFoodFactsService';
+import { enhancedOpenFoodFactsService } from '../services/enhancedOpenFoodFactsService';
+import { spoonacularService } from '../services/spoonacularService';
 import { unifiedNutritionService } from '../services/unifiedNutritionService';
+import { ansesRNPService } from '../services/ansesRNPService';
+import { realTimeNutritionalTrackingService } from '../services/realTimeNutritionalTrackingService';
 
 export const nutritionController = {
   /**
-   * Get ANSES RNP data
+   * Get ANSES RNP data with personalized recommendations
    */
   getRNPData: async (req: Request, res: Response) => {
     try {
-      const { _age, _gender } = req.query;
+      const { age, gender, weight, height, activityLevel, isPregnant, isLactating } = req.query;
 
-      // ANSES Références Nutritionnelles pour la Population
-      const rnpData = {
-        source: 'ANSES 2016 - Actualisation des références nutritionnelles',
-        lastUpdated: '2024-01-01',
-        macronutrients: {
-          protein: {
-            adult: { min: 0.83, recommended: 1.2, unit: 'g/kg/day' },
-            note: 'Augmenté pour régime vegan (biodisponibilité)'
-          },
-          carbohydrates: {
-            adult: { min: 45, max: 65, unit: '% of total energy' }
-          },
-          lipids: {
-            adult: { min: 20, max: 35, unit: '% of total energy' },
-            omega3: { recommended: 2.5, unit: 'g/day' }
-          }
-        },
-        micronutrients: {
-          vitamins: {
-            b12: { adult: 2.4, unit: 'μg/day', critical: true },
-            d: { adult: 15, unit: 'μg/day', critical: true },
-            b9: { adult: 400, unit: 'μg/day' },
-            b6: { adult: 1.7, unit: 'mg/day' },
-            b1: { adult: 1.3, unit: 'mg/day' },
-            b2: { adult: 1.6, unit: 'mg/day' }
-          },
-          minerals: {
-            iron: {
-              adult_male: 11,
-              adult_female: 16,
-              unit: 'mg/day',
-              note: 'Augmenté pour source végétale'
+      // Initialize ANSES service
+      await ansesRNPService.initialize();
+
+      let rnpData;
+
+      if (age && gender && weight && height) {
+        // Get personalized recommendations
+        const profile = {
+          age: Number(age),
+          gender: gender as 'male' | 'female',
+          weight: Number(weight),
+          height: Number(height),
+          activityLevel: (activityLevel as any) || 'moderate',
+          isPregnant: isPregnant === 'true',
+          isLactating: isLactating === 'true'
+        };
+
+        const recommendations = await ansesRNPService.getRecommendations(profile);
+        const energyNeeds = ansesRNPService.calculateEnergyNeeds(profile);
+
+        rnpData = {
+          source: 'ANSES - Références Nutritionnelles pour la Population',
+          lastUpdated: '2024-01-01',
+          personalized: true,
+          profile,
+          energyNeeds,
+          dailyRecommendations: recommendations.dailyRecommendations.reduce((acc, rec) => {
+            acc[rec.nutrient] = {
+              value: rec.value,
+              unit: rec.unit,
+              type: rec.type,
+              notes: rec.notes
+            };
+            return acc;
+          }, {} as any),
+          veganAdjustments: recommendations.veganSpecificAdjustments.reduce((acc, adj) => {
+            acc[adj.nutrient] = {
+              value: adj.value,
+              unit: adj.unit,
+              notes: adj.notes
+            };
+            return acc;
+          }, {} as any),
+          criticalNutrients: recommendations.criticalNutrients,
+          monitoringAdvice: recommendations.monitoringAdvice
+        };
+      } else {
+        // Return general RNP data
+        rnpData = {
+          source: 'ANSES - Références Nutritionnelles pour la Population',
+          lastUpdated: '2024-01-01',
+          personalized: false,
+          macronutrients: {
+            protein: {
+              adult: { min: 0.83, recommended: 1.2, unit: 'g/kg/day' },
+              note: 'Augmenté pour régime vegan (biodisponibilité)'
             },
-            calcium: { adult: 1000, unit: 'mg/day' },
-            zinc: {
-              adult_male: 11,
-              adult_female: 8,
-              unit: 'mg/day'
+            carbohydrates: {
+              adult: { min: 45, max: 65, unit: '% of total energy' }
             },
-            iodine: { adult: 150, unit: 'μg/day' },
-            selenium: { adult: 55, unit: 'μg/day' }
-          }
-        },
-        fiber: {
-          adult: { recommended: 30, unit: 'g/day' }
-        },
-        veganSpecificNotes: [
-          'Vitamine B12 : supplémentation obligatoire',
-          'Fer : associer avec vitamine C pour absorption',
-          'Oméga-3 : privilégier graines de lin, noix, algues',
-          'Calcium : sources variées (sésame, amandes, légumes verts)',
-          'Protéines : combiner céréales et légumineuses'
-        ]
-      };
+            lipids: {
+              adult: { min: 20, max: 35, unit: '% of total energy' },
+              omega3: { recommended: 2.5, unit: 'g/day' }
+            }
+          },
+          micronutrients: {
+            vitamins: {
+              b12: { adult: 4, unit: 'μg/day', critical: true },
+              d: { adult: 15, unit: 'μg/day', critical: true },
+              b9: { adult: 330, unit: 'μg/day' },
+              b6: { adult: 1.7, unit: 'mg/day' },
+              b1: { adult: 1.3, unit: 'mg/day' },
+              b2: { adult: 1.6, unit: 'mg/day' },
+              c: { adult: 110, unit: 'mg/day' }
+            },
+            minerals: {
+              iron: {
+                adult_male: 11,
+                adult_female: 16,
+                unit: 'mg/day',
+                note: 'Augmenté x1.8 pour source végétale (ANSES)'
+              },
+              calcium: { adult: 950, unit: 'mg/day' },
+              zinc: {
+                adult_male: 14,
+                adult_female: 12,
+                unit: 'mg/day',
+                note: 'Augmenté x1.5 pour phytates (ANSES)'
+              },
+              selenium: { adult: 70, unit: 'μg/day' }
+            }
+          },
+          fiber: {
+            adult: { recommended: 30, unit: 'g/day' }
+          },
+          veganSpecificNotes: [
+            'Vitamine B12 : supplémentation obligatoire (10-25 μg/j)',
+            'Fer : associer avec vitamine C pour absorption',
+            'Oméga-3 : privilégier graines de lin, noix, algues',
+            'Calcium : sources variées (sésame, amandes, légumes verts)',
+            'Protéines : combiner céréales et légumineuses',
+            'Zinc : faire tremper légumineuses pour réduire phytates'
+          ],
+          criticalNutrients: ansesRNPService.getCriticalVeganNutrients()
+        };
+      }
 
       res.status(200).json({
         success: true,
@@ -74,8 +128,8 @@ export const nutritionController = {
       });
 
     } catch (error) {
-      logger.error('RNP data retrieval failed:', error);
-      throw createError('Failed to retrieve RNP data', 500);
+      logger.error('ANSES RNP data retrieval failed:', error);
+      throw createError('Failed to retrieve ANSES RNP data', 500);
     }
   },
 
@@ -106,7 +160,7 @@ export const nutritionController = {
         vitamins: {},
         minerals: {},
         matches: [],
-        dataSources: { ciqual: 0, openfoodfacts: 0, hybrid: 0 }
+        dataSources: { openfoodfacts: 0, spoonacular: 0, user_input: 0 }
       };
 
       // Analyze each food using the unified service
