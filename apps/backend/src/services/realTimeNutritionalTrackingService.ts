@@ -403,7 +403,7 @@ export class RealTimeNutritionalTrackingService {
         for (const gap of dailySummary.nutritionalAssessment.gaps) {
           const alert: NutritionalAlert = {
             type: 'deficiency',
-            severity: gap.severity,
+            severity: gap.severity === 'moderate' ? 'medium' : gap.severity as 'low' | 'high' | 'critical',
             nutrient: gap.nutrient,
             message: `Insuffisance en ${gap.nutrient}: ${gap.current.toFixed(1)}/${gap.recommended.toFixed(1)}`,
             recommendation: gap.recommendations[0],
@@ -705,7 +705,7 @@ export class RealTimeNutritionalTrackingService {
       for (const gap of assessment.gaps.slice(0, 3)) { // Top 3 gaps
         alerts.push({
           type: 'deficiency',
-          severity: gap.severity,
+          severity: gap.severity === 'moderate' ? 'medium' : gap.severity as 'low' | 'high' | 'critical',
           nutrient: gap.nutrient,
           message: `Objectif ${gap.nutrient}: ${gap.current.toFixed(1)}/${gap.recommended.toFixed(1)}`,
           recommendation: gap.recommendations[0],

@@ -32,25 +32,88 @@ router.get('/daily-tracking/:profileId', nutritionController.getDailyTracking);
 router.get('/weekly-evolution/:profileId', nutritionController.getWeeklyEvolution);
 
 /**
- * @route GET /api/nutrition/ciqual/search
- * @desc Search CIQUAL database for foods
+ * @route GET /api/nutrition/search
+ * @desc Unified search across all food databases
  * @access Public
  */
-router.get('/ciqual/search', nutritionController.searchCiqual);
+router.get('/search', nutritionController.searchFoods);
 
 /**
- * @route GET /api/nutrition/ciqual/food/:code
- * @desc Get CIQUAL food by code
+ * @route GET /api/nutrition/barcode/:barcode
+ * @desc Get food by barcode (unified service)
  * @access Public
  */
-router.get('/ciqual/food/:code', nutritionController.getCiqualFood);
+router.get('/barcode/:barcode', nutritionController.getFoodByBarcode);
 
 /**
- * @route GET /api/nutrition/ciqual/vegan
- * @desc Get vegan foods from CIQUAL database
+ * @route GET /api/nutrition/vegan-foods
+ * @desc Get vegan foods from all databases
  * @access Public
  */
-router.get('/ciqual/vegan', nutritionController.getCiqualVeganFoods);
+router.get('/vegan-foods', nutritionController.getVeganFoods);
+
+/**
+ * @route GET /api/nutrition/spoonacular/search
+ * @desc Search Spoonacular for vegan recipes
+ * @access Public
+ */
+router.get('/spoonacular/search', nutritionController.searchSpoonacularRecipes);
+
+/**
+ * @route GET /api/nutrition/spoonacular/recipe/:id
+ * @desc Get Spoonacular recipe by ID
+ * @access Public
+ */
+router.get('/spoonacular/recipe/:id', nutritionController.getSpoonacularRecipe);
+
+/**
+ * @route GET /api/nutrition/spoonacular/random
+ * @desc Get random vegan recipes from Spoonacular
+ * @access Public
+ */
+router.get('/spoonacular/random', nutritionController.getRandomVeganRecipes);
+
+/**
+ * @route POST /api/nutrition/tracking/:userId/food
+ * @desc Add food entry for real-time tracking
+ * @access Public
+ */
+router.post('/tracking/:userId/food', nutritionController.addFoodEntry);
+
+/**
+ * @route GET /api/nutrition/tracking/:userId/daily
+ * @desc Get daily nutrition summary
+ * @access Public
+ */
+router.get('/tracking/:userId/daily', nutritionController.getDailyNutritionSummary);
+
+/**
+ * @route GET /api/nutrition/tracking/:userId/weekly
+ * @desc Get weekly nutrition summary
+ * @access Public
+ */
+router.get('/tracking/:userId/weekly', nutritionController.getWeeklyNutritionSummary);
+
+/**
+ * @route GET /api/nutrition/tracking/:userId/alerts
+ * @desc Get real-time nutritional alerts
+ * @access Public
+ */
+router.get('/tracking/:userId/alerts', nutritionController.getNutritionalAlerts);
+
+/**
+ * @route PUT /api/nutrition/tracking/:userId/profile
+ * @desc Update user nutritional profile
+ * @access Public
+ */
+router.put('/tracking/:userId/profile', nutritionController.updateUserProfile);
+
+/**
+ * @route POST /api/nutrition/assess
+ * @desc Assess nutritional adequacy against ANSES RNP
+ * @access Public
+ */
+router.post('/assess', nutritionController.assessNutritionalAdequacy);
 
 /**
  * @route GET /api/nutrition/openfoodfacts/search

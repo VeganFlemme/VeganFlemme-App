@@ -558,7 +558,7 @@ export const nutritionController = {
           })),
           total: results.total,
           dataSources: results.dataSources,
-          description: 'Recherche unifiée dans CIQUAL et OpenFoodFacts'
+          description: 'Recherche unifiée dans OpenFoodFacts et Spoonacular'
         }
       });
 
@@ -643,84 +643,12 @@ export const nutritionController = {
           })),
           total: results.total,
           dataSources: results.dataSources,
-          description: 'Aliments végétaliens des bases CIQUAL et OpenFoodFacts'
+          description: 'Aliments végétaliens des bases OpenFoodFacts et Spoonacular'
         }
       });
 
     } catch (error) {
       logger.error('Unified vegan foods retrieval failed:', error);
-      throw error;
-    }
-  },
-
-  /**
-   * Get CIQUAL food by code
-   */
-  getCiqualFood: async (req: Request, res: Response) => {
-    try {
-      const { code } = req.params;
-
-      if (!code) {
-        throw createError('Food code is required', 400);
-      }
-
-      logger.info('CIQUAL food requested', { code });
-
-      const food = await ciqualService.getFoodByCode(code);
-
-      if (!food) {
-        throw createError('Food not found', 404);
-      }
-
-      res.status(200).json({
-        success: true,
-        data: {
-          code: food.code,
-          name: food.name,
-          nameEn: food.nameEn,
-          group: food.group,
-          subGroup: food.subGroup,
-          nutrition: ciqualService.getNutritionSummary(food),
-          dataSource: 'CIQUAL - Base alimentaire française ANSES'
-        }
-      });
-
-    } catch (error) {
-      logger.error('CIQUAL food retrieval failed:', error);
-      throw error;
-    }
-  },
-
-  /**
-   * Get vegan foods from CIQUAL
-   */
-  getCiqualVeganFoods: async (req: Request, res: Response) => {
-    try {
-      const { limit = 50 } = req.query;
-
-      logger.info('CIQUAL vegan foods requested', { limit });
-
-      const veganFoods = await ciqualService.getVeganFoods(Number(limit));
-
-      res.status(200).json({
-        success: true,
-        data: {
-          foods: veganFoods.map(food => ({
-            code: food.code,
-            name: food.name,
-            nameEn: food.nameEn,
-            group: food.group,
-            subGroup: food.subGroup,
-            nutrition: ciqualService.getNutritionSummary(food)
-          })),
-          total: veganFoods.length,
-          dataSource: 'CIQUAL - Base alimentaire française ANSES',
-          note: 'Aliments identifiés comme compatibles avec un régime végétalien'
-        }
-      });
-
-    } catch (error) {
-      logger.error('CIQUAL vegan foods retrieval failed:', error);
       throw error;
     }
   },
@@ -738,7 +666,7 @@ export const nutritionController = {
 
       logger.info('OpenFoodFacts search requested', { query, page, pageSize });
 
-      const results = await openFoodFactsService.searchProducts(
+      const results = await enhancedOpenFoodFactsService.searchProducts(
         query, 
         Number(page), 
         Number(pageSize)
@@ -754,7 +682,7 @@ export const nutritionController = {
             name: product.product_name,
             brands: product.brands,
             ingredients: product.ingredients_text,
-            nutrition: openFoodFactsService.extractNutritionInfo(product),
+            nutrition: enhancedOpenFoodFactsService.extractNutritionInfo(product),
             image: product.image_url
           })) || [],
           pagination: {
@@ -785,7 +713,7 @@ export const nutritionController = {
 
       logger.info('OpenFoodFacts product requested', { barcode });
 
-      const result = await openFoodFactsService.getProductByBarcode(barcode);
+      const result = await enhancedOpenFoodFactsService.getProductByBarcode(barcode);
 
       if (result.status !== 1 || !result.product) {
         throw createError('Product not found', 404);
@@ -800,7 +728,7 @@ export const nutritionController = {
           name: product.product_name,
           brands: product.brands,
           ingredients: product.ingredients_text,
-          nutrition: openFoodFactsService.extractNutritionInfo(product),
+          nutrition: enhancedOpenFoodFactsService.extractNutritionInfo(product),
           image: product.image_url,
           dataSource: 'OpenFoodFacts - Base mondiale collaborative'
         }
@@ -826,7 +754,7 @@ export const nutritionController = {
 
       logger.info('OpenFoodFacts category requested', { category, page, pageSize });
 
-      const results = await openFoodFactsService.getProductsByCategory(
+      const results = await enhancedOpenFoodFactsService.getProductsByCategory(
         category, 
         Number(page), 
         Number(pageSize)
@@ -842,7 +770,7 @@ export const nutritionController = {
             name: product.product_name,
             brands: product.brands,
             ingredients: product.ingredients_text,
-            nutrition: openFoodFactsService.extractNutritionInfo(product),
+            nutrition: enhancedOpenFoodFactsService.extractNutritionInfo(product),
             image: product.image_url
           })) || [],
           pagination: {
@@ -868,7 +796,7 @@ export const nutritionController = {
 
       logger.info('OpenFoodFacts vegan products requested', { category, page, pageSize });
 
-      const veganProducts = await openFoodFactsService.getVeganProductsByCategory(
+      const veganProducts = await enhancedOpenFoodFactsService.getVeganProductsByCategory(
         category as string, 
         Number(page), 
         Number(pageSize)
@@ -884,7 +812,7 @@ export const nutritionController = {
             name: product.product_name,
             brands: product.brands,
             ingredients: product.ingredients_text,
-            nutrition: openFoodFactsService.extractNutritionInfo(product),
+            nutrition: enhancedOpenFoodFactsService.extractNutritionInfo(product),
             image: product.image_url
           })),
           pagination: {
@@ -903,6 +831,437 @@ export const nutritionController = {
   },
 
   /**
+   * Search Spoonacular recipes
+   */
+  searchSpoonacularRecipes: async (req: Request, res: Response) => {
+    try {
+      const { 
+        query, 
+        number = 12, 
+        type, 
+        maxReadyTime, 
+        minCalories, 
+        maxCalories,
+        minProtein,
+        maxProtein
+      } = req.query;
+
+      logger.info('Spoonacular recipe search requested', { query, number, type });
+
+      const searchParams: any = {
+        number: Number(number),
+        addRecipeInformation: true,
+        addRecipeNutrition: true
+      };
+
+      if (query) searchParams.query = query;
+      if (type) searchParams.type = type;
+      if (maxReadyTime) searchParams.maxReadyTime = Number(maxReadyTime);
+      if (minCalories) searchParams.minCalories = Number(minCalories);
+      if (maxCalories) searchParams.maxCalories = Number(maxCalories);
+      if (minProtein) searchParams.minProtein = Number(minProtein);
+      if (maxProtein) searchParams.maxProtein = Number(maxProtein);
+
+      const results = await spoonacularService.searchVeganRecipes(searchParams);
+
+      res.status(200).json({
+        success: true,
+        data: {
+          recipes: results.results.map(recipe => ({
+            id: recipe.id,
+            title: recipe.title,
+            image: recipe.image,
+            servings: recipe.servings,
+            readyInMinutes: recipe.readyInMinutes,
+            healthScore: recipe.healthScore,
+            nutrition: recipe.nutrition ? spoonacularService.extractNutritionInfo(recipe) : null,
+            ingredients: recipe.extendedIngredients?.map(ing => ({
+              name: ing.name,
+              amount: ing.amount,
+              unit: ing.unit,
+              original: ing.original
+            })),
+            vegan: recipe.vegan,
+            vegetarian: recipe.vegetarian
+          })),
+          total: results.totalResults,
+          pagination: {
+            offset: results.offset,
+            number: results.number
+          },
+          dataSource: 'Spoonacular - Recettes végétaliennes'
+        }
+      });
+
+    } catch (error) {
+      logger.error('Spoonacular recipe search failed:', error);
+      throw error;
+    }
+  },
+
+  /**
+   * Get Spoonacular recipe by ID
+   */
+  getSpoonacularRecipe: async (req: Request, res: Response) => {
+    try {
+      const { id } = req.params;
+
+      if (!id) {
+        throw createError('Recipe ID is required', 400);
+      }
+
+      logger.info('Spoonacular recipe requested', { id });
+
+      const recipe = await spoonacularService.getRecipeById(Number(id), true);
+
+      if (!recipe) {
+        throw createError('Recipe not found', 404);
+      }
+
+      res.status(200).json({
+        success: true,
+        data: {
+          id: recipe.id,
+          title: recipe.title,
+          image: recipe.image,
+          servings: recipe.servings,
+          readyInMinutes: recipe.readyInMinutes,
+          healthScore: recipe.healthScore,
+          summary: recipe.summary,
+          nutrition: recipe.nutrition ? spoonacularService.extractNutritionInfo(recipe) : null,
+          ingredients: recipe.extendedIngredients?.map(ing => ({
+            name: ing.name,
+            amount: ing.amount,
+            unit: ing.unit,
+            original: ing.original,
+            image: ing.image
+          })),
+          instructions: nutritionController.parseInstructionsFromRecipe(recipe),
+          vegan: recipe.vegan,
+          vegetarian: recipe.vegetarian,
+          glutenFree: recipe.glutenFree,
+          dairyFree: recipe.dairyFree,
+          dishTypes: recipe.dishTypes,
+          cuisines: recipe.cuisines,
+          sourceUrl: recipe.sourceUrl,
+          dataSource: 'Spoonacular - Recette végétalienne'
+        }
+      });
+
+    } catch (error) {
+      logger.error('Spoonacular recipe retrieval failed:', error);
+      throw error;
+    }
+  },
+
+  /**
+   * Get random vegan recipes from Spoonacular
+   */
+  getRandomVeganRecipes: async (req: Request, res: Response) => {
+    try {
+      const { number = 10, tags, excludeIngredients } = req.query;
+
+      logger.info('Random vegan recipes requested', { number, tags, excludeIngredients });
+
+      const tagsArray = tags ? (tags as string).split(',') : undefined;
+      const excludeArray = excludeIngredients ? (excludeIngredients as string).split(',') : undefined;
+
+      const result = await spoonacularService.getRandomVeganRecipes(
+        Number(number),
+        tagsArray,
+        excludeArray
+      );
+
+      res.status(200).json({
+        success: true,
+        data: {
+          recipes: result.recipes.map(recipe => ({
+            id: recipe.id,
+            title: recipe.title,
+            image: recipe.image,
+            servings: recipe.servings,
+            readyInMinutes: recipe.readyInMinutes,
+            healthScore: recipe.healthScore,
+            nutrition: recipe.nutrition ? spoonacularService.extractNutritionInfo(recipe) : null,
+            vegan: recipe.vegan,
+            vegetarian: recipe.vegetarian,
+            dishTypes: recipe.dishTypes,
+            cuisines: recipe.cuisines,
+            sourceUrl: recipe.sourceUrl
+          })),
+          total: result.recipes.length,
+          dataSource: 'Spoonacular - Recettes végétaliennes aléatoires'
+        }
+      });
+
+    } catch (error) {
+      logger.error('Random vegan recipes retrieval failed:', error);
+      throw error;
+    }
+  },
+
+  /**
+   * Add food entry for real-time tracking
+   */
+  addFoodEntry: async (req: Request, res: Response) => {
+    try {
+      const { userId } = req.params;
+      const { name, amount, unit, mealType, barcode, recipeId, nutrition } = req.body;
+
+      if (!name || !amount || !unit || !mealType) {
+        throw createError('Name, amount, unit, and mealType are required', 400);
+      }
+
+      logger.info('Food entry requested', { userId, name, amount, mealType });
+
+      await realTimeNutritionalTrackingService.initialize();
+
+      const foodEntry = await realTimeNutritionalTrackingService.addFoodEntry(
+        userId,
+        name,
+        Number(amount),
+        unit,
+        mealType,
+        barcode,
+        recipeId ? Number(recipeId) : undefined,
+        nutrition
+      );
+
+      res.status(201).json({
+        success: true,
+        data: {
+          id: foodEntry.id,
+          name: foodEntry.name,
+          amount: foodEntry.amount,
+          unit: foodEntry.unit,
+          mealType: foodEntry.mealType,
+          nutrition: foodEntry.nutrition,
+          source: foodEntry.source,
+          timestamp: foodEntry.timestamp,
+          verified: foodEntry.user_verified
+        }
+      });
+
+    } catch (error) {
+      logger.error('Food entry addition failed:', error);
+      throw error;
+    }
+  },
+
+  /**
+   * Get daily nutrition summary
+   */
+  getDailyNutritionSummary: async (req: Request, res: Response) => {
+    try {
+      const { userId } = req.params;
+      const { date } = req.query;
+
+      logger.info('Daily nutrition summary requested', { userId, date });
+
+      await realTimeNutritionalTrackingService.initialize();
+
+      const targetDate = date ? new Date(date as string) : new Date();
+      const summary = await realTimeNutritionalTrackingService.getDailySummary(userId, targetDate);
+
+      res.status(200).json({
+        success: true,
+        data: {
+          date: summary.date,
+          totalNutrition: summary.totalNutrition,
+          meals: {
+            breakfast: summary.meals.breakfast.length,
+            lunch: summary.meals.lunch.length,  
+            dinner: summary.meals.dinner.length,
+            snack: summary.meals.snack.length
+          },
+          nutritionalAssessment: summary.nutritionalAssessment ? {
+            overallScore: summary.nutritionalAssessment.overall_score,
+            adequacyPercentage: summary.nutritionalAssessment.adequacy_percentage,
+            topGaps: summary.nutritionalAssessment.gaps.slice(0, 3),
+            strengths: summary.nutritionalAssessment.strengths.slice(0, 3)
+          } : null,
+          recommendations: summary.recommendations,
+          alerts: summary.alerts
+        }
+      });
+
+    } catch (error) {
+      logger.error('Daily nutrition summary retrieval failed:', error);
+      throw error;
+    }
+  },
+
+  /**
+   * Get weekly nutrition summary
+   */
+  getWeeklyNutritionSummary: async (req: Request, res: Response) => {
+    try {
+      const { userId } = req.params;
+      const { startDate } = req.query;
+
+      logger.info('Weekly nutrition summary requested', { userId, startDate });
+
+      await realTimeNutritionalTrackingService.initialize();
+
+      const start = startDate ? new Date(startDate as string) : undefined;
+      const summary = await realTimeNutritionalTrackingService.getWeeklySummary(userId, start);
+
+      res.status(200).json({
+        success: true,
+        data: {
+          period: `${summary.startDate} - ${summary.endDate}`,
+          averageDaily: summary.averageDaily,
+          nutritionalAssessment: {
+            overallScore: summary.nutritionalAssessment.overall_score,
+            adequacyPercentage: summary.nutritionalAssessment.adequacy_percentage,
+            gaps: summary.nutritionalAssessment.gaps.slice(0, 5),
+            supplementRecommendations: summary.nutritionalAssessment.supplement_recommendations
+          },
+          trends: summary.trends,
+          achievements: summary.achievements,
+          improvements: summary.improvements.slice(0, 5)
+        }
+      });
+
+    } catch (error) {
+      logger.error('Weekly nutrition summary retrieval failed:', error);
+      throw error;
+    }
+  },
+
+  /**
+   * Get real-time nutritional alerts
+   */
+  getNutritionalAlerts: async (req: Request, res: Response) => {
+    try {
+      const { userId } = req.params;
+
+      logger.info('Nutritional alerts requested', { userId });
+
+      await realTimeNutritionalTrackingService.initialize();
+
+      const alerts = await realTimeNutritionalTrackingService.getNutritionalAlerts(userId);
+
+      res.status(200).json({
+        success: true,
+        data: {
+          alerts: alerts.map(alert => ({
+            type: alert.type,
+            severity: alert.severity,
+            nutrient: alert.nutrient,
+            message: alert.message,
+            recommendation: alert.recommendation,
+            timestamp: alert.timestamp
+          })),
+          total: alerts.length,
+          critical: alerts.filter(a => a.severity === 'critical').length,
+          high: alerts.filter(a => a.severity === 'high').length
+        }
+      });
+
+    } catch (error) {
+      logger.error('Nutritional alerts retrieval failed:', error);
+      throw error;
+    }
+  },
+
+  /**
+   * Update user nutritional profile
+   */
+  updateUserProfile: async (req: Request, res: Response) => {
+    try {
+      const { userId } = req.params;
+      const profileData = req.body;
+
+      if (!profileData.age || !profileData.gender || !profileData.weight || !profileData.height) {
+        throw createError('Age, gender, weight, and height are required', 400);
+      }
+
+      logger.info('User profile update requested', { userId });
+
+      await realTimeNutritionalTrackingService.initialize();
+
+      const profile = {
+        userId,
+        ...profileData,
+        trackingStartDate: new Date(),
+        lastUpdated: new Date()
+      };
+
+      await realTimeNutritionalTrackingService.updateUserProfile(profile);
+
+      res.status(200).json({
+        success: true,
+        data: {
+          message: 'Profil nutritionnel mis à jour avec succès',
+          profile: {
+            userId: profile.userId,
+            age: profile.age,
+            gender: profile.gender,
+            weight: profile.weight,
+            height: profile.height,
+            activityLevel: profile.activityLevel,
+            goals: profile.goals,
+            lastUpdated: profile.lastUpdated
+          }
+        }
+      });
+
+    } catch (error) {
+      logger.error('User profile update failed:', error);
+      throw error;
+    }
+  },
+
+  /**
+   * Assess nutritional adequacy against ANSES RNP
+   */
+  assessNutritionalAdequacy: async (req: Request, res: Response) => {
+    try {
+      const { profile, dailyIntake } = req.body;
+
+      if (!profile || !dailyIntake) {
+        throw createError('Profile and daily intake data are required', 400);
+      }
+
+      logger.info('Nutritional adequacy assessment requested', { 
+        profileKeys: Object.keys(profile),
+        intakeKeys: Object.keys(dailyIntake)
+      });
+
+      await ansesRNPService.initialize();
+
+      const assessment = await ansesRNPService.assessNutritionalAdequacy(profile, dailyIntake);
+
+      res.status(200).json({
+        success: true,
+        data: {
+          assessment: {
+            overallScore: assessment.overall_score,
+            adequacyPercentage: assessment.adequacy_percentage,
+            gaps: assessment.gaps.map(gap => ({
+              nutrient: gap.nutrient,
+              current: gap.current,
+              recommended: gap.recommended,
+              deficit: gap.gap,
+              severity: gap.severity,
+              recommendations: gap.recommendations.slice(0, 2)
+            })),
+            strengths: assessment.strengths,
+            improvements: assessment.improvements.slice(0, 5),
+            supplementRecommendations: assessment.supplement_recommendations
+          },
+          source: 'ANSES - Références Nutritionnelles pour la Population'
+        }
+      });
+
+    } catch (error) {
+      logger.error('Nutritional adequacy assessment failed:', error);
+      throw error;
+    }
+  },
+
+  /**
    * Get unified food database status and statistics
    */
   getFoodDatabaseStatus: async (req: Request, res: Response) => {
@@ -911,42 +1270,64 @@ export const nutritionController = {
 
       // Initialize unified service if needed
       await unifiedNutritionService.initialize();
+      await ansesRNPService.initialize();
+      await realTimeNutritionalTrackingService.initialize();
 
-      const status = unifiedNutritionService.getStatus();
+      const unifiedStatus = unifiedNutritionService.getStatus();
+      const ansesStatus = ansesRNPService.getStatus();
+      const trackingStatus = realTimeNutritionalTrackingService.getStatus();
 
       res.status(200).json({
         success: true,
         data: {
-          ciqual: {
-            available: status.ciqual.available,
-            totalFoods: status.ciqual.totalFoods,
-            source: 'ANSES - Agence nationale de sécurité sanitaire',
-            description: 'Base de données française officielle sur la composition nutritionnelle des aliments',
-            metadata: status.ciqual.metadata
-          },
           openFoodFacts: {
-            available: status.openFoodFacts.available,
+            available: unifiedStatus.openFoodFacts.available,
             source: 'OpenFoodFacts - Base collaborative mondiale',
             description: 'Base de données collaborative mondiale sur les produits alimentaires',
             features: ['Codes barres', 'Nutri-Score', 'Eco-Score', 'Ingrédients', 'Photos'],
-            cacheStats: status.openFoodFacts.cacheStats
+            cacheStats: unifiedStatus.openFoodFacts.cacheStats
+          },
+          spoonacular: {
+            available: unifiedStatus.spoonacular.available,
+            source: 'Spoonacular - Base de recettes API',
+            description: 'Base de données de recettes avec analyse nutritionnelle',
+            features: ['Recherche de recettes', 'Analyse nutritionnelle', 'Instructions', 'Ingrédients'],
+            cacheStats: unifiedStatus.spoonacular.cacheStats
+          },
+          ansesRNP: {
+            available: ansesStatus.initialized,
+            version: ansesStatus.version,
+            source: ansesStatus.source,
+            baseRecommendations: ansesStatus.baseRecommendations,
+            veganAdjustments: ansesStatus.veganAdjustments,
+            description: 'Références Nutritionnelles pour la Population française avec ajustements végétaliens',
+            features: ['RNP personnalisées', 'Ajustements végétaliens', 'Calcul BMR', 'Évaluation nutritionnelle']
+          },
+          realTimeTracking: {
+            available: trackingStatus.initialized,
+            userProfiles: trackingStatus.userProfiles,
+            totalFoodEntries: trackingStatus.totalFoodEntries,
+            dailySummaries: trackingStatus.dailySummaries,
+            description: 'Suivi nutritionnel en temps réel avec alertes ANSES',
+            features: ['Suivi quotidien', 'Évaluation ANSES', 'Alertes nutritionnelles', 'Tendances hebdomadaires']
           },
           unified: {
-            status: status.unified.initialized ? 'active' : 'initializing',
-            primaryDataSource: status.unified.dataSources.primary,
-            fallbackStrategy: status.unified.dataSources.fallback,
+            status: unifiedStatus.unified.initialized ? 'active' : 'initializing',
+            primaryDataSource: unifiedStatus.unified.dataSources.primary,
+            secondaryDataSource: unifiedStatus.unified.dataSources.secondary,
             capabilities: [
               'Recherche unifiée par nom d\'aliment',
               'Recherche par code-barres',
+              'Recherche de recettes végétaliennes',
               'Filtrage produits végétaliens',
               'Analyse nutritionnelle automatique',
               'Cache intelligent pour performance',
               'Fallback automatique entre sources'
             ],
             performance: {
-              ciqualLoadTime: 'Milliseconds (optimized JSON)',
               openFoodFactsCaching: 'Intelligent with offline fallback',
-              smartFallback: 'CIQUAL prioritized for basic foods, OpenFoodFacts for products'
+              spoonacularCaching: 'Recipe and nutrition data cached',
+              smartFallback: 'OpenFoodFacts for ingredients, Spoonacular for recipes'
             }
           }
         }
@@ -958,42 +1339,26 @@ export const nutritionController = {
     }
   },
 
-  // Keep legacy endpoints for backward compatibility
   /**
-   * Search CIQUAL database for foods (legacy endpoint)
+   * Parse instructions from recipe data (helper method)
    */
-  searchCiqual: async (req: Request, res: Response) => {
-    try {
-      const { query, limit = 20 } = req.query;
-
-      if (!query || typeof query !== 'string') {
-        throw createError('Search query is required', 400);
-      }
-
-      logger.info('CIQUAL search requested', { query, limit });
-
-      const results = await ciqualService.searchFoodsByName(query, Number(limit));
-
-      res.status(200).json({
-        success: true,
-        data: {
-          query,
-          results: results.foods.map(food => ({
-            code: food.code,
-            name: food.name,
-            nameEn: food.nameEn,
-            group: food.group,
-            subGroup: food.subGroup,
-            nutrition: ciqualService.getNutritionSummary(food)
-          })),
-          total: results.total,
-          dataSource: 'CIQUAL - Base alimentaire française ANSES'
-        }
-      });
-
-    } catch (error) {
-      logger.error('CIQUAL search failed:', error);
-      throw error;
+  parseInstructionsFromRecipe: (recipe: any) => {
+    if (!recipe.analyzedInstructions || recipe.analyzedInstructions.length === 0) {
+      return recipe.instructions ? [{ step: recipe.instructions }] : [];
     }
+    
+    const instructions: any[] = [];
+    
+    for (const instructionSet of recipe.analyzedInstructions) {
+      for (const step of instructionSet.steps) {
+        instructions.push({
+          number: step.number,
+          step: step.step,
+          ingredients: step.ingredients?.map((ing: any) => ing.name) || []
+        });
+      }
+    }
+    
+    return instructions;
   }
 };
