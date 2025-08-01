@@ -493,8 +493,19 @@ ALTER TABLE user_progress ENABLE ROW LEVEL SECURITY;
 ALTER TABLE user_resource_progress ENABLE ROW LEVEL SECURITY;
 
 -- Basic RLS policies (users can only access their own data)
+-- Note: Use DROP POLICY IF EXISTS to avoid conflicts if policies already exist
+DROP POLICY IF EXISTS "Users can view own profile" ON users;
+DROP POLICY IF EXISTS "Users can update own profile" ON users;
+
 CREATE POLICY "Users can view own profile" ON users FOR SELECT USING (auth.uid() = id);
 CREATE POLICY "Users can update own profile" ON users FOR UPDATE USING (auth.uid() = id);
+
+DROP POLICY IF EXISTS "Users can access own menus" ON menus;
+DROP POLICY IF EXISTS "Users can access own shopping lists" ON shopping_lists;
+DROP POLICY IF EXISTS "Users can access own meal plans" ON meal_plans;
+DROP POLICY IF EXISTS "Users can access own transition tasks" ON transition_tasks;
+DROP POLICY IF EXISTS "Users can access own nutrition trackers" ON nutrition_trackers;
+DROP POLICY IF EXISTS "Users can access own progress" ON user_progress;
 
 CREATE POLICY "Users can access own menus" ON menus FOR ALL USING (auth.uid() = user_id);
 CREATE POLICY "Users can access own shopping lists" ON shopping_lists FOR ALL USING (auth.uid() = user_id);
@@ -504,6 +515,10 @@ CREATE POLICY "Users can access own nutrition trackers" ON nutrition_trackers FO
 CREATE POLICY "Users can access own progress" ON user_progress FOR ALL USING (auth.uid() = user_id);
 
 -- Public read access for shared resources
+DROP POLICY IF EXISTS "Public read access to foods" ON foods;
+DROP POLICY IF EXISTS "Public read access to recipes" ON recipes;
+DROP POLICY IF EXISTS "Public read access to education resources" ON education_resources;
+
 CREATE POLICY "Public read access to foods" ON foods FOR SELECT TO anon, authenticated USING (true);
 CREATE POLICY "Public read access to recipes" ON recipes FOR SELECT TO anon, authenticated USING (true);
 CREATE POLICY "Public read access to education resources" ON education_resources FOR SELECT TO anon, authenticated USING (true);
