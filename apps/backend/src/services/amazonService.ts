@@ -25,14 +25,14 @@ export class AmazonPAAPIService {
   private readonly accessKeyId: string;
   private readonly secretAccessKey: string;
   private readonly region: string;
-  private readonly host: string = 'webservices.amazon.com';
+  private readonly host: string = 'webservices.amazon.fr';
   private readonly endpoint: string = '/paapi5/searchitems';
   private readonly service: string = 'ProductAdvertisingAPI';
 
   constructor() {
     this.accessKeyId = process.env.AMAZON_ACCESS_KEY_ID || '';
     this.secretAccessKey = process.env.AMAZON_SECRET_ACCESS_KEY || '';
-    this.region = process.env.AMAZON_REGION || 'us-east-1';
+    this.region = process.env.AMAZON_REGION || 'eu-west-1';
 
     // Only log warning in production or when explicitly requested
     if (!this.accessKeyId || !this.secretAccessKey) {
@@ -52,7 +52,7 @@ export class AmazonPAAPIService {
       const payload = {
         PartnerTag: request.associateTag,
         PartnerType: 'Associates',
-        Marketplace: 'www.amazon.com',
+        Marketplace: 'www.amazon.fr',
         Keywords: request.keywords,
         SearchIndex: request.searchIndex,
         ItemCount: request.itemCount,
@@ -75,7 +75,7 @@ export class AmazonPAAPIService {
       const payload = {
         PartnerTag: request.associateTag,
         PartnerType: 'Associates',
-        Marketplace: 'www.amazon.com',
+        Marketplace: 'www.amazon.fr',
         ItemIds: request.itemIds,
         ItemIdType: request.itemIdType,
         Resources: request.resources

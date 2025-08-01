@@ -39,9 +39,9 @@
 PAAPI_ACCESS_KEY_ID=your-amazon-access-key-id
 PAAPI_SECRET_ACCESS_KEY=your-amazon-secret-access-key
 PAAPI_PARTNER_TAG=your-amazon-associate-tag
-PAAPI_REGION=us-east-1
-PAAPI_HOST=webservices.amazon.com
-PAAPI_MARKETPLACE=www.amazon.com
+PAAPI_REGION=eu-west-1
+PAAPI_HOST=webservices.amazon.fr
+PAAPI_MARKETPLACE=www.amazon.fr
 FRONTEND_FUNCTION_SHARED_SECRET=your-secure-shared-secret
 ```
 

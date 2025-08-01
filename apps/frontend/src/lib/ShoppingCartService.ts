@@ -226,7 +226,7 @@ class ShoppingCartService {
   private getEstimatedPrice(ingredientName: string, unit: string): number {
     const name = ingredientName.toLowerCase();
     
-    // Price estimates in USD per unit
+    // Price estimates in EUR per unit
     const priceEstimates: Record<string, number> = {
       // Proteins (per unit/serving)
       'tofu': 3.50,
@@ -374,7 +374,7 @@ class ShoppingCartService {
     
     // For multiple products, we'll use the wishlist approach or individual links
     const associateTag = process.env.AMAZON_ASSOCIATE_TAG || '';
-    const baseUrl = 'https://www.amazon.com/gp/aws/cart/add.html';
+    const baseUrl = 'https://www.amazon.fr/gp/aws/cart/add.html';
     
     // Create add-to-cart URL for first product (Amazon limits cart API)
     const firstProduct = products[0];

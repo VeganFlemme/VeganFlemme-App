@@ -13,11 +13,11 @@ class AmazonService {
   private region: string;
 
   constructor() {
-    this.baseUrl = 'https://webservices.amazon.com/paapi5';
+    this.baseUrl = 'https://webservices.amazon.fr/paapi5';
     this.accessKeyId = process.env.AMAZON_ACCESS_KEY_ID || '';
     this.secretAccessKey = process.env.AMAZON_SECRET_ACCESS_KEY || '';
     this.associateTag = process.env.AMAZON_ASSOCIATE_TAG || '';
-    this.region = process.env.AMAZON_REGION || 'us-east-1';
+    this.region = process.env.AMAZON_REGION || 'eu-west-1';
     
     if (!this.accessKeyId || !this.secretAccessKey || !this.associateTag) {
       console.warn('Amazon API configuration is incomplete. Some features may not work properly.');
@@ -138,7 +138,7 @@ class AmazonService {
    * @param asin - Amazon Standard Identification Number
    */
   generateAffiliateLink(asin: string): string {
-    return `https://www.amazon.com/dp/${asin}?tag=${this.associateTag}`;
+    return `https://www.amazon.fr/dp/${asin}?tag=${this.associateTag}`;
   }
 
   /**
@@ -154,7 +154,7 @@ class AmazonService {
       title,
       description: apiProduct.ItemInfo?.Features?.DisplayValues?.join('. ') || '',
       price: apiProduct.Offers?.Listings?.[0]?.Price?.Amount || 0,
-      currency: apiProduct.Offers?.Listings?.[0]?.Price?.Currency || 'USD',
+      currency: apiProduct.Offers?.Listings?.[0]?.Price?.Currency || 'EUR',
       imageUrl: apiProduct.Images?.Primary?.Medium?.URL || '',
       category: 'Grocery',
       brand: apiProduct.ItemInfo?.ByLineInfo?.Brand?.DisplayValue,
@@ -205,14 +205,14 @@ class AmazonService {
         title: 'Organic Extra Firm Tofu',
         description: 'Premium organic tofu, perfect for all your vegan cooking needs.',
         price: 3.99,
-        currency: 'USD',
+        currency: 'EUR',
         imageUrl: 'https://via.placeholder.com/300x200?text=Organic+Tofu',
         category: 'Grocery',
         brand: 'Organic Valley',
         rating: 4.5,
         reviewCount: 245,
         availability: 'Available',
-        affiliateUrl: `https://www.amazon.com/dp/B000000000?tag=${this.associateTag}`,
+        affiliateUrl: `https://www.amazon.fr/dp/B000000000?tag=${this.associateTag}`,
         features: ['USDA Organic', 'Non-GMO', 'Plant-Based Protein'],
         isVegan: true,
         isOrganic: true
@@ -223,14 +223,14 @@ class AmazonService {
         title: 'Organic Rolled Oats',
         description: 'Wholesome organic rolled oats for nutritious breakfast meals.',
         price: 5.49,
-        currency: 'USD',
+        currency: 'EUR',
         imageUrl: 'https://via.placeholder.com/300x200?text=Organic+Oats',
         category: 'Grocery',
         brand: 'Bob\'s Red Mill',
         rating: 4.7,
         reviewCount: 892,
         availability: 'Available',
-        affiliateUrl: `https://www.amazon.com/dp/B000000001?tag=${this.associateTag}`,
+        affiliateUrl: `https://www.amazon.fr/dp/B000000001?tag=${this.associateTag}`,
         features: ['USDA Organic', 'Whole Grain', 'High Fiber'],
         isVegan: true,
         isOrganic: true
