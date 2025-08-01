@@ -182,32 +182,38 @@ export const nutritionController = {
                          successfulMatches.length / foods.length > 0.7 ? 'high' : 'medium';
 
       // Provide fallback values for completely missing data
+      const totalNutrition = {
+        calories: Math.round(nutritionAnalysis.totalNutrition.calories) || 1850,
+        protein: Math.round(nutritionAnalysis.totalNutrition.protein * 10) / 10 || 85.2,
+        carbs: Math.round(nutritionAnalysis.totalNutrition.carbs * 10) / 10 || 220.5,
+        fat: Math.round(nutritionAnalysis.totalNutrition.fat * 10) / 10 || 62.8,
+        fiber: Math.round(nutritionAnalysis.totalNutrition.fiber * 10) / 10 || 32.1,
+        salt: Math.round(nutritionAnalysis.totalNutrition.salt * 100) / 100 || 6.0,
+        sugar: 45.2 // This would need to be calculated from ingredient data
+      };
+
+      const vitamins = {
+        b12: Math.round((nutritionAnalysis.vitamins.b12 || 1.8) * 10) / 10,
+        d: Math.round((nutritionAnalysis.vitamins.d || 5.2) * 10) / 10,
+        b9: Math.round(nutritionAnalysis.vitamins.b9) || 380,
+        b6: Math.round((nutritionAnalysis.vitamins.b6 || 2.1) * 10) / 10,
+        c: Math.round(nutritionAnalysis.vitamins.c) || 120,
+        e: Math.round((nutritionAnalysis.vitamins.e || 15.8) * 10) / 10
+      };
+
+      const minerals = {
+        iron: Math.round((nutritionAnalysis.minerals.iron || 14.2) * 10) / 10,
+        calcium: Math.round(nutritionAnalysis.minerals.calcium) || 850,
+        zinc: Math.round((nutritionAnalysis.minerals.zinc || 9.8) * 10) / 10,
+        iodine: Math.round(nutritionAnalysis.minerals.iodine) || 95,
+        selenium: Math.round(nutritionAnalysis.minerals.selenium) || 48,
+        sodium: Math.round(nutritionAnalysis.minerals.sodium) || 2400
+      };
+
       const analysis = {
-        totalNutrition: {
-          calories: Math.round(nutritionAnalysis.totalNutrition.calories) || 1850,
-          protein: Math.round(nutritionAnalysis.totalNutrition.protein * 10) / 10 || 85.2,
-          carbs: Math.round(nutritionAnalysis.totalNutrition.carbs * 10) / 10 || 220.5,
-          fat: Math.round(nutritionAnalysis.totalNutrition.fat * 10) / 10 || 62.8,
-          fiber: Math.round(nutritionAnalysis.totalNutrition.fiber * 10) / 10 || 32.1,
-          salt: Math.round(nutritionAnalysis.totalNutrition.salt * 100) / 100 || 6.0,
-          sugar: 45.2 // This would need to be calculated from ingredient data
-        },
-        vitamins: {
-          b12: Math.round((nutritionAnalysis.vitamins.b12 || 1.8) * 10) / 10,
-          d: Math.round((nutritionAnalysis.vitamins.d || 5.2) * 10) / 10,
-          b9: Math.round(nutritionAnalysis.vitamins.b9) || 380,
-          b6: Math.round((nutritionAnalysis.vitamins.b6 || 2.1) * 10) / 10,
-          c: Math.round(nutritionAnalysis.vitamins.c) || 120,
-          e: Math.round((nutritionAnalysis.vitamins.e || 15.8) * 10) / 10
-        },
-        minerals: {
-          iron: Math.round((nutritionAnalysis.minerals.iron || 14.2) * 10) / 10,
-          calcium: Math.round(nutritionAnalysis.minerals.calcium) || 850,
-          zinc: Math.round((nutritionAnalysis.minerals.zinc || 9.8) * 10) / 10,
-          iodine: Math.round(nutritionAnalysis.minerals.iodine) || 95,
-          selenium: Math.round(nutritionAnalysis.minerals.selenium) || 48,
-          sodium: Math.round(nutritionAnalysis.minerals.sodium) || 2400
-        },
+        totalNutrition,
+        vitamins,
+        minerals,
         dataSource: {
           matches: nutritionAnalysis.matches,
           dataSources: nutritionAnalysis.dataSources,
@@ -217,19 +223,19 @@ export const nutritionController = {
           description: `${successfulMatches.length}/${foods.length} aliments trouvés dans les bases de données`
         },
         rnpCoverage: {
-          protein: Math.min(Math.round((analysis.totalNutrition.protein / 100) * 100), 150),
-          iron: Math.min(Math.round((analysis.minerals.iron / 15) * 100), 150),
-          calcium: Math.min(Math.round((analysis.minerals.calcium / 1000) * 100), 150),
-          b12: Math.min(Math.round((analysis.vitamins.b12 / 2.4) * 100), 150),
+          protein: Math.min(Math.round((totalNutrition.protein / 100) * 100), 150),
+          iron: Math.min(Math.round((minerals.iron / 15) * 100), 150),
+          calcium: Math.min(Math.round((minerals.calcium / 1000) * 100), 150),
+          b12: Math.min(Math.round((vitamins.b12 / 2.4) * 100), 150),
           omega3: 72, // Would need specific omega-3 data
-          fiber: Math.min(Math.round((analysis.totalNutrition.fiber / 30) * 100), 150)
+          fiber: Math.min(Math.round((totalNutrition.fiber / 30) * 100), 150)
         },
         qualityScores: {
           nutriScore: dataQuality === 'high' ? 'A' : 'B',
           ecoScore: 'A+',
           processed: 'minimally'
         },
-        alerts: this.generateNutritionalAlerts(analysis)
+        alerts: nutritionController.generateNutritionalAlerts({ totalNutrition, vitamins, minerals })
       };
 
       res.status(200).json({
@@ -592,39 +598,6 @@ export const nutritionController = {
       throw error;
     }
   },
-    try {
-      const { query, limit = 20 } = req.query;
-
-      if (!query || typeof query !== 'string') {
-        throw createError('Search query is required', 400);
-      }
-
-      logger.info('CIQUAL search requested', { query, limit });
-
-      const results = await ciqualService.searchFoodsByName(query, Number(limit));
-
-      res.status(200).json({
-        success: true,
-        data: {
-          query,
-          results: results.foods.map(food => ({
-            code: food.code,
-            name: food.name,
-            nameEn: food.nameEn,
-            group: food.group,
-            subGroup: food.subGroup,
-            nutrition: ciqualService.getNutritionSummary(food)
-          })),
-          total: results.total,
-          dataSource: 'CIQUAL - Base alimentaire française ANSES'
-        }
-      });
-
-    } catch (error) {
-      logger.error('CIQUAL search failed:', error);
-      throw error;
-    }
-  },
 
   /**
    * Get CIQUAL food by code
@@ -936,4 +909,37 @@ export const nutritionController = {
    * Search CIQUAL database for foods (legacy endpoint)
    */
   searchCiqual: async (req: Request, res: Response) => {
+    try {
+      const { query, limit = 20 } = req.query;
+
+      if (!query || typeof query !== 'string') {
+        throw createError('Search query is required', 400);
+      }
+
+      logger.info('CIQUAL search requested', { query, limit });
+
+      const results = await ciqualService.searchFoodsByName(query, Number(limit));
+
+      res.status(200).json({
+        success: true,
+        data: {
+          query,
+          results: results.foods.map(food => ({
+            code: food.code,
+            name: food.name,
+            nameEn: food.nameEn,
+            group: food.group,
+            subGroup: food.subGroup,
+            nutrition: ciqualService.getNutritionSummary(food)
+          })),
+          total: results.total,
+          dataSource: 'CIQUAL - Base alimentaire française ANSES'
+        }
+      });
+
+    } catch (error) {
+      logger.error('CIQUAL search failed:', error);
+      throw error;
+    }
+  }
 };

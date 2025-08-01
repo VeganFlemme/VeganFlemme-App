@@ -385,9 +385,9 @@ export class UnifiedNutritionService {
         },
         vitamins: {},
         qualityScores: {
-          nutriScore: nutrition.nutriScore,
-          ecoScore: nutrition.ecoScore,
-          novaGroup: nutrition.novaGroup
+          nutriScore: nutrition.nutriScore || undefined,
+          ecoScore: nutrition.ecoScore || undefined,
+          novaGroup: nutrition.novaGroup || undefined
         }
       },
       dataSource: 'openfoodfacts',
