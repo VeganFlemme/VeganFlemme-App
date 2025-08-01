@@ -67,6 +67,9 @@ junit.xml
 .eslintcache
 .stylelintcache
 
+# OpenFoodFacts API cache
+apps/backend/cache/
+
 # Docker
 .docker/
 docker-compose.override.yml

@@ -8,6 +8,8 @@
     "prebuild": "rm -rf dist",
     "build": "tsc",
     "postbuild": "echo 'Build completed successfully'",
+    "optimize-data": "node scripts/optimize-ciqual-data.js",
+    "prebuild:production": "npm run optimize-data",
     "start": "node dist/index.js",
     "test": "jest",
     "test:watch": "jest --watch",
@@ -17,7 +19,7 @@
     "verify-types": "./scripts/verify-types.sh",
     "build:verified": "./scripts/verify-types.sh && npm run build",
     "build:render": "./scripts/build-render.sh",
-    "build:production": "npm ci --production=false && npm run build:verified",
+    "build:production": "npm ci --production=false && npm run prebuild:production && npm run build:verified",
     "verify-deployment": "./scripts/verify-deployment.sh"
   },
   "dependencies": {
