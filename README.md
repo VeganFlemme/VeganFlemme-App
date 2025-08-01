@@ -33,9 +33,9 @@ VeganFlemme est l'outil ultime pour les plus flemmes : devenir vegan n'a jamais 
 ### 🎯 **Expérience Utilisateur "Flemme-Friendly"**
 
 1. **Menu Immédiat** : Génération automatique d'un menu équilibré dès l'arrivée
-2. **Personnalisation Optionnelle** : Tous les réglages sont facultatifs (allergies, budget, temps)
-3. **Échange en Un Clic** : Chaque repas peut être échangé instantanément
-4. **Dashboard Temps Réel** : Nutrition, impact environnemental et coût automatiquement calculés
+2. **Personnalisation Optionnelle** : Tous les réglages sont facultatifs (allergies, restrictions, données pour calcul IMC + objectifs minceur/prise de muscle, etc...)
+3. **Échange en Un Clic** : Chaque repas peut être échangé instantanément 
+4. **Dashboard Temps Réel** : données completes Nutrition et jauges par rapport à objectif+ criteres RNP ANSES et option Ajouter ou retirer aliment pour equilibrer)
 
 ## 🚀 QUICK START - DÉMARRAGE RAPIDE
 
