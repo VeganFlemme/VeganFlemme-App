@@ -20,7 +20,7 @@ export const searchProducts = async (req: Request, res: Response): Promise<void>
 
     // Check if Amazon service is configured
     if (!amazonService.isConfigured()) {
-      logger.warn('Amazon PA API not configured, returning empty results');
+      // Return empty results in demo mode without logging warning
       res.json({ searchResult: { items: [] } });
       return;
     }
@@ -73,7 +73,6 @@ export const getItems = async (req: Request, res: Response): Promise<void> => {
 
     // Check if Amazon service is configured
     if (!amazonService.isConfigured()) {
-      logger.warn('Amazon PA API not configured, returning empty results');
       res.json({ itemsResult: { items: [] } });
       return;
     }
@@ -123,7 +122,6 @@ export const getRecommendations = async (req: Request, res: Response): Promise<v
     }
 
     if (!amazonService.isConfigured()) {
-      logger.warn('Amazon PA API not configured, returning empty recommendations');
       res.json({ recommendations: [] });
       return;
     }

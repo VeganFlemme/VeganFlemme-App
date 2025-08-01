@@ -34,8 +34,13 @@ export class AmazonPAAPIService {
     this.secretAccessKey = process.env.AMAZON_SECRET_ACCESS_KEY || '';
     this.region = process.env.AMAZON_REGION || 'us-east-1';
 
+    // Only log warning in production or when explicitly requested
     if (!this.accessKeyId || !this.secretAccessKey) {
-      logger.warn('Amazon PA API credentials not configured');
+      if (process.env.NODE_ENV === 'production') {
+        logger.warn('Amazon PA API credentials not configured for production');
+      } else {
+        logger.info('Amazon PA API running in demo mode - credentials not configured');
+      }
     }
   }
 
