@@ -4,6 +4,14 @@
 
 The VeganFlemme Engine is a Node.js/Express API that provides intelligent vegan nutrition tools, menu optimization algorithms, and comprehensive nutritional analysis based on ANSES (French health agency) reference values.
 
+## 🌐 Production Deployment
+
+**The VeganFlemme Engine is live and operational:**
+- **Production URL**: https://veganflemme-engine.onrender.com
+- **API Base**: https://veganflemme-engine.onrender.com/api
+- **Health Check**: https://veganflemme-engine.onrender.com/api/health
+- **Status**: ✅ All services initialized and running
+
 ## 📋 Table of Contents
 
 - [Overview](#overview)
@@ -17,12 +25,12 @@ The VeganFlemme Engine is a Node.js/Express API that provides intelligent vegan 
 
 ## 🎯 Overview
 
-### Key Features
-- **Menu Generation**: Basic vegan menu creation with genetic algorithm
-- **Quality Analysis**: Complete Nutri-Score, Eco-Score, and NOVA classification
-- **Profile Management**: User profile structure (partial implementation)
-- **Nutrition Data**: ANSES RNP reference data integration
-- **Health Monitoring**: Basic health check endpoints
+### Key Features - Operational in Production
+- **Menu Generation**: Vegan menu creation with genetic algorithms ✅ Active
+- **Quality Analysis**: Complete Nutri-Score, Eco-Score, and NOVA classification ✅ Running
+- **Profile Management**: User profile structure (partial implementation) 🔧 In development
+- **Nutrition Data**: ANSES RNP reference data integration ✅ 3,211 foods loaded
+- **Health Monitoring**: Comprehensive health check endpoints ✅ Monitored
 
 ### Tech Stack
 - **Runtime**: Node.js (≥18.0.0)
@@ -35,14 +43,28 @@ The VeganFlemme Engine is a Node.js/Express API that provides intelligent vegan 
 
 ## 🚀 Quick Start
 
+### Production Access (Recommended)
+The API is fully operational in production:
+```bash
+# Test the live API
+curl https://veganflemme-engine.onrender.com/api/health
+
+# Generate a menu in production
+curl -X POST https://veganflemme-engine.onrender.com/api/menu/generate \
+  -H "Content-Type: application/json" \
+  -d '{"people": 2, "budget": "medium", "daysCount": 3}'
+```
+
+### Local Development (Optional)
+
 ### Prerequisites
 - Node.js ≥18.0.0
 - npm ≥8.0.0
 
-### Installation
+### Local Installation (For Development Only)
 ```bash
-# Clone the repository
-cd engine
+# Clone the repository (optional - API is live)
+cd apps/backend
 
 # Install dependencies
 npm install
@@ -54,10 +76,14 @@ cp .env.example .env
 npm run dev
 ```
 
-The API will be available at `http://localhost:3001/api`
+The local API will be available at `http://localhost:3001/api`
 
-### Health Check
+### Health Check (Production or Local)
 ```bash
+# Production
+curl https://veganflemme-engine.onrender.com/api/health
+
+# Local development
 curl http://localhost:3001/api/health
 ```
 
