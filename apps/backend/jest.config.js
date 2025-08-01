@@ -11,8 +11,16 @@ module.exports = {
   coverageDirectory: 'coverage',
   coverageReporters: ['text', 'lcov', 'html'],
   transform: {
-    '^.+\\.ts$': ['ts-jest', {
-      isolatedModules: true
-    }]
-  }
+    '^.+\\.ts$': 'ts-jest'
+  },
+  globals: {
+    'ts-jest': {
+      tsconfig: {
+        types: ['node', 'jest']
+      }
+    }
+  },
+  testTimeout: 30000,
+  forceExit: true,
+  detectOpenHandles: true
 }

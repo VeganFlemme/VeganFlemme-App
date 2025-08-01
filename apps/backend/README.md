@@ -4,13 +4,17 @@
 
 The VeganFlemme Engine is a Node.js/Express API that provides intelligent vegan nutrition tools, menu optimization algorithms, and comprehensive nutritional analysis based on ANSES (French health agency) reference values.
 
-## 🌐 Production Deployment
+## 🚨 ÉTAT RÉEL DU DÉPLOIEMENT
 
-**The VeganFlemme Engine is live and operational:**
-- **Production URL**: https://veganflemme-engine.onrender.com
-- **API Base**: https://veganflemme-engine.onrender.com/api
-- **Health Check**: https://veganflemme-engine.onrender.com/api/health
-- **Status**: ✅ All services initialized and running
+**⚠️ CORRECTION**: Les affirmations de déploiement étaient fausses
+- **Status réel**: 🔴 **DÉVELOPPEMENT EN COURS** - Pas de production
+- **URLs citées**: ❌ Non fonctionnelles (veganflemme-engine.onrender.com n'existe pas)
+- **API Production**: ❌ Aucun déploiement confirmé
+
+### ✅ Ce qui fonctionne vraiment
+- **Développement local**: ✅ http://localhost:3001 opérationnel
+- **Build local**: ✅ Compilation TypeScript réussie
+- **Tests**: ⚠️ 139/149 passent (10 échouent)
 
 ## 📋 Table of Contents
 
@@ -25,9 +29,9 @@ The VeganFlemme Engine is a Node.js/Express API that provides intelligent vegan 
 
 ## 🎯 Overview
 
-### Key Features - Operational in Production
-- **Menu Generation**: Vegan menu creation with genetic algorithms ✅ Active
-- **Quality Analysis**: Complete Nutri-Score, Eco-Score, and NOVA classification ✅ Running
+### Key Features - État Local de Développement
+- **Menu Generation**: Algorithme génétique basique ✅ Fonctionne en local
+- **Quality Analysis**: Nutri-Score, Eco-Score, NOVA ✅ Implémenté
 - **Profile Management**: User profile structure (partial implementation) 🔧 In development
 - **Nutrition Data**: ANSES RNP reference data integration ✅ 3,211 foods loaded
 - **Health Monitoring**: Comprehensive health check endpoints ✅ Monitored
