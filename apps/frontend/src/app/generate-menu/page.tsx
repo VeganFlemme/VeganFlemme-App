@@ -1,63 +1,24 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { ArrowLeft, RefreshCw, Clock, DollarSign, Activity, AlertTriangle, ChefHat, BarChart3 } from 'lucide-react'
+import { ArrowLeft, RefreshCw, Clock, DollarSign, Activity, AlertTriangle, ChefHat, BarChart3, Loader2 } from 'lucide-react'
 import Link from 'next/link'
 import { apiClient, type MenuPreferences, type GeneratedMenu } from '@/lib/api'
 import { trackMenuGeneration } from '@/lib/analytics'
 import { useUserJourney } from '@/hooks/useUserJourney'
 
-// Mock meal data for immediate display (replace with API call later)
-const mockDailyMeals = [
-  {
-    id: '1',
-    name: 'Porridge aux fruits rouges et graines',
-    type: 'breakfast',
-    time: '8h00',
-    cookingTime: 10,
-    calories: 420,
-    protein: 15,
-    carbs: 65,
-    fat: 12,
-    ingredients: ['Flocons d\'avoine', 'Fruits rouges', 'Graines de chia', 'Lait d\'amande']
-  },
-  {
-    id: '2', 
-    name: 'Salade de quinoa aux légumes grillés',
-    type: 'lunch',
-    time: '12h30',
-    cookingTime: 25,
-    calories: 520,
-    protein: 18,
-    carbs: 70,
-    fat: 16,
-    ingredients: ['Quinoa', 'Courgettes', 'Poivrons', 'Pois chiches', 'Huile d\'olive']
-  },
-  {
-    id: '3',
-    name: 'Houmous de betterave et légumes croquants',
-    type: 'snack', 
-    time: '16h00',
-    cookingTime: 5,
-    calories: 180,
-    protein: 8,
-    carbs: 22,
-    fat: 7,
-    ingredients: ['Betterave cuite', 'Haricots blancs', 'Tahini', 'Carottes', 'Concombre']
-  },
-  {
-    id: '4',
-    name: 'Curry de lentilles aux épinards et riz complet',
-    type: 'dinner',
-    time: '19h30', 
-    cookingTime: 30,
-    calories: 580,
-    protein: 22,
-    carbs: 85,
-    fat: 14,
-    ingredients: ['Lentilles corail', 'Épinards frais', 'Riz complet', 'Lait de coco', 'Épices curry']
-  }
-]
+interface DailyMeal {
+  id: string
+  name: string
+  type: string
+  time: string
+  cookingTime: number
+  calories: number
+  protein: number
+  carbs: number
+  fat: number
+  ingredients: string[]
+}
 
 export default function GenerateMenuPage() {
   const { actions, state } = useUserJourney()
@@ -68,45 +29,182 @@ export default function GenerateMenuPage() {
     dietaryRestrictions: state.profile?.allergies || [],
   })
   
-  const [dailyMeals, setDailyMeals] = useState(mockDailyMeals)
+  const [generatedMenu, setGeneratedMenu] = useState<GeneratedMenu | null>(null)
+  const [dailyMeals, setDailyMeals] = useState<DailyMeal[]>([])
   const [isSwapping, setIsSwapping] = useState<string | null>(null)
+  const [isGenerating, setIsGenerating] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [selectedDay, setSelectedDay] = useState(0)
 
-  // Initialize with meal plan on load
+  // Generate initial menu on load
   useEffect(() => {
-    actions.setHasGeneratedMenu(true)
+    generateMenu()
   }, [])
 
+  const generateMenu = async () => {
+    setIsGenerating(true)
+    setError(null)
+    
+    try {
+      const response = await apiClient.generateMenu({
+        ...preferences,
+        daysCount: 7,
+        userId: state.profile?.id || 'demo_user'
+      })
+
+      if (response.success && response.data) {
+        setGeneratedMenu(response.data)
+        // Convert first day's meals to display format
+        if (response.data.days && response.data.days.length > 0) {
+          const firstDay = response.data.days[0]
+          const convertedMeals: DailyMeal[] = []
+          
+          // Process each meal type in the day
+          const mealTimes = [
+            { key: 'breakfast', time: '8h00', type: 'breakfast' },
+            { key: 'lunch', time: '12h30', type: 'lunch' },
+            { key: 'dinner', time: '19h30', type: 'dinner' }
+          ]
+          
+          mealTimes.forEach((mealTime, index) => {
+            const meal = firstDay[mealTime.key as keyof typeof firstDay]
+            if (meal && typeof meal === 'object') {
+              convertedMeals.push({
+                id: `${selectedDay}-${index}`,
+                name: (meal as any).name || `Repas ${mealTime.type}`,
+                type: mealTime.type,
+                time: mealTime.time,
+                cookingTime: (meal as any).cookingTime || 20,
+                calories: Math.round((meal as any).nutrition?.calories || 0),
+                protein: Math.round((meal as any).nutrition?.protein || 0),
+                carbs: Math.round((meal as any).nutrition?.carbs || 0),
+                fat: Math.round((meal as any).nutrition?.fat || 0),
+                ingredients: ((meal as any).ingredients?.map((ing: any) => {
+                  if (typeof ing === 'string') return ing;
+                  if (ing && ing.name) return ing.name;
+                  if (ing && ing.foodId) return ing.foodId;
+                  return 'Ingrédient';
+                }) || []).slice(0, 5)
+              })
+            }
+          })
+          
+          setDailyMeals(convertedMeals)
+        }
+        actions.setHasGeneratedMenu(true)
+        
+        // Track the generation
+        trackMenuGeneration({
+          userId: state.profile?.id || 'demo_user',
+          preferences,
+          success: true
+        })
+      } else {
+        throw new Error(response.error || 'Failed to generate menu')
+      }
+    } catch (err) {
+      console.error('Menu generation failed:', err)
+      setError(err instanceof Error ? err.message : 'Failed to generate menu')
+      trackMenuGeneration({
+        userId: state.profile?.id || 'demo_user',
+        preferences,
+        success: false,
+        error: err instanceof Error ? err.message : 'Unknown error'
+      })
+    } finally {
+      setIsGenerating(false)
+    }
+  }
+
   const swapMeal = async (mealId: string) => {
+    if (!generatedMenu) return
+    
     setIsSwapping(mealId)
     
-    // Simulate API call for meal swap
-    setTimeout(() => {
-      const alternatives = {
-        '1': { name: 'Smoothie bowl aux superfruits', calories: 380, protein: 12 },
-        '2': { name: 'Buddha bowl aux légumineuses', calories: 580, protein: 22 },
-        '3': { name: 'Energy balls aux dattes et noix', calories: 200, protein: 6 },
-        '4': { name: 'Risotto de quinoa aux champignons', calories: 620, protein: 20 }
-      }
-      
-      const newMeal = alternatives[mealId as keyof typeof alternatives]
-      if (newMeal) {
+    try {
+      const currentMeal = dailyMeals.find(m => m.id === mealId)
+      if (!currentMeal) return
+
+      const response = await apiClient.swapIngredient({
+        ingredient: currentMeal.name,
+        nutritionalTarget: {
+          calories: currentMeal.calories,
+          protein: currentMeal.protein
+        },
+        recipeType: currentMeal.type,
+        budget: preferences.budget,
+        cookingTime: preferences.cookingTime,
+        userRestrictions: {
+          allergens: preferences.dietaryRestrictions || [],
+          intolerances: [],
+          preferences: ['vegan'],
+          excludedIngredients: []
+        }
+      })
+
+      if (response.success && response.data?.alternatives?.length > 0) {
+        const alternative = response.data.alternatives[0]
         setDailyMeals(prev => prev.map(meal => 
           meal.id === mealId 
-            ? { ...meal, name: newMeal.name, calories: newMeal.calories, protein: newMeal.protein }
+            ? { 
+                ...meal, 
+                name: alternative.name || alternative.ingredient,
+                calories: Math.round(alternative.nutrition?.calories || meal.calories),
+                protein: Math.round(alternative.nutrition?.protein || meal.protein)
+              }
             : meal
         ))
       }
+    } catch (err) {
+      console.error('Meal swap failed:', err)
+    } finally {
       setIsSwapping(null)
-    }, 1000)
+    }
   }
 
   const generateNewDay = () => {
-    // Simulate generating a new random day
-    const newMeals = [...mockDailyMeals].map(meal => ({
-      ...meal,
-      id: Math.random().toString()
-    }))
-    setDailyMeals(newMeals)
+    if (generatedMenu && generatedMenu.days && generatedMenu.days.length > 1) {
+      const nextDay = (selectedDay + 1) % generatedMenu.days.length
+      setSelectedDay(nextDay)
+      
+      const dayData = generatedMenu.days[nextDay]
+      const convertedMeals: DailyMeal[] = []
+      
+      // Process each meal type in the day
+      const mealTimes = [
+        { key: 'breakfast', time: '8h00', type: 'breakfast' },
+        { key: 'lunch', time: '12h30', type: 'lunch' },
+        { key: 'dinner', time: '19h30', type: 'dinner' }
+      ]
+      
+      mealTimes.forEach((mealTime, index) => {
+        const meal = dayData[mealTime.key as keyof typeof dayData]
+        if (meal && typeof meal === 'object') {
+          convertedMeals.push({
+            id: `${nextDay}-${index}`,
+            name: (meal as any).name || `Repas ${mealTime.type}`,
+            type: mealTime.type,
+            time: mealTime.time,
+            cookingTime: (meal as any).cookingTime || 20,
+            calories: Math.round((meal as any).nutrition?.calories || 0),
+            protein: Math.round((meal as any).nutrition?.protein || 0),
+            carbs: Math.round((meal as any).nutrition?.carbs || 0),
+            fat: Math.round((meal as any).nutrition?.fat || 0),
+            ingredients: ((meal as any).ingredients?.map((ing: any) => {
+              if (typeof ing === 'string') return ing;
+              if (ing && ing.name) return ing.name;
+              if (ing && ing.foodId) return ing.foodId;
+              return 'Ingrédient';
+            }) || []).slice(0, 5)
+          })
+        }
+      })
+      
+      setDailyMeals(convertedMeals)
+    } else {
+      // Regenerate menu if no more days available
+      generateMenu()
+    }
   }
 
   const totalNutrition = dailyMeals.reduce((acc, meal) => ({
@@ -125,21 +223,87 @@ export default function GenerateMenuPage() {
             <ArrowLeft className="h-4 w-4 mr-2" />
             Retour à l'accueil
           </Link>
-          <button
-            onClick={generateNewDay}
-            className="inline-flex items-center bg-primary-500 text-white px-4 py-2 rounded-lg hover:bg-primary-600 transition-colors"
-          >
-            <RefreshCw className="h-4 w-4 mr-2" />
-            Nouveau jour
-          </button>
+          <div className="flex items-center space-x-4">
+            {generatedMenu && generatedMenu.days && generatedMenu.days.length > 1 && (
+              <span className="text-sm text-gray-500">
+                Jour {selectedDay + 1} sur {generatedMenu.days.length}
+              </span>
+            )}
+            <button
+              onClick={generateNewDay}
+              disabled={isGenerating}
+              className="inline-flex items-center bg-primary-500 text-white px-4 py-2 rounded-lg hover:bg-primary-600 transition-colors disabled:opacity-50"
+            >
+              {isGenerating ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Génération...
+                </>
+              ) : (
+                <>
+                  <RefreshCw className="h-4 w-4 mr-2" />
+                  Nouveau jour
+                </>
+              )}
+            </button>
+          </div>
         </div>
       </div>
+
+      {/* Error Display */}
+      {error && (
+        <div className="bg-red-50 border-l-4 border-red-400 p-4 mx-6 mt-4">
+          <div className="flex">
+            <AlertTriangle className="h-5 w-5 text-red-400 mr-2" />
+            <div>
+              <p className="text-sm text-red-700">{error}</p>
+              <button
+                onClick={generateMenu}
+                className="mt-2 text-sm text-red-600 hover:text-red-800 underline"
+              >
+                Réessayer
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="flex h-screen">
         {/* Left Sidebar - Optional Customization */}
         <div className="w-80 bg-white border-r border-gray-200 p-6 overflow-y-auto">
           <h2 className="text-lg font-semibold text-gray-900 mb-4">Options</h2>
-          <p className="text-sm text-gray-600 mb-6">À choisir ou non</p>
+          <p className="text-sm text-gray-600 mb-6">Personnalisez votre menu</p>
+
+          {/* People Count */}
+          <div className="mb-6">
+            <h3 className="text-sm font-medium text-gray-900 mb-3">Personnes</h3>
+            <div className="flex items-center space-x-2">
+              <button
+                onClick={() => setPreferences(prev => ({ ...prev, people: Math.max(1, prev.people - 1) }))}
+                className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:border-primary-500"
+              >
+                -
+              </button>
+              <span className="w-8 text-center">{preferences.people}</span>
+              <button
+                onClick={() => setPreferences(prev => ({ ...prev, people: prev.people + 1 }))}
+                className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:border-primary-500"
+              >
+                +
+              </button>
+            </div>
+          </div>
+
+          {/* Apply Preferences Button */}
+          <div className="mb-6">
+            <button
+              onClick={generateMenu}
+              disabled={isGenerating}
+              className="w-full bg-primary-500 text-white px-4 py-2 rounded-lg hover:bg-primary-600 disabled:opacity-50 font-medium"
+            >
+              {isGenerating ? 'Génération...' : 'Régénérer menu'}
+            </button>
+          </div>
 
           {/* Allergies */}
           <div className="mb-6">
@@ -171,8 +335,13 @@ export default function GenerateMenuPage() {
               ].map((option) => (
                 <button
                   key={option.value}
-                  onClick={() => setPreferences(prev => ({ ...prev, cookingTime: option.value }))}
-                  className={`p-2 text-xs rounded border text-center ${
+                  onClick={() => {
+                    setPreferences(prev => ({ ...prev, cookingTime: option.value }))
+                    // Auto-regenerate menu with new preference
+                    setTimeout(() => generateMenu(), 100)
+                  }}
+                  disabled={isGenerating}
+                  className={`p-2 text-xs rounded border text-center disabled:opacity-50 ${
                     preferences.cookingTime === option.value
                       ? 'border-primary-500 bg-primary-50 text-primary-700'
                       : 'border-gray-200 hover:border-gray-300'
@@ -199,8 +368,13 @@ export default function GenerateMenuPage() {
               ].map((option) => (
                 <button
                   key={option.value}
-                  onClick={() => setPreferences(prev => ({ ...prev, budget: option.value }))}
-                  className={`p-2 text-xs rounded border text-center ${
+                  onClick={() => {
+                    setPreferences(prev => ({ ...prev, budget: option.value }))
+                    // Auto-regenerate menu with new preference
+                    setTimeout(() => generateMenu(), 100)
+                  }}
+                  disabled={isGenerating}
+                  className={`p-2 text-xs rounded border text-center disabled:opacity-50 ${
                     preferences.budget === option.value
                       ? 'border-primary-500 bg-primary-50 text-primary-700'
                       : 'border-gray-200 hover:border-gray-300'
@@ -324,7 +498,21 @@ export default function GenerateMenuPage() {
           <div className="mb-6">
             <h3 className="text-sm font-medium text-gray-900 mb-3">Couverture RNP</h3>
             <div className="space-y-3">
-              {[
+              {generatedMenu?.analysis?.rnpCoverage ? 
+                Object.entries(generatedMenu.analysis.rnpCoverage).slice(0, 5).map(([nutrient, coverage]) => (
+                  <div key={nutrient}>
+                    <div className="flex justify-between text-sm mb-1">
+                      <span className="text-gray-600 capitalize">{nutrient.replace('vitamin', 'Vit. ')}</span>
+                      <span className="font-semibold">{Math.round(coverage as number)}%</span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div 
+                        className={`h-2 rounded-full ${(coverage as number) >= 80 ? 'bg-green-500' : (coverage as number) >= 60 ? 'bg-yellow-500' : 'bg-red-500'}`}
+                        style={{ width: `${Math.min(coverage as number, 100)}%` }}
+                      ></div>
+                    </div>
+                  </div>
+                )) : [
                 { nutrient: 'Protéines', coverage: 95 },
                 { nutrient: 'Fer', coverage: 88 },
                 { nutrient: 'B12', coverage: 100 },
@@ -351,19 +539,48 @@ export default function GenerateMenuPage() {
           <div className="mb-6">
             <h3 className="text-sm font-medium text-gray-900 mb-3">Impact environnemental</h3>
             <div className="text-center p-4 bg-green-50 rounded-lg">
-              <div className="text-2xl font-bold text-green-600 mb-1">A</div>
-              <div className="text-xs text-green-700">Très faible impact carbone</div>
+              <div className="text-2xl font-bold text-green-600 mb-1">
+                {generatedMenu?.analysis?.sustainability?.ecoRating || 'A'}
+              </div>
+              <div className="text-xs text-green-700">
+                {generatedMenu?.analysis?.sustainability?.carbonFootprint 
+                  ? `${generatedMenu.analysis.sustainability.carbonFootprint}kg CO2`
+                  : 'Très faible impact carbone'
+                }
+              </div>
             </div>
           </div>
 
           {/* Cost */}
-          <div>
+          <div className="mb-6">
             <h3 className="text-sm font-medium text-gray-900 mb-3">Coût estimé</h3>
             <div className="text-center p-4 bg-blue-50 rounded-lg">
-              <div className="text-2xl font-bold text-blue-600 mb-1">12,50€</div>
+              <div className="text-2xl font-bold text-blue-600 mb-1">
+                {generatedMenu?.analysis?.totalCost 
+                  ? `${generatedMenu.analysis.totalCost.toFixed(2)}€`
+                  : '12,50€'
+                }
+              </div>
               <div className="text-xs text-blue-700">Pour aujourd'hui</div>
             </div>
           </div>
+
+          {/* Optimization Score */}
+          {generatedMenu?.optimizationScore && (
+            <div>
+              <h3 className="text-sm font-medium text-gray-900 mb-3">Score d'optimisation</h3>
+              <div className="text-center p-4 bg-purple-50 rounded-lg">
+                <div className="text-2xl font-bold text-purple-600 mb-1">
+                  {generatedMenu.optimizationScore}%
+                </div>
+                <div className="text-xs text-purple-700">
+                  {generatedMenu.optimizationScore >= 80 ? 'Excellent équilibre' :
+                   generatedMenu.optimizationScore >= 60 ? 'Bon équilibre' : 
+                   'Peut être amélioré'}
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </main>
