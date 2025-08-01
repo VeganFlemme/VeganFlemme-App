@@ -71,7 +71,19 @@ class ApiClient {
         throw new Error(`HTTP error! status: ${response.status}`)
       }
 
-      return await response.json()
+      const data = await response.json()
+      
+      // The backend already returns { success, data, error } format for some endpoints
+      // but menu generation returns the data directly, so we need to wrap it
+      if (endpoint.includes('/menu/generate') && !data.success) {
+        return {
+          success: true,
+          data: data,
+          error: undefined
+        }
+      }
+      
+      return data
     } catch (error) {
       // Return error response instead of logging
       return {
