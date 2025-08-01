@@ -135,13 +135,6 @@ SPOONACULAR_API_KEY=votre_cle_optionnelle
 FRONTEND_URL=https://veganflemme.vercel.app  # URL de production
 ```
 
-#### Base de Données Supabase (Optionnel)
-```bash
-# 1. Créer un projet sur supabase.com
-# 2. SQL Editor → Copier/coller le contenu de supabase-schema.sql
-# 3. Exécuter (script sécurisé, peut être relancé)
-```
-
 #### Configuration PA-API Amazon (Pour Recherche Produits)
 ```bash
 # Déployer la fonction Supabase
