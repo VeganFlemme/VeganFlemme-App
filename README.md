@@ -6,11 +6,12 @@ VeganFlemme est l'outil ultime pour les plus flemmes : devenir vegan n'a jamais 
 
 ### 🎯 Valeur Ajoutée
 
-- **Zéro Effort** : Un seul clic pour obtenir le meilleur menu vegan, parfait pour tout le monde
-- **Simplicité Radicale** : Pas de formulaires interminables, pas de calculs compliqués, juste l'essentiel
-- **Pour Tout le Monde** : Notre menu universel satisfait tous les goûts et besoins nutritionnels
-- **100% Équilibré** : Respecte scrupuleusement les apports nutritionnels recommandés (RNP ANSES)
+- **Zéro Effort** : Un seul clic pour generer un menu vegan 
+- **100% Équilibré** : Algorithme ultra puissant pour adapter le menu en fonction de multicriteres optionnels pour personaliser au maximum son menu et ses recettes tout en respectant les apports nutritionnels recommandés (RNP ANSES) et ses objectifs et criteres personnels, basés sur les données OpenFoodFacts, Ciqual et spoonacular.
+- Generation de liste de course chez le partenaire affilié choisi, pret a commander. 
 - **Monétisation Transparente** : Modèle économique basé sur l'affiliation e-commerce, service gratuit pour l'utilisateur
+- L'outil revolutionnaire pour faciliter la transition vegan pour tous, adapté à tout le monde. 
+
 
 ## 🚀 ÉTAT ACTUEL - JANVIER 2025 (Vérifié)
 
