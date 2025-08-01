@@ -13,9 +13,9 @@ PAAPI_PARTNER_TAG=your-amazon-associate-tag
 
 ### Optional PA-API Configuration (with defaults)
 ```
-PAAPI_REGION=us-east-1
-PAAPI_HOST=webservices.amazon.com
-PAAPI_MARKETPLACE=www.amazon.com
+PAAPI_REGION=eu-west-1
+PAAPI_HOST=webservices.amazon.fr
+PAAPI_MARKETPLACE=www.amazon.fr
 ```
 
 ### Security Configuration

@@ -48,9 +48,9 @@ function calculateSignature(
 async function callPAAPI(request: PAAPIRequest): Promise<PAAPIResponse> {
   const accessKeyId = Deno.env.get('PAAPI_ACCESS_KEY_ID');
   const secretAccessKey = Deno.env.get('PAAPI_SECRET_ACCESS_KEY');
-  const region = Deno.env.get('PAAPI_REGION') || 'us-east-1';
-  const host = Deno.env.get('PAAPI_HOST') || 'webservices.amazon.com';
-  const marketplace = Deno.env.get('PAAPI_MARKETPLACE') || 'www.amazon.com';
+  const region = Deno.env.get('PAAPI_REGION') || 'eu-west-1';
+  const host = Deno.env.get('PAAPI_HOST') || 'webservices.amazon.fr';
+  const marketplace = Deno.env.get('PAAPI_MARKETPLACE') || 'www.amazon.fr';
   const partnerTag = Deno.env.get('PAAPI_PARTNER_TAG');
 
   if (!accessKeyId || !secretAccessKey || !partnerTag) {
