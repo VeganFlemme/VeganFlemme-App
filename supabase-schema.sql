@@ -3,6 +3,9 @@
 -- ===================================================================
 -- Execute this script directly in Supabase SQL Editor
 -- This script contains the complete database schema ready for production
+-- 
+-- ✅ FIXED: All policies use DROP POLICY IF EXISTS to prevent conflicts
+-- This script can be run multiple times safely without errors
 -- ===================================================================
 
 -- Enable PostgreSQL extensions (Supabase usually has these enabled by default)
@@ -512,7 +515,24 @@ CREATE POLICY "Users can access own shopping lists" ON shopping_lists FOR ALL US
 CREATE POLICY "Users can access own meal plans" ON meal_plans FOR ALL USING (auth.uid() = user_id);
 CREATE POLICY "Users can access own transition tasks" ON transition_tasks FOR ALL USING (auth.uid() = user_id);
 CREATE POLICY "Users can access own nutrition trackers" ON nutrition_trackers FOR ALL USING (auth.uid() = user_id);
-CREATE POLICY "Users can access own progress" ON user_progress FOR ALL USING (auth.uid() = user_id);
+-- Apply policies for meal-related tables that may reference menus
+DROP POLICY IF EXISTS "Users can access own meals" ON meals;
+DROP POLICY IF EXISTS "Users can access own shopping list items" ON shopping_list_items;
+DROP POLICY IF EXISTS "Users can access own user resource progress" ON user_resource_progress;
+DROP POLICY IF EXISTS "Users can access own tracked meals" ON tracked_meals;
+DROP POLICY IF EXISTS "Users can access own post likes" ON post_likes;
+
+CREATE POLICY "Users can access own meals" ON meals FOR ALL USING (
+    meal_plan_id IN (SELECT id FROM meal_plans WHERE user_id = auth.uid())
+);
+CREATE POLICY "Users can access own shopping list items" ON shopping_list_items FOR ALL USING (
+    shopping_list_id IN (SELECT id FROM shopping_lists WHERE user_id = auth.uid())
+);
+CREATE POLICY "Users can access own user resource progress" ON user_resource_progress FOR ALL USING (auth.uid() = user_id);
+CREATE POLICY "Users can access own tracked meals" ON tracked_meals FOR ALL USING (
+    tracker_id IN (SELECT id FROM nutrition_trackers WHERE user_id = auth.uid())
+);
+CREATE POLICY "Users can access own post likes" ON post_likes FOR ALL USING (auth.uid() = user_id);
 
 -- Public read access for shared resources
 DROP POLICY IF EXISTS "Public read access to foods" ON foods;
@@ -524,10 +544,20 @@ CREATE POLICY "Public read access to recipes" ON recipes FOR SELECT TO anon, aut
 CREATE POLICY "Public read access to education resources" ON education_resources FOR SELECT TO anon, authenticated USING (true);
 
 -- Community features - public read, authenticated write
+DROP POLICY IF EXISTS "Public read access to community posts" ON community_posts;
+DROP POLICY IF EXISTS "Authenticated users can create posts" ON community_posts;
+DROP POLICY IF EXISTS "Users can edit own posts" ON community_posts;
+DROP POLICY IF EXISTS "Users can delete own posts" ON community_posts;
+
 CREATE POLICY "Public read access to community posts" ON community_posts FOR SELECT TO anon, authenticated USING (true);
 CREATE POLICY "Authenticated users can create posts" ON community_posts FOR INSERT TO authenticated WITH CHECK (auth.uid() = user_id);
 CREATE POLICY "Users can edit own posts" ON community_posts FOR UPDATE TO authenticated USING (auth.uid() = user_id);
 CREATE POLICY "Users can delete own posts" ON community_posts FOR DELETE TO authenticated USING (auth.uid() = user_id);
+
+DROP POLICY IF EXISTS "Public read access to comments" ON comments;
+DROP POLICY IF EXISTS "Authenticated users can create comments" ON comments;
+DROP POLICY IF EXISTS "Users can edit own comments" ON comments;
+DROP POLICY IF EXISTS "Users can delete own comments" ON comments;
 
 CREATE POLICY "Public read access to comments" ON comments FOR SELECT TO anon, authenticated USING (true);
 CREATE POLICY "Authenticated users can create comments" ON comments FOR INSERT TO authenticated WITH CHECK (auth.uid() = user_id);
