@@ -7,6 +7,8 @@
 L'application VeganFlemme est **entièrement fonctionnelle** avec toutes les fonctionnalités principales opérationnelles :
 
 - **✅ Interface Utilisateur** : Application complète avec design professionnel
+- **✅ PA-API Proxy Sécurisé** : Proxy Supabase avec authentification SigV4 pour Amazon PA-API
+- **✅ Recherche Vegan** : Endpoint `/api/vegan-search` et interface de test fonctionnelle
 - **✅ Génération de Menus** : Algorithmes d'IA fonctionnels avec génération temps réel
 - **✅ Échange de Repas** : Système de swap opérationnel
 - **✅ Dashboard Nutritionnel** : Calculs RNP, impact carbone, coût en temps réel
@@ -47,14 +49,47 @@ L'application VeganFlemme est **entièrement fonctionnelle** avec toutes les fon
 4. **Exécuter le script** (✅ Sécurisé, peut être relancé)
 5. **Copier l'URL** de connexion dans les variables d'environnement
 
+### **T2b. Configuration PA-API Proxy** ⏱️ *15 minutes*
+**Statut: CODE IMPLÉMENTÉ, CONFIGURATION REQUISE**
+
+1. **Déployer la fonction Supabase** :
+   ```bash
+   supabase functions deploy paapi-proxy --project-ref your-project-ref
+   ```
+
+2. **Configurer les variables d'environnement** dans Supabase :
+   - `PAAPI_ACCESS_KEY_ID` : Votre clé d'accès Amazon
+   - `PAAPI_SECRET_ACCESS_KEY` : Votre clé secrète Amazon
+   - `PAAPI_PARTNER_TAG` : Votre tag d'associé Amazon
+   - `FRONTEND_FUNCTION_SHARED_SECRET` : Secret partagé sécurisé
+
+3. **Configurer le frontend** dans Vercel/production :
+   - `VEGANFLEMME_PAAPI_PROXY_URL` : URL de la fonction Supabase
+   - `VEGANFLEMME_FUNCTION_SHARED_SECRET` : Même secret que côté Supabase
+
 ### **T3. Tests de Production** ⏱️ *1 heure*
 **Statut: CHECK-LIST PRÊTE**
 
 1. **Tester la génération de menus** sur la version prodution
 2. **Vérifier l'échange de repas** fonctionne
-3. **Tester la génération de liste de courses**
-4. **Valider le dashboard nutritionnel** se met à jour
-5. **Tester la responsivité** mobile
+3. **Tester la recherche vegan** sur `/vegan-search-test`
+4. **Valider le proxy PA-API** avec des requêtes de test
+5. **Tester la génération de liste de courses**
+6. **Valider le dashboard nutritionnel** se met à jour
+7. **Tester la responsivité** mobile
+
+#### Tests API spécifiques :
+```bash
+# Test local
+curl -X POST http://localhost:3000/api/vegan-search \
+  -H "Content-Type: application/json" \
+  -d '{"q": "vegan protein powder"}'
+
+# Test production
+curl -X POST https://your-domain.com/api/vegan-search \
+  -H "Content-Type: application/json" \
+  -d '{"q": "plant based milk"}'
+```
 
 ---
 
@@ -135,6 +170,8 @@ Après ces tâches, vous aurez :
 
 ### **Pas de Développement Requis**
 - Toutes les fonctionnalités sont implémentées et testées
+- **✅ PA-API Proxy Sécurisé** : Fonction Supabase avec authentification SigV4
+- **✅ Recherche Vegan** : API endpoint et interface de test complète
 - Les intégrations techniques sont complètes
 - L'interface utilisateur est finalisée
 - Les algorithmes d'IA sont fonctionnels
