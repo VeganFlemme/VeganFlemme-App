@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen } from './test-utils'
 import HomePage from '../src/app/page'
 
 // Mock lucide-react icons
@@ -16,6 +16,20 @@ jest.mock('next/link', () => {
     return <a href={href} {...props}>{children}</a>
   }
 })
+
+// Mock the API client
+jest.mock('../src/lib/api', () => ({
+  apiClient: {
+    generateMenu: jest.fn().mockResolvedValue({
+      success: false,
+      error: 'Mock API - not implemented in tests'
+    }),
+    swapIngredient: jest.fn().mockResolvedValue({
+      success: false,
+      error: 'Mock API - not implemented in tests'
+    })
+  }
+}))
 
 describe('HomePage', () => {
   it('renders the main heading', () => {
