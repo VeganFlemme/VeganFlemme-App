@@ -99,6 +99,15 @@ export interface ShoppingList {
   updatedAt: Date;
   isCompleted: boolean;
   mealPlanId?: string;
+  totalEstimatedCost?: number;
+  metadata?: {
+    generatedFromMenu?: boolean;
+    menuId?: string;
+    affiliatePartnersAvailable?: {
+      amazon?: boolean;
+      greenweez?: boolean;
+    };
+  };
 }
 
 export interface ShoppingItem {
@@ -107,9 +116,13 @@ export interface ShoppingItem {
   quantity: number;
   unit: string;
   isChecked: boolean;
+  isCompleted: boolean;
   category: string;
+  notes?: string;
   greenweezProductId?: string;
   greenweezProductUrl?: string;
+  amazonProductId?: string;
+  amazonProductUrl?: string;
 }
 
 export interface GreenweezProduct {
@@ -128,6 +141,27 @@ export interface GreenweezProduct {
   brand: string;
   packageSize: string;
   affiliateUrl: string;
+}
+
+export interface AmazonProduct {
+  id: string;
+  asin: string;
+  title: string;
+  description: string;
+  price: number;
+  currency: string;
+  imageUrl: string;
+  category: string;
+  subcategory?: string;
+  brand?: string;
+  rating?: number;
+  reviewCount?: number;
+  availability: string;
+  affiliateUrl: string;
+  features?: string[];
+  isVegan?: boolean;
+  isOrganic?: boolean;
+  nutritionalInfo?: NutritionalInfo;
 }
 
 export interface TransitionPlan {

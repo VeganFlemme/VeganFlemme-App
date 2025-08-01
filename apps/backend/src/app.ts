@@ -10,6 +10,7 @@ import { profileRouter } from './routes/profile';
 import { nutritionRouter } from './routes/nutrition';
 import qualityRouter from './routes/quality';
 import recipeRouter from './routes/recipeRoutes';
+import amazonRouter from './routes/amazonRoutes';
 
 // Load environment variables
 dotenv.config();
@@ -47,6 +48,7 @@ app.use('/api/profile', profileRouter);
 app.use('/api/nutrition', nutritionRouter);
 app.use('/api/quality', qualityRouter);
 app.use('/api/recipe', recipeRouter);
+app.use('/api/amazon', amazonRouter);
 
 // Root endpoint
 app.get('/', (req: Request, res: Response) => {
@@ -60,7 +62,8 @@ app.get('/', (req: Request, res: Response) => {
       profile: '/api/profile',
       nutrition: '/api/nutrition',
       quality: '/api/quality',
-      recipe: '/api/recipe'
+      recipe: '/api/recipe',
+      amazon: '/api/amazon'
     }
   });
 });
@@ -77,7 +80,8 @@ app.get('/api', (req: Request, res: Response) => {
       profile: '/api/profile',
       nutrition: '/api/nutrition',
       quality: '/api/quality',
-      recipe: '/api/recipe'
+      recipe: '/api/recipe',
+      amazon: '/api/amazon'
     }
   });
 });
