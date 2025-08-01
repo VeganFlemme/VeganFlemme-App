@@ -1,7 +1,5 @@
 # 🌱 VeganFlemme - L'Assistant Ultime pour Devenir Vegan Sans Effort
 
-## ✨ Source de Vérité
-
 **Manger 100% végétal sans effort : menu en 1 clic, recettes auto, personnalisation intelligente, panier prêt à commander.**
 
 ### 🎯 Mission et Vision du Projet
